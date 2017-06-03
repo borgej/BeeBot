@@ -1,0 +1,282 @@
+﻿@{
+
+}
+
+<div class="">
+
+    <!-- Example row of columns -->
+    <div class="row">
+        <div class="col-md-2">
+            <h4 class="">Menu</h4>
+            <div class="btn-group-vertical menuButtons">
+                <button type="button" class="btn btn-primary-outline" id="chatToggleButton">Chat</button>
+                <button type="button" class="btn btn-primary-outline" id="consoleToggleButton">Console</button>
+                <button type="button" class="btn btn-primary-outline" id="usersToggleButton">Users</button>
+                <button type="button" class="btn btn-primary-outline" id="chatPrefsToggleButton">Chat prefs</button>
+                <button type="button" class="btn btn-primary-outline" id="triggersToggleButton">Triggers</button>
+                <button type="button" class="btn btn-primary-outline" id="timersToggleButton">Timers</button>
+                <button type="button" class="btn btn-primary-outline" id="pollsToggleButton">Polls</button>
+
+
+            </div>
+        </div>
+        <div class="col">
+            <div class="card botStatusCard">
+                <div class="card card-block">
+                    <h4 class="card-title"><i class="fa fa-square-o"></i> Bot controls</h4>
+                    <div class="btn-group botButtons">
+                        <button id="botConnectButton" type="button" class="btn btn-success" data-username="@Session["botusername"]" data-password="@Session["botpassword"]" data-channel="@Session["botchannel"]"><i class="fa fa-plug"></i> Connect</button>
+                        <button id="botReconnectButton" type="button" class="btn btn-secondary" data-username="@Session["botusername"]" data-password="@Session["botpassword"]" data-channel="@Session["botchannel"]"><i class="fa fa-plug"></i> Re-connect</button>
+                        <button id="botDisconnectButton" type="button" class="btn btn-warning"><i class="fa fa-window-close"></i> Disconnect</button>
+                    </div>
+                    <div class="">
+                        <div>
+                            <span id="botMsg" class="badge badge-default dontshow"></span>
+                        </div>
+                        <div>
+                            <span id="botWarningMsg" class="badge badge-warning dontshow"></span>
+                        </div>
+                        <div>
+                            <span id="botinfoMsg" class="badge badge-info dontshow"></span>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            <div class="card consoleStatusCard">
+                <div class="card card-block">
+                    <h4 class="card-title"><i class="fa fa-square-o"></i> Console</h4>
+                    <div class="consoleLog pre-scrollable">
+
+                    </div>
+
+                </div>
+            </div>
+            <div class="card usersStatusCard">
+                <div class="card card-block">
+                    <h4 class="card-title"><i class="fa fa-square-o"></i> Users</h4>
+                    <div class="usersCard">
+                        <div class="usersCount">
+                            0
+                        </div>
+                        <div class="usersConnInfo pre-scrollable">
+                            
+                        </div>
+                        
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="card chatPrefsCard">
+                <div class="card card-block">
+                    <h4 class="card-title"><i class="fa fa-square-o"></i> Chat prefs</h4>
+                    <p class="card-text"></p>
+
+                </div>
+            </div>
+            <div class="card triggersCard">
+                <div class="card card-block">
+                    <h4 class="card-title"><i class="fa fa-square-o"></i> Triggers</h4>
+                    <p class="card-text"></p>
+
+
+                </div>
+            </div>
+            <div class="card timersCard">
+                <div class="card card-block">
+                    <h4 class="card-title"><i class="fa fa-square-o"></i> Timers</h4>
+                    <p class="card-text"></p>
+
+
+                </div>
+            </div>
+            <div class="card pollsCard">
+                <div class="card card-block">
+                    <h4 class="card-title"><i class="fa fa-square-o"></i> Polls</h4>
+                    <p class="card-text"></p>
+
+
+                </div>
+            </div>
+
+
+        </div>
+        <div class="col-md-6 chatCard">
+            <div class="card chatCardDiv">
+                <div class="card card-block">
+                    <h4 class="card-title"><i class="fa fa-square-o"></i> Chat</h4>
+                    <div class="chatText pre-scrollable">
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script type="text/javascript">
+    $(document).ready(function () {
+
+        $("#chatToggleButton").click(function () {
+            toggleButton(this);
+            $(".chatCard").toggle();
+        });
+        $("#consoleToggleButton").click(function () {
+            toggleButton(this);
+            $(".consoleStatusCard").toggle();
+        });
+        $("#usersToggleButton").click(function () {
+            toggleButton(this);
+            $(".usersStatusCard").toggle();
+        });
+        $("#chatPrefsToggleButton").click(function () {
+            toggleButton(this);
+            $(".chatPrefsCard").toggle();
+        });
+        $("#triggersToggleButton").click(function () {
+            toggleButton(this);
+            $(".triggersCard").toggle();
+        });
+        $("#timersToggleButton").click(function () {
+            toggleButton(this);
+            $(".timersCard").toggle();
+        });
+        $("#pollsToggleButton").click(function () {
+            toggleButton(this);
+            $(".pollsCard").toggle();
+        });
+        $("#chatTpollsToggleButtonoggleButton").click(function () {
+            toggleButton(this);
+            $(".chchatCardat").toggle();
+        });
+
+
+        // Make each header clickable so content is toggled
+        $(".card-title").click(function() {
+            $(this).next().toggle();
+        });
+    });
+
+
+    function toggleButton(elem) {
+        $(elem).toggleClass("btn-primary-outline").toggleClass("btn-secondary");
+    }
+
+
+    (function () {
+        // Defining a connection to the server hub.
+
+        var twitchHub = $.connection.twitchHub;
+        // Setting logging to true so that we can see whats happening in the browser console log. [OPTIONAL]
+
+        $.connection.hub.logging = true;
+        // Start the hub
+
+        $.connection.hub.start();
+
+
+        // This is the client method which is being called inside the MyHub constructor method every 3 seconds
+        twitchHub.client.SendServerTime = function (serverTime) {
+            // Set the received serverTime in the span to show in browser
+
+            $(".chatText").append(serverTime + "<br>");
+        };
+
+        twitchHub.client.Hello = function (hello) {
+            $(".chatText").append(hello + "<br>");
+        };
+
+        twitchHub.client.ChatShow = function (msg) {
+            $(".chatText").append(msg);
+
+            var objDiv = document.getElementsByClassName("chatText")[0];
+            objDiv.scrollTop = objDiv.scrollHeight;
+        };
+
+        twitchHub.client.DonationShow = function (msg) {
+            $(".chatText").append("<div class='donationMsg'>" + msg + "</span>");
+
+            var objDiv = document.getElementsByClassName("chatText")[0];
+            objDiv.scrollTop = objDiv.scrollHeight;
+        };
+
+        twitchHub.client.HostShow = function (msg) {
+            $(".chatText").append("<div class='hostMsg'>" + msg + "</span>");
+
+            var objDiv = document.getElementsByClassName("chatText")[0];
+            objDiv.scrollTop = objDiv.scrollHeight;
+        };
+
+        twitchHub.client.ConsoleLog = function (log) {
+            $(".consoleLog").append(log + "<br>");
+            var objDiv = document.getElementsByClassName("consoleLog")[0];
+            objDiv.scrollTop = objDiv.scrollHeight;
+        };
+
+        twitchHub.client.UsersConnLog = function (log) {
+            var value = 0;
+
+            if (log.indexOf("(connected)") != -1) {
+                value = parseInt($(".usersCount").text()) + 1;
+            }
+            else if (log.indexOf("(disconnected)") != -1) {
+                if (parseInt($(".usersCount").text()) > 0) {
+                    value = parseInt($(".usersCount").text()) - 1;
+                } else {
+                    value = 0;
+                }
+            
+            }
+
+            console.log("Users: " + value.toString());
+
+            $(".usersCount").text(value.toString());
+
+            $(".usersConnInfo").append(log);
+            var objDiv = document.getElementsByClassName("usersConnInfo")[0];
+            objDiv.scrollTop = objDiv.scrollHeight;
+        };
+
+        twitchHub.client.BotStatus = function (connected) {
+            console.log("BotStatus: " + connected);
+            if (connected.message != "") {
+                $("#botMsg").removeClass("dontshow").text(connected.message);
+            }
+            if (connected.warning != "") {
+                $("#botWarningMsg").removeClass("dontshow").text(connected.warning);
+            }
+            if (connected.info != "") {
+                $("#botinfoMsg").removeClass("dontshow").text(connected.info);
+            }
+        
+        
+        
+        };
+
+        //Button click jquery handler
+        $("#botConnectButton").click(function () {
+            // Call SignalR hub method
+            var username = $(this).data("username");
+            var password = $(this).data("password");
+            var channel = $(this).data("channel");
+
+            twitchHub.server.connectBot(username, password, channel);
+        });
+
+        $("#botReconnectButton").click(function () {
+            var username = $(this).data("username");
+            var password = $(this).data("password");
+            var channel = $(this).data("channel");
+            twitchHub.server.reconnect(username, password, channel);
+        });
+
+        $("#botDisconnectButton").click(function () {
+            // Call SignalR hub method
+
+            twitchHub.server.disconnectBot();
+        });
+
+    })()
+</script>

@@ -1,0 +1,83 @@
+﻿@model BeeBot.Models.PrefViewModel
+
+@{
+    ViewBag.Title = "title";
+    Model.channel = "";
+}
+
+<h2>Bot preferences</h2>
+
+<div class="col-md-12">
+    <form id="prefForm" class="form-horizontal">
+        <fieldset>
+
+            <!-- Form Name -->
+            <legend>Login credentials</legend>
+
+            <!-- Text input-->
+            <div class="form-group">
+                <label class="col-md-4 control-label" for="botusername">Username</label>
+                <div class="col-md-4">
+                    <input id="botusername" name="botusername" type="text" placeholder="username" class="form-control input-md" required="" value="@Model.username">
+
+                </div>
+            </div>
+
+            <!-- Password input-->
+            <div class="form-group">
+                <label class="col-md-4 control-label" for="passwordinput">Password</label>
+                <div class="col-md-4">
+                    <input id="passwordinput" name="passwordinput" type="password" placeholder="password" class="form-control input-md" required="" value="@Model.password">
+                    <span class="help-block">oauth:password</span>
+                </div>
+            </div>
+
+            <legend>Channel</legend>
+
+            <!-- Text input-->
+            <div class="form-group">
+                <label class="col-md-4 control-label" for="channel">Channel</label>
+                <div class="col-md-4">
+                    <input id="channel" name="Channel" type="text" placeholder="channel" class="form-control input-md" required="" value="@Model.channel">
+
+                </div>
+            </div>
+
+            <!-- Button -->
+            <div class="form-group">
+                <div class="col-md-4">
+                    <button id="savebutton" name="savebutton" class="btn" type="button"><i class="fa fa-floppy-o"></i> Save</button>
+                </div>
+            </div>
+
+        </fieldset>
+    </form>
+
+</div>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+
+        $("#savebutton").click(function (e) {
+
+            var vaules = $("#prefForm").serialize();
+            e.preventDefault();
+
+
+            $.ajax({
+                type: "POST",
+                url: "@Url.Action("PreferencesSave")",
+                data: vaules,
+                dataType: "json",
+                success: function (response) {
+                    alert(response.message);
+                    window.location = "@Url.Action("Index")";
+                }
+            });
+
+
+
+        });
+    });
+
+</script>

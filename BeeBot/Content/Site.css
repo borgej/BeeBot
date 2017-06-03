@@ -1,0 +1,335 @@
+﻿
+
+
+
+/* Card css */
+html {
+    font-family: Lato, 'Helvetica Neue', Arial, Helvetica, sans-serif;
+    font-size: 14px;
+}
+
+h5 {
+    font-size: 1.28571429em;
+    font-weight: 700;
+    line-height: 1.2857em;
+    margin: 0;
+}
+
+.card {
+    font-size: 1em;
+    overflow: hidden;
+    padding: 0;
+    border: none;
+    border-radius: .28571429rem;
+    box-shadow: 0 1px 3px 0 #d4d4d5, 0 0 0 1px #d4d4d5;
+    max-height: 400px !important;
+}
+
+.card-block {
+    font-size: 1em;
+    position: relative;
+    margin: 0;
+    padding: 1em;
+    border: none;
+    border-top: 1px solid rgba(34, 36, 38, .1);
+    box-shadow: none;
+}
+
+.card-img-top {
+    display: block;
+    width: 100%;
+    height: auto;
+}
+
+.card-title {
+    font-size: 1.28571429em;
+    font-weight: 700;
+    line-height: 1.2857em;
+}
+
+.card-text {
+    clear: both;
+    margin-top: .5em;
+    color: rgba(0, 0, 0, .68);
+}
+
+.card-footer {
+    font-size: 1em;
+    position: static;
+    top: 0;
+    left: 0;
+    max-width: 100%;
+    padding: .75em 1em;
+    color: rgba(0, 0, 0, .4);
+    border-top: 1px solid rgba(0, 0, 0, .05) !important;
+    background: #fff;
+}
+
+.card-inverse .btn {
+    border: 1px solid rgba(0, 0, 0, .05);
+}
+
+.profile {
+    position: absolute;
+    top: -12px;
+    display: inline-block;
+    overflow: hidden;
+    box-sizing: border-box;
+    width: 25px;
+    height: 25px;
+    margin: 0;
+    border: 1px solid #fff;
+    border-radius: 50%;
+}
+
+.profile-avatar {
+    display: block;
+    width: 100%;
+    height: auto;
+    border-radius: 50%;
+}
+
+.profile-inline {
+    position: relative;
+    top: 0;
+    display: inline-block;
+}
+
+    .profile-inline ~ .card-title {
+        display: inline-block;
+        margin-left: 4px;
+        vertical-align: top;
+    }
+
+.text-bold {
+    font-weight: 700;
+}
+
+.meta {
+    font-size: 1em;
+    color: rgba(0, 0, 0, .4);
+}
+
+    .meta a {
+        text-decoration: none;
+        color: rgba(0, 0, 0, .4);
+    }
+
+        .meta a:hover {
+            color: rgba(0, 0, 0, .87);
+        }
+
+
+body {
+    padding-top: 66px;
+    padding-bottom: 20px;
+}
+
+/* Set padding to keep content from hitting the edges */
+.body-content {
+    margin-top: 17px !important;
+    padding-left: 15px;
+    padding-right: 15px;
+}
+
+/* Override the default bootstrap behavior where horizontal description lists 
+   will truncate terms that are too long to fit in the left column 
+*/
+.dl-horizontal dt {
+    white-space: normal;
+}
+
+/* Set width on the form input elements since they're 100% wide by default */
+input,
+select,
+textarea {
+    max-width: 280px;
+}
+
+.login input, select, textarea {
+    max-width: 100% !important;
+}
+
+.btn-login {
+    margin-top: 20px;
+    margin-bottom: 5px;    
+}
+
+.login-input {
+    margin-top: 5px;
+}
+.menuCard {
+    min-width: 120px !important;
+}
+
+.menuButtons {
+    width: 90% !important;
+    margin-left: 10px;
+    margin-right: 10px;
+    margin-bottom: 10px;
+}
+
+.consoleLog {
+    min-height: 50px;
+    margin-bottom: 10px;
+}
+
+.chatText {
+    min-height: 580px;
+    margin-bottom: 10px;
+}
+
+.chatCard {
+    
+    margin-bottom: 30px;
+}
+
+.chatCardDiv {
+    min-height: 650px;
+}
+
+.chatCardDiv > .card{
+    min-height: 650px;
+}
+
+.chatMsg {
+    width: auto;
+    padding-left: 4px;
+    padding-right: 4px;
+    /*border-top: 1px darkgray solid;*/
+    border-top: 1px darkgray solid;
+}
+
+.chatMsgToBroadcaster {
+    background-color: #ffc0cb;
+}
+
+.chatDonationMsg {
+    background-color: lawngreen;
+}
+
+.chatHostMsg {
+    background-color: dodgerblue;
+}
+
+
+.card-title {
+    cursor: pointer;
+}
+
+.dontshow {
+    display: none;
+}
+
+.userConnected {
+    background-color: springgreen
+}
+
+.userLeft {
+    background-color: #d4d4d5
+}
+
+.usersCard {
+    width: 100%;
+    display: table;
+}
+
+.usersConnInfo .usersCount {
+    
+    display: table-cell;
+}
+
+.usersConnInfo {
+    
+    height: 130px;
+    width: 70%;
+}
+
+.usersCount {
+    width: 30%;
+    float: left;
+    font-size: 60px;
+    text-align: center;
+    height: 100%;
+}
+
+/* Fill card witdh with buttons */
+.botButtons > .btn{
+    width: 33% !important;
+}
+
+.divCenter {
+    margin-left: 50%;
+    margin-right: 50%;
+}
+/*
+    Note: It is best to use a less version of this file ( see http://css2less.cc
+    For the media queries use @screen-sm-min instead of 768px.
+    For .omb_spanOr use @body-bg instead of white.
+*/
+@media (min-width: 768px) {
+    .omb_row-sm-offset-3 div:first-child[class*="col-"] {
+        margin-left: 25%;
+    }
+}
+
+.omb_login .omb_authTitle {
+    text-align: center;
+    /*line-height: 300%;*/
+}
+	
+.omb_login .omb_socialButtons a {
+    color: white; /*// In yourUse @body-bg*/ 
+    opacity:0.9;
+}
+.omb_login .omb_socialButtons a:hover {
+    color: white;
+    opacity:1;    	
+}
+.omb_login .omb_socialButtons .omb_btn-facebook {background: #3b5998;}
+.omb_login .omb_socialButtons .omb_btn-twitter {background: #00aced;}
+.omb_login .omb_socialButtons .omb_btn-twitch {background: #6441A4; color: #ffffff !important}
+.omb_login .omb_socialButtons .omb_btn-google {background: #c32f10;}
+
+
+.omb_login .omb_loginOr {
+    position: relative;
+    font-size: 1.5em;
+    color: #aaa;
+    margin-top: 1em;
+    margin-bottom: 1em;
+    padding-top: 0.5em;
+    padding-bottom: 0.5em;
+    text-align: center;
+}
+.omb_login .omb_loginOr .omb_hrOr {
+    background-color: #cdcdcd;
+    height: 1px;
+    margin-top: 0px !important;
+    margin-bottom: 0px !important;
+}
+.omb_login .omb_loginOr .omb_spanOr {
+    display: block;
+    position: absolute;
+    left: 50%;
+    top: -0.6em;
+    margin-left: -1.5em;
+    background-color: white;
+    width: 3em;
+    text-align: center;
+}			
+
+.omb_login .omb_loginForm .input-group.i {
+    width: 2em;
+}
+.omb_login .omb_loginForm  .help-block {
+    color: red;
+}
+
+	
+@media (min-width: 768px) {
+    .omb_login .omb_forgotPwd {
+        text-align: right;
+        margin-top:10px;
+    }		
+}
