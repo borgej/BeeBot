@@ -10,6 +10,7 @@ using Owin;
 using BeeBot.Models;
 using Microsoft.AspNet.SignalR;
 using Owin.Security.Providers.Twitch;
+using YTBot.Context;
 
 namespace BeeBot
 {
@@ -58,6 +59,8 @@ namespace BeeBot
             });
 
             app.MapSignalR();
+
+
         }
     }
 }

@@ -11,6 +11,7 @@ using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin;
 using Microsoft.Owin.Security;
 using BeeBot.Models;
+using YTBot.Context;
 
 namespace BeeBot.App_Start
 {

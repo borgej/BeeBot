@@ -232,25 +232,79 @@
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\Startup.Auth.cs" />
     <Compile Include="BotGames\BlackJack.cs" />
+    <Compile Include="BotGames\Gamble.cs" />
+    <Compile Include="BotGames\Love.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\ManageController.cs" />
+    <Compile Include="Context\DBContext.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
-    <Compile Include="Models\AccountViewModel.cs" />
-    <Compile Include="Models\BotStatusVM.cs" />
+    <Compile Include="Migrations\201705290042582_InitialCreate.cs" />
+    <Compile Include="Migrations\201705290042582_InitialCreate.Designer.cs">
+      <DependentUpon>201705290042582_InitialCreate.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201706041321588_AddedBotUserSettings.cs" />
+    <Compile Include="Migrations\201706041321588_AddedBotUserSettings.Designer.cs">
+      <DependentUpon>201706041321588_AddedBotUserSettings.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201706041454025_BotUserSettingsIdToIdentity.cs" />
+    <Compile Include="Migrations\201706041454025_BotUserSettingsIdToIdentity.Designer.cs">
+      <DependentUpon>201706041454025_BotUserSettingsIdToIdentity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201706041826486_AddedBotChannelSettings.cs" />
+    <Compile Include="Migrations\201706041826486_AddedBotChannelSettings.Designer.cs">
+      <DependentUpon>201706041826486_AddedBotChannelSettings.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201706041844486_ChangedNameOfTriggers.cs" />
+    <Compile Include="Migrations\201706041844486_ChangedNameOfTriggers.Designer.cs">
+      <DependentUpon>201706041844486_ChangedNameOfTriggers.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201706041914521_AddedLoyalty.cs" />
+    <Compile Include="Migrations\201706041914521_AddedLoyalty.Designer.cs">
+      <DependentUpon>201706041914521_AddedLoyalty.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201706060234340_UpdatedModelsLoyalty.cs" />
+    <Compile Include="Migrations\201706060234340_UpdatedModelsLoyalty.Designer.cs">
+      <DependentUpon>201706060234340_UpdatedModelsLoyalty.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201706061737329_LoyaltyChangedDateTimeToNullable.cs" />
+    <Compile Include="Migrations\201706061737329_LoyaltyChangedDateTimeToNullable.Designer.cs">
+      <DependentUpon>201706061737329_LoyaltyChangedDateTimeToNullable.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201706061959074_TriggerAddedRestrictions.cs" />
+    <Compile Include="Migrations\201706061959074_TriggerAddedRestrictions.Designer.cs">
+      <DependentUpon>201706061959074_TriggerAddedRestrictions.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201706062131502_LoyaltyAddedLastGamble.cs" />
+    <Compile Include="Migrations\201706062131502_LoyaltyAddedLastGamble.Designer.cs">
+      <DependentUpon>201706062131502_LoyaltyAddedLastGamble.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\Configuration.cs" />
+    <Compile Include="Models\BotChannelSettings.cs" />
+    <Compile Include="Models\TwitchClientContainer.cs" />
+    <Compile Include="Models\ViewModels\AccountViewModel.cs" />
+    <Compile Include="Models\ViewModels\BotStatusVM.cs" />
     <Compile Include="Models\BotUserSettings.cs" />
     <Compile Include="Models\IdentityModels.cs" />
-    <Compile Include="Models\ManageViewModels.cs" />
-    <Compile Include="Models\PrefViewModel.cs" />
+    <Compile Include="Models\ViewModels\DashboardViewModel.cs" />
+    <Compile Include="Models\ViewModels\LoyaltyViewModel.cs" />
+    <Compile Include="Models\ViewModels\ManageViewModels.cs" />
+    <Compile Include="Models\ViewModels\PrefViewModel.cs" />
+    <Compile Include="Models\WorkerThreadArg.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Services\ContextService.cs" />
     <Compile Include="Services\TwitchService.cs" />
+    <Compile Include="Services\UserService.cs" />
     <Compile Include="Signalr\TwitchHub.cs" />
     <Compile Include="Signalr\TwitchHubPersistent.cs" />
     <Compile Include="Startup.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Content\aamaran.css" />
+    <Content Include="Content\amaran.min.css" />
+    <Content Include="Content\animate.min.css" />
     <Content Include="Content\bootstrap-grid.css" />
     <Content Include="Content\bootstrap-grid.min.css" />
     <Content Include="Content\bootstrap-reboot.css" />
@@ -299,6 +353,8 @@
     <Content Include="Scripts\jquery-3.1.1.slim.min.map" />
     <Content Include="Scripts\jquery-3.1.1.min.map" />
     <None Include="Scripts\jquery.validate-vsdoc.js" />
+    <Content Include="Scripts\jquery.amaran.js" />
+    <Content Include="Scripts\jquery.amaran.min.js" />
     <Content Include="Scripts\jquery.signalR-2.2.2.js" />
     <Content Include="Scripts\jquery.signalR-2.2.2.min.js" />
     <Content Include="Scripts\jquery.validate.js" />
@@ -353,6 +409,38 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\201705290042582_InitialCreate.resx">
+      <DependentUpon>201705290042582_InitialCreate.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201706041321588_AddedBotUserSettings.resx">
+      <DependentUpon>201706041321588_AddedBotUserSettings.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201706041454025_BotUserSettingsIdToIdentity.resx">
+      <DependentUpon>201706041454025_BotUserSettingsIdToIdentity.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201706041826486_AddedBotChannelSettings.resx">
+      <DependentUpon>201706041826486_AddedBotChannelSettings.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201706041844486_ChangedNameOfTriggers.resx">
+      <DependentUpon>201706041844486_ChangedNameOfTriggers.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201706041914521_AddedLoyalty.resx">
+      <DependentUpon>201706041914521_AddedLoyalty.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201706060234340_UpdatedModelsLoyalty.resx">
+      <DependentUpon>201706060234340_UpdatedModelsLoyalty.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201706061737329_LoyaltyChangedDateTimeToNullable.resx">
+      <DependentUpon>201706061737329_LoyaltyChangedDateTimeToNullable.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201706061959074_TriggerAddedRestrictions.resx">
+      <DependentUpon>201706061959074_TriggerAddedRestrictions.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201706062131502_LoyaltyAddedLastGamble.resx">
+      <DependentUpon>201706062131502_LoyaltyAddedLastGamble.cs</DependentUpon>
+    </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

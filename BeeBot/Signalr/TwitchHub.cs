@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Entity.Core.Mapping;
+using System.Diagnostics;
 using System.Linq;
 using System.Security.Policy;
 using System.Text.RegularExpressions;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Helpers;
@@ -14,48 +17,58 @@ using Newtonsoft.Json;
 using TwitchLib;
 using TwitchLib.Events.Client;
 using TwitchLib.Models.Client;
+using YTBot.Context;
+using YTBot.Models;
+using YTBot.Services;
 
 namespace BeeBot.Signalr
 {
     public class TwitchHub : Hub
     {
-        public static string Username { get; set; }
-        public static string Password { get; set; }
-        public static string Channel { get; set; }
+        public string Username { get; set; }
+        public string Password { get; set; }
+        public string Channel { get; set; }
 
-        private static ConnectionCredentials ConnCred { get; set; }
-        public static TwitchClient Client { get; set; }
+        private ContextService ContextService { get; set; }
+
+        public static List<TwitchClientContainer> ClientContainers { get; set; }
+
+        private ConnectionCredentials ConnCred { get; set; }
+        public TwitchClient Client { get; set; }
+
+        private const int SLEEPSECONDS = 1;
+
+
 
         public TwitchHub()
         {
+            ContextService = new ContextService();
 
-
-            // Create a Long running task to do an infinite loop which will keep sending the server time
-
-            // to the clients every 3 seconds.
-
-            //var taskTimer = Task.Factory.StartNew(async () =>
-            //    {
-            //        while (true)
-            //        {
-            //            string timeNow = DateTime.Now.ToString();
-            //            //Sending the server time to all the connected clients on the Client method SendServerTime()
-
-            //            Clients.All.SendServerTime(timeNow);
-            //            //Delaying by 3 seconds.
-
-            //            await Task.Delay(3000);
-            //        }
-            //    }, TaskCreationOptions.LongRunning
-            //);
-
-            //var id = taskTimer.Id;
-
-            //Task.Factory.
-
-
+            if (ClientContainers == null)
+            {
+                ClientContainers = new List<TwitchClientContainer>();
+            }
         }
 
+        public override Task OnConnected()
+        {
+            if (ClientContainers.Any(c => c.Id == Context.User.Identity.Name))
+            {
+                Client = GetClient();
+            }
+            else
+            {
+                var tcc = new TwitchClientContainer()
+                {
+                    Id = Context.User.Identity.Name,
+                    Channel = Channel
+                };
+
+                ClientContainers.Add(tcc);
+            }
+
+            return base.OnConnected();
+        }
 
         /// <summary>
         /// Client sent connect to channel
@@ -68,15 +81,16 @@ namespace BeeBot.Signalr
 
             try
             {
-                if (Client != null)
+                if (GetClient() != null)
                 {
-                    if (Client.IsConnected)
+                    if (GetClient().IsConnected)
                     {
                         ConsoleLog("Already connected...");
                     }
                     else
                     {
-                        Client.Connect();
+                        GetClient().Connect();
+                        GetClient().SendMessage(channel, " is now connected and serving its master!");
                         ConsoleLog("Connected");
                     }   
                 }
@@ -92,36 +106,53 @@ namespace BeeBot.Signalr
                     Channel = channel;
                     ConnCred = new ConnectionCredentials(Username, Password);
 
-                    Client = new TwitchClient(ConnCred, Channel, logging: false);
+
+                    var clientContainer = GetClientContainer();
+                    clientContainer.Client = new TwitchClient(ConnCred, Channel, logging: false);
 
                     // Throttle bot
-                    Client.ChatThrottler = new TwitchLib.Services.MessageThrottler(20, TimeSpan.FromSeconds(30));
+                    clientContainer.Client.ChatThrottler = new TwitchLib.Services.MessageThrottler(20, TimeSpan.FromSeconds(30));
 
 
 
-                    Client.OnLog += ConsoleLog;
-                    Client.OnConnectionError += ConsoleLogConnectionError;
-                    Client.OnMessageReceived += ChatShowMessage;
-                    Client.OnUserJoined += ShowUserJoined;
-                    Client.OnUserLeft += ShowUserLeft;
-                    Client.OnModeratorsReceived += ChannelModerators;
+                    clientContainer.Client.OnLog += ConsoleLog;
+                    clientContainer.Client.OnConnectionError += ConsoleLogConnectionError;
+                    clientContainer.Client.OnMessageReceived += ChatShowMessage;
+                    clientContainer.Client.OnMessageSent += ChatShowMessage;
+                    clientContainer.Client.OnUserJoined += ShowUserJoined;
+                    clientContainer.Client.OnUserLeft += ShowUserLeft;
+                    clientContainer.Client.OnModeratorsReceived += ChannelModerators;
 
-                    Client.Connect();
+                    clientContainer.Client.Connect();
                     ConsoleLog("Connected to channel " + Channel);
+                    GetClient().SendMessage(channel, " is now connected and serving its master!");
+
+                    var arg = new WorkerThreadArg()
+                    {
+                        Channel = Channel,
+                        Username = Context.User.Identity.Name, 
+                        Client = clientContainer.Client
+                    };
+
+                    var parameterizedThreadStart = new ParameterizedThreadStart(TrackLoyaltyAndTimers);
+                    var tcc = new TwitchClientContainer();
+                    tcc.WorkerThread = new Thread(parameterizedThreadStart);
+                    tcc.Client = clientContainer.Client;
+                    tcc.WorkerThread.Start(arg);
                 }
-                
-                Client.GetChannelModerators(channel);
-                Client.WillReplaceEmotes = true;
+
+                GetClientContainer().Client.GetChannelModerators(channel);
+                GetClientContainer().Client.WillReplaceEmotes = true;
 
 
                 var botStatus = new BotStatusVM()
                 {
-                    info = Client.IsConnected ? "Bot is connected" : "Bot is not connected",
+                    info = GetClientContainer().Client.IsConnected ? "Bot is connected" : "Bot is not connected",
                     message = "",
                     warning = ""
                 };
 
-                Clients.All.BotStatus(botStatus);
+                Clients.Caller.BotStatus(botStatus);
 
             }
             catch (Exception e)
@@ -130,34 +161,46 @@ namespace BeeBot.Signalr
             }
         }
 
+        
+
         public void Reconnect(string username, string password, string channel)
         {
-            if (Client.IsConnected)
+            try
             {
-                DisconnectBot();
-                ConsoleLog("Reconnecting to channel " + Channel);
-                Client.Connect();
-                ConsoleLog("Connected to channel " + Channel);
+                if (GetClientContainer().Client.IsConnected)
+                {
+                    DisconnectBot();
+                    ConsoleLog("Reconnecting to channel " + Channel);
+                    GetClientContainer().Client.Connect();
+                    GetClient().SendMessage(channel, " is now connected and serving its master!");
+                    ConsoleLog("Connected to channel " + Channel);
+                }
+                else
+                {
+                    ConsoleLog("Reconnecting to channel " + Channel);
+                    GetClient().Connect();
+                    GetClient().SendMessage(channel, " is now connected and serving its master!");
+
+                    ConsoleLog("Connected to channel " + Channel);
+                }
             }
-            else
+            catch (Exception e)
             {
-                ConsoleLog("Reconnecting to channel " + Channel);
-                Client.Connect();
-                ConsoleLog("Connected to channel " + Channel);
+                ConsoleLog(e.Message);
             }
         }
 
-        private void ChannelModerators(object sender, OnModeratorsReceivedArgs e)
+        public void ChannelModerators(object sender, OnModeratorsReceivedArgs e)
         {
             bool botIsMod = e.Moderators.Contains(Username);
             var botStatus = new BotStatusVM()
             {
-                info = Client.IsConnected ? "Bot is connected" : "Bot is not connected",
+                info = GetClientContainer().Client.IsConnected ? "Bot is connected" : "Bot is not connected",
                 message = "",
                 warning = botIsMod == false ? "Bot is not moderator in channel" : ""
             };
 
-            Clients.All.BotStatus(botStatus);
+            Clients.Caller.BotStatus(botStatus);
         }
 
         /// <summary>
@@ -165,12 +208,12 @@ namespace BeeBot.Signalr
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void ShowUserLeft(object sender, OnUserLeftArgs e)
+        public void ShowUserLeft(object sender, OnUserLeftArgs e)
         {
             string userConnected = DateTime.Now.ToString("HH:mm:ss").ToString() + " - " + e.Username + " (disconnected)";
             var msg = "<div class='userLeft'>" + userConnected + "</div>";
 
-            Clients.All.UsersConnLog(msg);
+            Clients.Caller.UsersConnLog(msg);
         }
 
         /// <summary>
@@ -178,13 +221,29 @@ namespace BeeBot.Signalr
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void ShowUserJoined(object sender, OnUserJoinedArgs e)
+        public void ShowUserJoined(object sender, OnUserJoinedArgs e)
         {
             
             string userConnected = DateTime.Now.ToString("HH:mm:ss").ToString() + " - " + e.Username + " (connected)";
             var msg = "<div class='userConnected'>" + userConnected + "</div>";
 
-            Clients.All.UsersConnLog(msg);
+            Clients.Caller.UsersConnLog(msg);
+        }
+
+        public void ShowUserTimedOut(object sender, OnUserTimedoutArgs e)
+        {
+            string userConnected = DateTime.Now.ToString("HH:mm:ss").ToString() + " - " + e.Username + " (timed out)";
+            var msg = "<div class='userTimedOut'>" + userConnected + "</div>";
+
+            Clients.Caller.UsersConnLog(msg);
+        }
+
+        public void ShowUserBanned(object sender, OnUserBannedArgs e)
+        {
+            string userConnected = DateTime.Now.ToString("HH:mm:ss").ToString() + " - " + e.Username + " (banned)";
+            var msg = "<div class='userBanned'>" + userConnected + "</div>";
+
+            Clients.Caller.UsersConnLog(msg);
         }
 
         /// <summary>
@@ -194,7 +253,8 @@ namespace BeeBot.Signalr
         {
             try
             {
-                Client.Disconnect();
+                GetClient().SendMessage(Channel, " is now connected and serving its master!");
+                GetClientContainer().Client.Disconnect();
                 ConsoleLog("Disconnected channel " + Channel);
             }
             catch (Exception e)
@@ -214,16 +274,16 @@ namespace BeeBot.Signalr
         /// </summary>
         public void IsConnected()
         {
-            if (Client.IsConnected)
+            if (GetClientContainer().Client.IsConnected)
             {
 
-                Clients.All.ConsoleLog(DateTime.Now.ToString("HH:mm:ss").ToString() + " - " +
+                Clients.Caller.ConsoleLog(DateTime.Now.ToString("HH:mm:ss").ToString() + " - " +
                                        "Bot is still connected!");
 
             }
             else
             {
-                Clients.All.ConsoleLog(DateTime.Now.ToString("HH:mm:ss").ToString() + " - " +
+                Clients.Caller.ConsoleLog(DateTime.Now.ToString("HH:mm:ss").ToString() + " - " +
                                        "Bot is no longer connected!");
             }
         }
@@ -244,19 +304,19 @@ namespace BeeBot.Signalr
         /// Log to Client console
         /// </summary>
         /// <param name="msg"></param>
-        public void ConsoleLog(string msg)
+        public void ConsoleLog(string msg, bool debug = false)
         {
-            Clients.All.ConsoleLog(DateTime.Now.ToString("HH:mm:ss").ToString() + " - " + msg);
+            Clients.Caller.ConsoleLog(DateTime.Now.ToString("HH:mm:ss").ToString() + " - " + msg);
         }
 
         public void ConsoleLog(object sender, OnLogArgs e)
         {
-            Clients.All.ConsoleLog(e.DateTime.ToString("HH:mm:ss").ToString() + " - " + e.Data);
+            Clients.Caller.ConsoleLog(e.DateTime.ToString("HH:mm:ss").ToString() + " - " + e.Data);
         }
 
         public void ConsoleLogConnectionError(object sender, OnConnectionErrorArgs e)
         {
-            Clients.All.ConsoleLog(DateTime.Now.ToString("HH:mm:ss").ToString() + " - " + e.Error.Message);
+            Clients.Caller.ConsoleLog(DateTime.Now.ToString("HH:mm:ss").ToString() + " - " + e.Error.Message);
         }
 
         /// <summary>
@@ -273,7 +333,7 @@ namespace BeeBot.Signalr
                       e.ChatMessage.Message;
             //r.Replace(e.ChatMessage.Message, "<a href=\"$1\" target=\"_blank\">$1</a>");
 
-            // TODO: if links are allowed
+            // TODO: check if links are allowed
             if (e.ChatMessage.IsBroadcaster)
             {
                 msg = "<b>" + msg + "</b>";
@@ -287,16 +347,320 @@ namespace BeeBot.Signalr
                 msg = "<div class=\"chatMsg\">" + msg + "</div>";
             }
 
-            // badges
-            Clients.All.ChatShow(msg);
+            // 
+            Clients.Caller.ChatShow(msg);
 
+            // check for triggers
+            ChatMessageTriggerCheck(e.ChatMessage);
+
+        }
+
+        /// <summary>
+        /// Send chat message to Client
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void ChatShowMessage(object sender, OnMessageSentArgs e)
+        {
+            if (e.SentMessage.Message.StartsWith("/"))
+            {
+                return;
+            }
+
+            Regex r = new Regex(@"(https?://[^\s]+)");
+
+            var msg = DateTime.Now.ToString("HH:mm:ss").ToString() + " - " +
+                      FormatUsername(e.SentMessage) + ": " +
+                      e.SentMessage.Message;
+            //r.Replace(e.ChatMessage.Message, "<a href=\"$1\" target=\"_blank\">$1</a>");
+
+            // TODO: check if links are allowed
+            //if (e.SentMessage.)
+            //{
+            //    msg = "<b>" + msg + "</b>";
+            //}
+            if (e.SentMessage.Message.ToLower().Contains("@" + e.SentMessage.Channel.ToLower()))
+            {
+                msg = "<div class=\"chatMsg chatMsgToBroadcaster\">" + msg + "</div>";
+            }
+            else
+            {
+                msg = "<div class=\"chatMsg\">" + msg + "</div>";
+            }
+
+            // 
+            Clients.Caller.ChatShow(msg);
+
+        }
+
+        /// <summary>
+        /// Check for chat triggers
+        /// </summary>
+        /// <param name="chatmessage"></param>
+        public void ChatMessageTriggerCheck(ChatMessage chatmessage)
+        {
+            var triggers = ContextService.GetTriggers(Context.User.Identity.Name).Where(t => t.Active == true);
+            // loot name
+            var bcs = ContextService.GetBotChannelSettings(ContextService.GetUser(Context.User.Identity.Name));
+            if (bcs.Loyalty != null && bcs.Loyalty.LoyaltyName != null && !string.IsNullOrWhiteSpace(bcs.Loyalty.LoyaltyName))
+            {
+                // !<loyaltyName>
+                if (chatmessage.Message.StartsWith("!"+bcs.Loyalty.LoyaltyName))
+                {
+                    var userLoyalty = ContextService.GetLoyaltyForUser(Context.User.Identity.Name, chatmessage.UserId,
+                        chatmessage.Username);
+
+                    if (userLoyalty != null)
+                    {
+                        GetClient().SendMessage(
+                            $"@{chatmessage.DisplayName} has {userLoyalty.CurrentPoints.ToString()} {bcs.Loyalty.LoyaltyName}");
+                    }
+                }
+
+                // !burn<loyaltyName>
+                if (chatmessage.Message.StartsWith("!burn" + bcs.Loyalty.LoyaltyName.ToLower()))
+                {
+                    Random rnd = new Random();
+                    var userLoyalty = ContextService.GetLoyaltyForUser(Context.User.Identity.Name, chatmessage.UserId,
+                        chatmessage.Username);
+
+                    if (userLoyalty != null)
+                    {
+                        var ripLoyaltySentences = new List<string>
+                        {
+                            $"@{chatmessage.DisplayName}'s {bcs.Loyalty.LoyaltyName} spontaneously combusted!",
+                            $"@{chatmessage.DisplayName}'s {bcs.Loyalty.LoyaltyName} turned to ashes!",
+                            $"@{chatmessage.DisplayName} just scorched his loot.",
+                            $"@{chatmessage.DisplayName} just cooked his loot... it's not fit to eat!",
+                            $"@{chatmessage.DisplayName} witnessed all their {bcs.Loyalty.LoyaltyName} ignite... #rip{bcs.Loyalty.LoyaltyName}"
+                        };
+                        int randonIndex = rnd.Next(ripLoyaltySentences.Count);
+
+
+                        ContextService.AddLoyalty(ContextService.GetUser(Context.User.Identity.Name), chatmessage.Channel.ToLower(), userLoyalty, -userLoyalty.CurrentPoints);
+                        GetClient().SendMessage((string)ripLoyaltySentences[randonIndex]);
+                    }
+                }
+
+                if (chatmessage.Message.StartsWith("!bonusall") || chatmessage.Message.StartsWith("!give") || chatmessage.Message.StartsWith("!bonus") || chatmessage.Message.StartsWith("!gamble"))
+                {
+                    // PS: only mods and streamer can use these
+                    if (chatmessage.IsBroadcaster || chatmessage.IsModerator)
+                    {
+                        // !bonusall
+                        if (chatmessage.Message.StartsWith("!bonusall"))
+                        {
+                            try
+                            {
+                                var verb = "";
+                                var bonusValue = Math.Abs(Convert.ToInt32(Regex.Match(chatmessage.Message, @"-?\d+").Value));
+
+                                ContextService.AddLoyalty(ContextService.GetUser(Context.User.Identity.Name), chatmessage.Channel.ToLower(), GetUsersInChannel(chatmessage.Channel.ToLower()), bonusValue);
+
+                                if (bonusValue > 0)
+                                {
+                                    verb = "has been given";
+
+                                }
+                                else
+                                {
+                                    verb = "has been deprived of";
+                                }
+
+                                GetClient()
+                                    .SendMessage(
+                                        $"Everyone {verb} {bonusValue} {bcs.Loyalty.LoyaltyName}");
+                            }
+                            catch (Exception e)
+                            {
+                                ConsoleLog("Error on !bonusall: " + e.Message, true);
+                            }
+                        } 
+                        // !bonus
+                        else if (chatmessage.Message.StartsWith("!bonus"))
+                        {
+                            try
+                            {
+                                var loyaltyAmount = Math.Abs(Convert.ToInt32(chatmessage.Message.Split(' ')[2]));
+                                string destinationViewerName = chatmessage.Message.Split(' ')[1];
+
+                                var destinationViewerLoyalty = ContextService.GetLoyaltyForUser(Context.User.Identity.Name, null,
+                                    destinationViewerName);
+
+                                if (loyaltyAmount != null && (destinationViewerLoyalty != null))
+                                {
+                                    ContextService.AddLoyalty(ContextService.GetUser(Context.User.Identity.Name), chatmessage.Channel.ToLower(), destinationViewerLoyalty, loyaltyAmount);
+
+                                    GetClient().SendMessage($"@{chatmessage.DisplayName} was given {loyaltyAmount} {bcs.Loyalty.LoyaltyName}");
+                                }
+                            }
+                            catch (Exception e)
+                            {
+                                ConsoleLog("Error on !bonus: " + e.Message, true);
+                            }
+                        }
+                    }
+
+                    //  !give
+                    if (chatmessage.Message.StartsWith("!give"))
+                    {
+                        try
+                        {
+                            // get who to give it to
+                            var loyaltyAmount = Math.Abs(Convert.ToInt32(chatmessage.Message.Split(' ')[2]));
+                            string destinationViewerName = chatmessage.Message.Split(' ')[1];
+                            string sourceViewerId = chatmessage.UserId;
+                            string sourceViewerName = chatmessage.Username;
+
+                            var sourceViewerLoyalty = ContextService.GetLoyaltyForUser(Context.User.Identity.Name, sourceViewerId,
+                                sourceViewerName);
+                            var destinationViewerLoyalty = ContextService.GetLoyaltyForUser(Context.User.Identity.Name, null,
+                                destinationViewerName);
+
+                            // uses does not have enough to give away
+                            if (loyaltyAmount != null && (sourceViewerLoyalty != null && sourceViewerLoyalty.CurrentPoints < loyaltyAmount))
+                            {
+                                GetClient().SendMessage($"Stop wasting my time @{chatmessage.DisplayName}, you ain't got that much {bcs.Loyalty.LoyaltyName}");
+                            }
+                            // give away loot
+                            else if (loyaltyAmount != null && (sourceViewerLoyalty != null && sourceViewerLoyalty.CurrentPoints >= loyaltyAmount))
+                            {
+                                ContextService.AddLoyalty(ContextService.GetUser(Context.User.Identity.Name), chatmessage.Channel.ToLower(), sourceViewerLoyalty, -loyaltyAmount);
+                                ContextService.AddLoyalty(ContextService.GetUser(Context.User.Identity.Name), chatmessage.Channel.ToLower(), destinationViewerLoyalty, loyaltyAmount);
+
+                                GetClient().SendMessage($"@{chatmessage.DisplayName} gave {destinationViewerLoyalty.TwitchUsername} {loyaltyAmount} {bcs.Loyalty.LoyaltyName}");
+                            }
+                        }
+                        catch (Exception e)
+                        {
+                            ConsoleLog("Error on !give: " + e.Message, true);
+                        }
+
+
+                    }
+
+                    // !gamble
+                    if (chatmessage.Message.StartsWith("!gamble"))
+                    {
+                        // get 
+                        var loyalty = ContextService.GetLoyaltyForUser(Context.User.Identity.Name, chatmessage.UserId);
+
+                        // timeout for 5 minutes if user has gamble before
+                        if(loyalty != null && (loyalty.LastGamble == null || (loyalty.LastGamble.HasValue && loyalty.LastGamble.Value.AddMinutes(5) <= DateTime.Now)))
+                        {
+                            try
+                            {
+                                Random rnd = new Random();
+
+                                int gambleAmount;
+                                bool allIn = false;
+                                // get who to give it to
+                                if (chatmessage.Message.Split(' ')[1].ToLower().Equals("allin"))
+                                {
+                                    allIn = true;
+                                    gambleAmount = loyalty.CurrentPoints;
+                                }
+                                else
+                                {
+                                    gambleAmount = Math.Abs(Convert.ToInt32(chatmessage.Message.Split(' ')[1]));
+                                }
+                                
+                                string sourceViewerId = chatmessage.UserId;
+                                string sourceViewerName = chatmessage.Username;
+
+                                var sourceViewerLoyalty = ContextService.GetLoyaltyForUser(Context.User.Identity.Name, sourceViewerId,
+                                    sourceViewerName);
+
+                                // user has enough loyalty to gamble
+                                if (sourceViewerLoyalty != null && sourceViewerLoyalty.CurrentPoints >= gambleAmount)
+                                {
+                                    var rolledNumber = rnd.Next(1, 100);
+
+                                    // rolled 1-49
+                                    if (rolledNumber < 50)
+                                    {
+                                        var newAmount = sourceViewerLoyalty.CurrentPoints - (gambleAmount);
+                                        ContextService.AddLoyalty(ContextService.GetUser(Context.User.Identity.Name), chatmessage.Channel.ToLower(), sourceViewerLoyalty, -gambleAmount);
+                                        GetClient().SendMessage($"@{chatmessage.DisplayName} rolled a sad {rolledNumber}, lost {gambleAmount} and now got {newAmount} {bcs.Loyalty.LoyaltyName}!! #house\"Always\"Wins");
+                                    }
+                                    // rolled 50-99
+                                    else if (rolledNumber >= 50 && rolledNumber < 100)
+                                    {
+                                        var newAmount = sourceViewerLoyalty.CurrentPoints + (gambleAmount * 2);
+                                        ContextService.AddLoyalty(ContextService.GetUser(Context.User.Identity.Name), chatmessage.Channel.ToLower(), sourceViewerLoyalty, gambleAmount * 2);
+                                        GetClient().SendMessage($"@{chatmessage.DisplayName} rolled {rolledNumber}, won {gambleAmount * 2} and now got {newAmount} {bcs.Loyalty.LoyaltyName}!");
+                                    }
+                                    // rolled 100
+                                    else
+                                    {
+                                        ContextService.AddLoyalty(ContextService.GetUser(Context.User.Identity.Name), chatmessage.Channel.ToLower(), sourceViewerLoyalty, gambleAmount * 3);
+                                        var newAmount = sourceViewerLoyalty.CurrentPoints + (gambleAmount * 3);
+                                        GetClient().SendMessage($"@{chatmessage.DisplayName} did an epic roll, threw {rolledNumber}, won {gambleAmount * 3} and now got {newAmount} {bcs.Loyalty.LoyaltyName}!! #houseCries");
+                                    }
+
+                                    ContextService.StampLastGamble(ContextService.GetUser(Context.User.Identity.Name), chatmessage.Channel.ToLower(), sourceViewerLoyalty);
+                                }
+                            }
+                            catch (Exception e)
+                            {
+                                ConsoleLog("Error on !gamble: " + e.Message, true);
+                            }
+                        }
+                        
+                        
+
+
+                    }
+
+                }
+            }
+            
+
+            
+
+            if (triggers.Any(t => t.TriggerName.Equals(chatmessage.Message.Split(' ').FirstOrDefault())))
+            {
+                var trigger =
+                    triggers.FirstOrDefault(t => t.TriggerName.Equals(chatmessage.Message.Split(' ').FirstOrDefault()));
+                switch (trigger.TriggerType)
+                {
+                    // Chat response
+                    case TriggerType.Message:
+                        // TODO: something here
+                        break;
+                    // Game response
+                    case TriggerType.Game:
+                        // TODO: something here
+                        break;
+                    // Quote response
+                    case TriggerType.Quote:
+                        // TODO: something here
+                        break;
+                    // Statistic response
+                    case TriggerType.Statistic:
+                        // TODO: something here
+                        break;
+                    case TriggerType.Loyalty:
+                        // TODO: something here
+                        break;
+                    default:
+                        // TODO: something here
+                        break;
+                }
+                
+            }
+        }
+
+        private void LoyaltyAdmin(string message)
+        {
+            
         }
 
 
         /// <summary>
         /// Add html color to username
         /// </summary>
-        /// <param name="msg"></param>
+        /// <param name="msg">ChatMessage</param>
         /// <returns>String formatted span</returns>
         private string FormatUsername(ChatMessage msg)
         {
@@ -315,5 +679,144 @@ namespace BeeBot.Signalr
             }
             return username;
         }
+
+        /// <summary>
+        /// Add html color to username in SentMessage
+        /// </summary>
+        /// <param name="msg">SentMessage</param>
+        /// <returns>String formatted span</returns>
+        private string FormatUsername(SentMessage msg)
+        {
+            var color = msg.ColorHex.ToString();
+            if (!color.StartsWith("#"))
+            {
+                color = "#" + color;
+            }
+            if (color.Length < 1)
+            {
+                // red color for bot
+                color += "b30000";
+            }
+            string badges = "";
+            string username = "<span style=\"color:"+ color + ";\">" + msg.DisplayName + "</span>";
+            foreach (var badge in msg.Badges)
+            {
+                var key = badge.Key;
+                var value = badge.Value;
+
+                if (key.ToLower().Contains("moderator") && Convert.ToInt32(value) == 1)
+                {
+                    username = "<img='~/Content/moderatorBadge.png' style='padding-right: 3px;' />" + username;
+                }
+            }
+            return username;
+        }
+
+        /// <summary>
+        /// Gets the current TwitchClient for the current web-connection
+        /// </summary>
+        /// <returns></returns>
+        private TwitchClient GetClient()
+        {
+            return ClientContainers.FirstOrDefault(t => t.Id == Context.User.Identity.Name).Client;
+        }
+
+        /// <summary>
+        /// Gets the current TwitchClientContainer for the current web-connection
+        /// </summary>
+        /// <returns></returns>
+        private TwitchClientContainer GetClientContainer()
+        {
+            return ClientContainers.FirstOrDefault(t => t.Id == Context.User.Identity.Name);
+        }
+
+
+        public void TrackLoyaltyAndTimers(object arg)
+        {
+            var wtarg = (WorkerThreadArg)arg;
+            ApplicationUser User = ContextService.GetUser(wtarg.Username);
+
+            Stopwatch stopWatch = new Stopwatch();
+            stopWatch.Start();
+            var lastLoyaltyElapsedMinutes = stopWatch.Elapsed.Minutes;
+
+
+
+            while (true)
+            {
+
+                while (wtarg.Client == null)
+                {
+                    Thread.Sleep(SLEEPSECONDS);
+                }
+                while (wtarg.Client != null && wtarg.Client.IsConnected == false)
+                {
+                    Thread.Sleep(SLEEPSECONDS);
+                }
+
+                // Update database connector
+                ContextService = new ContextService();
+
+                // Timers
+                // TODO
+
+
+                // Loyalty 
+                var botChannelSettings = ContextService.GetBotChannelSettings(User);
+                if (botChannelSettings != null && botChannelSettings.Loyalty != null && botChannelSettings.Loyalty.Track == true)
+                {
+
+                    if (stopWatch.Elapsed.Minutes % botChannelSettings.Loyalty.LoyaltyInterval == 0 && lastLoyaltyElapsedMinutes != stopWatch.Elapsed.Minutes)
+                    {
+                        var channelUsers = GetUsersInChannel(wtarg.Channel);
+
+                        ContextService.AddLoyalty(User, Channel, channelUsers);
+
+                        lastLoyaltyElapsedMinutes = stopWatch.Elapsed.Minutes;
+                    }
+                }
+
+                // chill for a second
+                Thread.Sleep(SLEEPSECONDS);
+            }
+
+        }
+
+
+        /// <summary>
+        /// Gets list of users in channel, looks up their twitch ID 
+        /// </summary>
+        /// <param name="channel">Channel as string</param>
+        /// <returns>list of StreamView</returns>
+        public List<StreamViewer> GetUsersInChannel(string channel)
+        {
+            var users = new List<StreamViewer>();
+
+            var test = TwitchLib.TwitchAPI.Settings.ClientId = "gokkk5ean0yksozv0ctvljwqpceuin";
+            var streamUsers = TwitchAPI.Undocumented.GetChatters(channel).Result;
+
+            foreach (var user in streamUsers)
+            {
+                var tmpUser = TwitchAPI.Users.v3.GetUserFromUsername(user.Username);
+
+                var t = new StreamViewer();
+
+                t.TwitchUsername = user.Username;
+                t.TwitchUserId = tmpUser.Result.Id;
+
+                if (!users.Any(u => u.TwitchUserId == t.TwitchUserId))
+                {
+                    users.Add(t);
+                }
+                    
+            }
+
+            return users;
+        }
+
+
+
     }
+
+
 }

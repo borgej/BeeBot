@@ -1,6 +1,4 @@
-﻿@{
-
-}
+﻿@model YTBot.Models.ViewModels.DashboardViewModel
 
 <div class="">
 
@@ -12,6 +10,7 @@
                 <button type="button" class="btn btn-primary-outline" id="chatToggleButton">Chat</button>
                 <button type="button" class="btn btn-primary-outline" id="consoleToggleButton">Console</button>
                 <button type="button" class="btn btn-primary-outline" id="usersToggleButton">Users</button>
+                <button type="button" class="btn btn-primary-outline" id="loyaltyToggleButton">Loyalty points</button>
                 <button type="button" class="btn btn-primary-outline" id="chatPrefsToggleButton">Chat prefs</button>
                 <button type="button" class="btn btn-primary-outline" id="triggersToggleButton">Triggers</button>
                 <button type="button" class="btn btn-primary-outline" id="timersToggleButton">Timers</button>
@@ -23,10 +22,10 @@
         <div class="col">
             <div class="card botStatusCard">
                 <div class="card card-block">
-                    <h4 class="card-title"><i class="fa fa-square-o"></i> Bot controls</h4>
+                    <h4 class="card-title"><i class="fa fa-window-minimize"></i> Bot controls</h4>
                     <div class="btn-group botButtons">
-                        <button id="botConnectButton" type="button" class="btn btn-success" data-username="@Session["botusername"]" data-password="@Session["botpassword"]" data-channel="@Session["botchannel"]"><i class="fa fa-plug"></i> Connect</button>
-                        <button id="botReconnectButton" type="button" class="btn btn-secondary" data-username="@Session["botusername"]" data-password="@Session["botpassword"]" data-channel="@Session["botchannel"]"><i class="fa fa-plug"></i> Re-connect</button>
+                        <button id="botConnectButton" type="button" class="btn btn-success" data-username="@Model.BotUserSettings.BotUsername" data-password="@Model.BotUserSettings.BotPassword" data-channel="@Model.BotUserSettings.BotChannel"><i class="fa fa-plug"></i> Connect</button>
+                        <button id="botReconnectButton" type="button" class="btn btn-secondary" data-username="@Model.BotUserSettings.BotUsername" data-password="@Model.BotUserSettings.BotPassword" data-channel="@Model.BotUserSettings.BotChannel"><i class="fa fa-plug"></i> Re-connect</button>
                         <button id="botDisconnectButton" type="button" class="btn btn-warning"><i class="fa fa-window-close"></i> Disconnect</button>
                     </div>
                     <div class="">
@@ -45,7 +44,7 @@
             </div>
             <div class="card consoleStatusCard">
                 <div class="card card-block">
-                    <h4 class="card-title"><i class="fa fa-square-o"></i> Console</h4>
+                    <h4 class="card-title"><i class="fa fa-window-minimize"></i> Console</h4>
                     <div class="consoleLog pre-scrollable">
 
                     </div>
@@ -54,7 +53,7 @@
             </div>
             <div class="card usersStatusCard">
                 <div class="card card-block">
-                    <h4 class="card-title"><i class="fa fa-square-o"></i> Users</h4>
+                    <h4 class="card-title"><i class="fa fa-window-minimize"></i> Users</h4>
                     <div class="usersCard">
                         <div class="usersCount">
                             0
@@ -67,17 +66,78 @@
 
                 </div>
             </div>
+            <div class="card loyaltyCard">
+                <div class="card card-block">
+                    <h4 class="card-title"><i class="fa fa-window-minimize"></i> Loyalty points</h4>
+                    <form id="loyaltyForm">
+                        <div class="card-text">
+                            <div class="form-check">
+                                <label class="form-check-label">
+                                    @{
+                                        var track = "";
+                                        if (Model.LoyaltySettings.Track != null)
+                                        {
+                                            if (Model.LoyaltySettings.Track == true)
+                                            {
+                                                track = "checked";
+                                            }
+                                        }
+                                    }
+                                    <input class="form-check-input" type="checkbox" id="track" name="track" @track value="1">
+                                    Track loyalty
+                                </label>
+                            </div>
+                            <div class="row">
+                                <div class="col-5">
+                                    <label for="loyaltyName">Loyaltyname</label>
+                                </div>
+                                <div class="col-4">
+                                    <input id="loyaltyName" name="loyaltyName" type="text" class="form-control" placeholder="" value="@Model.LoyaltySettings.LoyaltyName">
+                                </div>
 
+                            </div>
+                            <div class="row">
+                                <div class="col-5">
+                                    <label for="loyaltyValue">Give users</label>
+                                </div>
+                                <div class="col-2">
+                                    <input type="text" id="loyaltyValue" name="loyaltyValue" class="form-control" placeholder="" value="@Model.LoyaltySettings.LoyaltyValue">
+                                </div>
+                                <div class="col-2">
+                                    <p>units</p>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-5">
+                                    <label for="loyaltyValue">Every </label>
+                                </div>
+                                <div class="col-2">
+                                    <input type="text" id="loyaltyInterval" name="loyaltyInterval" class="form-control" placeholder="" value="@Model.LoyaltySettings.LoyaltyInterval">
+                                </div>
+                                <div class="col-2">
+                                    <p>minute</p>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md">
+                                    <button type="button" id="btnLoyaltySave" class="btn btn-info float-right"><i class="fa fa-save"></i> Save</button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
             <div class="card chatPrefsCard">
                 <div class="card card-block">
-                    <h4 class="card-title"><i class="fa fa-square-o"></i> Chat prefs</h4>
+                    <h4 class="card-title"><i class="fa fa-window-minimize"></i> Chat prefs</h4>
                     <p class="card-text"></p>
 
                 </div>
             </div>
             <div class="card triggersCard">
                 <div class="card card-block">
-                    <h4 class="card-title"><i class="fa fa-square-o"></i> Triggers</h4>
+                    <h4 class="card-title"><i class="fa fa-window-minimize"></i> Triggers</h4>
                     <p class="card-text"></p>
 
 
@@ -85,7 +145,7 @@
             </div>
             <div class="card timersCard">
                 <div class="card card-block">
-                    <h4 class="card-title"><i class="fa fa-square-o"></i> Timers</h4>
+                    <h4 class="card-title"><i class="fa fa-window-minimize"></i> Timers</h4>
                     <p class="card-text"></p>
 
 
@@ -93,7 +153,7 @@
             </div>
             <div class="card pollsCard">
                 <div class="card card-block">
-                    <h4 class="card-title"><i class="fa fa-square-o"></i> Polls</h4>
+                    <h4 class="card-title"><i class="fa fa-window-minimize"></i> Polls</h4>
                     <p class="card-text"></p>
 
 
@@ -105,7 +165,7 @@
         <div class="col-md-6 chatCard">
             <div class="card chatCardDiv">
                 <div class="card card-block">
-                    <h4 class="card-title"><i class="fa fa-square-o"></i> Chat</h4>
+                    <h4 class="card-title"><i class="fa fa-window-minimize"></i> Chat</h4>
                     <div class="chatText pre-scrollable">
 
                     </div>
@@ -130,6 +190,10 @@
         $("#usersToggleButton").click(function () {
             toggleButton(this);
             $(".usersStatusCard").toggle();
+        });
+        $("#loyaltyToggleButton").click(function () {
+            toggleButton(this);
+            $(".loyaltyCard").toggle();
         });
         $("#chatPrefsToggleButton").click(function () {
             toggleButton(this);
@@ -156,8 +220,56 @@
         // Make each header clickable so content is toggled
         $(".card-title").click(function() {
             $(this).next().toggle();
+            $(this).find("i").toggleClass("fa-window-minimize").toggleClass("fa-window-maximize");
+
+        });
+
+
+
+
+        $("#btnLoyaltySave").click(function () {
+            console.log("Clicked button");
+            var loyaltyData = $("#loyaltyForm").serialize();
+
+            $.ajax({
+                type: "POST",
+                url: "@Url.Action("LoyaltySave")",
+                data: loyaltyData,
+                dataType: "json",
+                success: function (response) {
+                    if (response.data == "1") {
+                        $.amaran({
+                            'theme': 'colorful',
+                            'content'   :{
+                                bgcolor:'#27ae60',
+                                color:'#fff',
+                                message: response.message,
+                            },
+                            'closeOnClick':false,
+                            'inEffect':'slideTop',
+                            'outEffect':'slideLeft'
+                        });
+
+                    } else {
+
+                        $.amaran({
+                            'theme': 'colorful',
+                            'content': {
+                                bgcolor: '##ff3300', 
+                                color: '#fff',
+                                message: response.message,
+                            },
+                            'closeOnClick': false,
+                            'inEffect': 'slideTop',
+                            'outEffect': 'slideLeft'
+                        });
+                    }
+                }
+            });
         });
     });
+
+    
 
 
     function toggleButton(elem) {
@@ -277,6 +389,7 @@
 
             twitchHub.server.disconnectBot();
         });
+
 
     })()
 </script>

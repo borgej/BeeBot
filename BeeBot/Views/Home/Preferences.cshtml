@@ -1,8 +1,7 @@
 ﻿@model BeeBot.Models.PrefViewModel
 
 @{
-    ViewBag.Title = "title";
-    Model.channel = "";
+    
 }
 
 <h2>Bot preferences</h2>
@@ -13,7 +12,13 @@
 
             <!-- Form Name -->
             <legend>Login credentials</legend>
-
+            
+            @if (ViewBag.Message != null)
+            {
+                <div class="alert alert-warning" role="alert">
+                    ViewBag.Message
+                </div>
+            }
             <!-- Text input-->
             <div class="form-group">
                 <label class="col-md-4 control-label" for="botusername">Username</label>
@@ -70,7 +75,20 @@
                 data: vaules,
                 dataType: "json",
                 success: function (response) {
-                    alert(response.message);
+                    $.amaran({
+                        'theme': 'awesome ok',
+                        'message'   : response.message,
+                        'position'  :'bottom right'
+                    });
+
+                    window.location = "@Url.Action("Index")";
+                },
+                error: function(response) {
+                    $.amaran({
+                        'theme': 'awesome error',
+                        'message'   : response.message,
+                        'position'  :'bottom right'
+                    });
                     window.location = "@Url.Action("Index")";
                 }
             });

@@ -222,11 +222,19 @@ textarea {
 }
 
 .userConnected {
-    background-color: springgreen
+    background-color: springgreen;
 }
 
 .userLeft {
-    background-color: #d4d4d5
+    background-color: #d4d4d5;
+}
+
+.userTimedOut {
+    background-color: coral;
+}
+
+.userbanned {
+    background-color: orchid;
 }
 
 .usersCard {

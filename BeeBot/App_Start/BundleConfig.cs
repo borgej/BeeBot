@@ -22,17 +22,19 @@ namespace BeeBot
             bundles.Add(new ScriptBundle("~/bundles/bootstrap").Include(
                 "~/Scripts/tether/tether.js",
                 "~/Scripts/bootstrap.js",
-                        "~/Scripts/respond.js"
-                        ));
+                "~/Scripts/respond.js",
+                "~/Scripts/jquery.amaran.min.js"));
 
             bundles.Add(new ScriptBundle("~/bundles/signalr").Include(
                 "~/Scripts/jquery.signalR-2.2.2.*"));
 
             bundles.Add(new StyleBundle("~/Content/css").Include(
-                        "~/Content/bootstrap.css",
-                        "~/Content/tether/tether.css",
-                        "~/Content/font-awesome.css",
-                "~/Content/site.css"));
+                "~/Content/bootstrap.css",
+                "~/Content/tether/tether.css",
+                "~/Content/font-awesome.css",
+                "~/Content/site.css",
+                "~/Content/amaran.min.css",
+                "~/Content/animate.min.css"));
         }
     }
 }

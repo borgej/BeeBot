@@ -4,11 +4,11 @@ using System.Linq;
 using System.Web;
 using BeeBot.Models;
 
-namespace YTBot.Models
+namespace BeeBot.Models
 {
     public class BotUserSettings
     {
-        public string Id { get; set; }
+        public int Id { get; set; }
         public string BotUsername { get; set; }
         public string BotPassword { get; set; }
         public string BotChannel { get; set; }

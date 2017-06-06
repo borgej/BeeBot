@@ -5,20 +5,49 @@ using System.Web;
 using System.Web.Mvc;
 using BeeBot.Models;
 using BeeBot.Signalr;
+using Microsoft.ApplicationInsights.WindowsServer;
+using Newtonsoft.Json;
+using YTBot.Models;
+using YTBot.Models.ViewModels;
+using YTBot.Services;
 
 namespace BeeBot.Controllers
 {
     [Authorize]
     public class HomeController : Controller
     {
+        private ContextService ContextService { get; set; }
+        private UserService UserService { get; set; }
+
+
         public HomeController()
         {
-
+            ContextService = new ContextService();
+            UserService = new UserService();
         }
+
         public ActionResult Index()
         {
+            // get users bot settings
+            var userBotSettings = ContextService.GetBotUserSettingsForUser(ContextService.GetUser(User.Identity.Name));
+            var userLoyalty = ContextService.GetBotChannelSettings(ContextService.GetUser(User.Identity.Name)).Loyalty;
 
-            return View();
+            var loyalty = userLoyalty ?? new Loyalty();
+            var dashboardViewModel = new DashboardViewModel()
+            {
+                BotUserSettings = userBotSettings,
+                LoyaltySettings = loyalty
+            };
+
+            // send user to bot preferences page if not set
+            if (string.IsNullOrEmpty(userBotSettings.BotChannel) || string.IsNullOrEmpty(userBotSettings.BotUsername) ||
+                string.IsNullOrEmpty(userBotSettings.BotUsername))
+            {
+                RedirectToAction("Preferences", new {message = "Please set your bot account and channel information"});
+            }
+
+            // assert that
+            return View(dashboardViewModel);
         }
 
         public ActionResult About()
@@ -35,33 +64,100 @@ namespace BeeBot.Controllers
             return View();
         }
 
-        public ActionResult Preferences()
+        public ActionResult Loyalty()
         {
+            var botChannelSettings = ContextService.GetBotChannelSettings(ContextService.GetUser(User.Identity.Name));
+
+            if (botChannelSettings.Loyalty != null)
+            {
+                return Json(JsonConvert.SerializeObject(botChannelSettings.Loyalty));
+            }
+            else
+            {
+                var loyalty = new Loyalty();
+                return Json(JsonConvert.SerializeObject(loyalty));
+            }
+        }
+
+        public ActionResult LoyaltySave(string loyaltyName, string loyaltyValue, string loyaltyInterval, string track)
+        {
+            try
+            {
+                var userName = User.Identity.Name;
+                var user = ContextService.GetUser(userName);
+
+                var loyalty = new Loyalty();
+                if (track == null)
+                {
+                    loyalty.Track = false;
+                }
+                else
+                {
+                    if (Convert.ToInt32(track) == 1)
+                    {
+                        loyalty.Track = true;
+                    }
+                    else
+                    {
+                        loyalty.Track = false;
+                    }
+                }
+                loyalty.LoyaltyName = loyaltyName;
+                loyalty.LoyaltyInterval = Convert.ToInt32(loyaltyInterval);
+                loyalty.LoyaltyValue = Convert.ToInt32(loyaltyValue);
+
+                ContextService.SetLoyalty(user, loyalty);
+
+                return Json(new { data = "1", message = "Saved loyalty" }, JsonRequestBehavior.AllowGet);
+            }
+            catch (Exception exception)
+            {
+                return Json(new { data = "-1", message = "Error on save: " + exception.Message }, JsonRequestBehavior.AllowGet);
+            }
+        }
+
+        public ActionResult Preferences(string message = null)
+        {
+            var userName = User.Identity.Name;
+            var user = ContextService.GetUser(userName);
+
+            var userBotSettings = ContextService.GetBotUserSettingsForUser(user);
+
+
             var model = new PrefViewModel()
             {
-                username = Session["botusername"]?.ToString() ?? "borgej_bot",
-                password = Session["botpassword"]?.ToString() ?? "",
-                channel = Session["botchannel"]?.ToString() ?? "",
+                username = userBotSettings.BotUsername,
+                password = userBotSettings.BotPassword,
+                channel = userBotSettings.BotChannel 
             };
+
+            ViewBag.Message = message;
 
             return View(model);
         }
 
         public ActionResult PreferencesSave(string botusername, string passwordinput, string channel)
         {
-            if (Session["botusername"] != null)
+
+            try
             {
-                Session["botusername"] = botusername;
-                Session["botpassword"] = passwordinput;
-                Session["botchannel"] = channel;
+                var botUserSettings = new BotUserSettings()
+                {
+                    User = ContextService.GetUser(User.Identity.Name),
+                    BotUsername = botusername ?? "",
+                    BotPassword = passwordinput ?? "",
+                    BotChannel = channel ?? ""
+                };
+
+                ContextService.SetBotUserSettingsForUser(botUserSettings);
+
+
                 return Json(new { data = "1", message = "Saved!" }, JsonRequestBehavior.AllowGet);
+
             }
-            else
+            catch (Exception e)
             {
-                Session["botusername"] = botusername;
-                Session["botpassword"] = passwordinput;
-                Session["botchannel"] = channel;
-                return Json(new { data = "1", message = "Already set, resaved!" }, JsonRequestBehavior.AllowGet);
+                return Json(new { data = "-1", message = "Error saving: " + e.Message }, JsonRequestBehavior.AllowGet);
             }
         }
 
@@ -69,5 +165,6 @@ namespace BeeBot.Controllers
         {
             return View();
         }
+
     }
 }
