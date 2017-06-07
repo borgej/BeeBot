@@ -86,7 +86,7 @@ namespace BeeBot.Services
 
                 var botStatus = new BotStatusVM()
                 {
-                    info = Client.IsConnected ? "Bot is connected" : "Bot is not connected",
+                    info = Client.IsConnected ? "Connected" : "Disconnected",
                     message = "",
                     warning = ""
                 };

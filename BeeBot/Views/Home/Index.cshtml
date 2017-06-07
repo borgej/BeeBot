@@ -59,9 +59,9 @@
                             0
                         </div>
                         <div class="usersConnInfo pre-scrollable">
-                            
+
                         </div>
-                        
+
                     </div>
 
                 </div>
@@ -162,12 +162,43 @@
 
 
         </div>
-        <div class="col-md-6 chatCard">
-            <div class="card chatCardDiv">
-                <div class="card card-block">
-                    <h4 class="card-title"><i class="fa fa-window-minimize"></i> Chat</h4>
-                    <div class="chatText pre-scrollable">
+        <div class="col">
+            <div class="col-md streamCard">
+                <div class="card streamCardDiv">
+                    <div class="card card-block">
+                        <h4 class="card-title"><i class="fa fa-window-minimize"></i> Stream</h4>
+                        <div class="card-text">
+                            @*<form action="#" method="post">
+                                <fieldset class="form-group">
+                                    <label for="streamTitle">Title</label>
+                                    <input type="text" class="form-control" id="streamTitle" name="streamTitle">
+                                    <label for="streamGame">Game</label>
+                                    <input type="text" class="form-control" id="streamGame" name="streamGame">
+                                </fieldset>
+                                <fieldset class="form-group">
+                                    
+                                </fieldset>
+                                <button type="button" class="btn btn-info float-right">Save</button>
+                            </form>*@
+                            
+                            <form action="#" class="form-inline">
+                                <label class="mr-sm-1 mb-0" for="streamTitle">Title</label>
+                                <input type="text" class="form-control mr-sm-1 mb-2 mb-sm-0 col-sm-6" id="streamTitle" name="streamTitle">
+                                <label class="mr-sm-1 mb-0" for="last_name">Game</label>
+                                <input type="text" class="form-control mr-sm-1 mb-2 mb-sm-0 col-sm-3" id="streamGame" name="streamGame">
+                                <button id="streamInfoSaveButton" type="button" class="btn btn-info mt-2 mt-sm-0"><i class="fa fa-save"></i> Save</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md chatCard">
+                <div class="card chatCardDiv">
+                    <div class="card card-block">
+                        <h4 class="card-title"><i class="fa fa-window-minimize"></i> Chat</h4>
+                        <div class="chatText pre-scrollable">
 
+                        </div>
                     </div>
                 </div>
             </div>
@@ -218,7 +249,7 @@
 
 
         // Make each header clickable so content is toggled
-        $(".card-title").click(function() {
+        $(".card-title").click(function () {
             $(this).next().toggle();
             $(this).find("i").toggleClass("fa-window-minimize").toggleClass("fa-window-maximize");
 
@@ -228,7 +259,7 @@
 
 
         $("#btnLoyaltySave").click(function () {
-            console.log("Clicked button");
+            console.log("Clicked btnLoyaltySave");
             var loyaltyData = $("#loyaltyForm").serialize();
 
             $.ajax({
@@ -255,7 +286,7 @@
                         $.amaran({
                             'theme': 'colorful',
                             'content': {
-                                bgcolor: '##ff3300', 
+                                bgcolor: '##ff3300',
                                 color: '#fff',
                                 message: response.message,
                             },
@@ -267,9 +298,11 @@
                 }
             });
         });
+
+
     });
 
-    
+
 
 
     function toggleButton(elem) {
@@ -339,7 +372,7 @@
                 } else {
                     value = 0;
                 }
-            
+
             }
 
             console.log("Users: " + value.toString());
@@ -362,10 +395,40 @@
             if (connected.info != "") {
                 $("#botinfoMsg").removeClass("dontshow").text(connected.info);
             }
-        
-        
-        
+
+
+
         };
+
+        twitchHub.client.StreamInfoSaveCallback = function(data, message) {
+            if (data == "1") {
+                $.amaran({
+                    'theme': 'colorful',
+                    'content'   :{
+                        bgcolor:'#27ae60',
+                        color:'#fff',
+                        message: message,
+                    },
+                    'closeOnClick':false,
+                    'inEffect':'slideTop',
+                    'outEffect':'slideLeft'
+                });
+
+            } else {
+
+                $.amaran({
+                    'theme': 'colorful',
+                    'content': {
+                        bgcolor: '##ff3300',
+                        color: '#fff',
+                        message: message,
+                    },
+                    'closeOnClick': false,
+                    'inEffect': 'slideTop',
+                    'outEffect': 'slideLeft'
+                });
+            }
+        }
 
         //Button click jquery handler
         $("#botConnectButton").click(function () {
@@ -388,6 +451,16 @@
             // Call SignalR hub method
 
             twitchHub.server.disconnectBot();
+        });
+
+        $("#streamInfoSaveButton").click(function() {
+            console.log("Clicked streamInfoSaveButton");
+
+            var title = $("#streamTitle").val();
+            var game = $("#streamGame").val();
+            var channel = $("#botConnectButton").data("channel");
+            twitchHub.server.saveStreamInfo(title, game, channel);
+            
         });
 
 

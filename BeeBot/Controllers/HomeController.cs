@@ -79,6 +79,18 @@ namespace BeeBot.Controllers
             }
         }
 
+        public ActionResult StreamInfoSave(string title, string game)
+        {
+            try
+            {
+                return Json(new { data = "1", message = "Stream title and game updated!" }, JsonRequestBehavior.AllowGet);
+            }
+            catch (Exception exception)
+            {
+                return Json(new { data = "-1", message = "Error on update: " + exception.Message }, JsonRequestBehavior.AllowGet);
+            }
+        }
+
         public ActionResult LoyaltySave(string loyaltyName, string loyaltyValue, string loyaltyInterval, string track)
         {
             try
