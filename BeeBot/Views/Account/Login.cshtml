@@ -13,7 +13,7 @@
         </div>
     </div>
     <div class="omb_login">
-        @using (Html.BeginForm("ExternalLogin", "Account", new { ReturnUrl = "/" }))
+        @using (Html.BeginForm("ExternalLogin", "Account", new { ReturnUrl = Url.Action("Index", "Home") }))
         {
             @Html.AntiForgeryToken()
 
@@ -23,12 +23,12 @@
             <div class="row omb_row-sm-offset-3 omb_socialButtons omb_login">
                 <div class="col-xs-12 col-sm-6">
                     <input name="provider" value="Twitch" style="display: none" />
-                    <input name="returnUrl" value="/" style="display: none" />
+                    <input name="returnUrl" value="@Url.Action("Index", "Home")" style="display: none" />
                     <button type="submit" class="btn btn-lg btn-block omb_login omb_btn-twitch" title="Log in using your Twitch account"><i class="fa fa-twitch visible-xs"></i><span class="hidden-xs"></span> Login</button>
                 </div>
             </div>
         }
-    @using (Html.BeginForm("Login", "Account", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
+    @using (Html.BeginForm("Login", "Account", new { ReturnUrl = Url.Action("Index", "Home") }, FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
     {
         @Html.AntiForgeryToken()
         <div class="row omb_row-sm-offset-3 omb_loginOr">
@@ -63,7 +63,7 @@
             </div>
             <div class="col-xs-12 col-sm-3">
                 <p class="omb_forgotPwd">
-                    <a href="#">Forgot password?</a>
+                    <a href="@Url.Action("ForgotPassword")">Forgot password?</a>
                 </p>
             </div>
         </div>
