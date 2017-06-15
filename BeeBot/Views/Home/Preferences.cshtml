@@ -4,9 +4,9 @@
     
 }
 
-<h2>Bot preferences</h2>
+<h2>Bot and channel preferences</h2>
 
-<div class="col-md-12">
+<div class="col-md">
     <form id="prefForm" class="form-horizontal">
         <fieldset>
 
@@ -21,19 +21,20 @@
             }
             <!-- Text input-->
             <div class="form-group">
-                <label class="col-md-4 control-label" for="botusername">Username</label>
-                <div class="col-md-4">
-                    <input id="botusername" name="botusername" type="text" placeholder="username" class="form-control input-md" required="" value="@Model.username">
+                <label class="col-md-4 control-label" for="botusername">Bot username</label>
+                <div class="col-md-8">
+                    <input id="botusername" name="botusername" type="text" placeholder="username" class="form-control input-md" required="required" value="@Model.username">
 
                 </div>
             </div>
 
             <!-- Password input-->
             <div class="form-group">
-                <label class="col-md-4 control-label" for="passwordinput">Password</label>
-                <div class="col-md-4">
-                    <input id="passwordinput" name="passwordinput" type="password" placeholder="password" class="form-control input-md" required="" value="@Model.password">
-                    <span class="help-block">oauth:password</span>
+                <label class="col-md-4 control-label" for="passwordinput">Bot Oauth code</label>
+                <div class="col-md-8">
+                    <input id="passwordinput" name="passwordinput" type="password" placeholder="password" class="form-control input-md" required="required" value="@Model.password">
+                    <span class="help-block">oauth:password. </span>
+                    <span class="help-block">Log in to twitch with your <b>bot</b> and click <a href="https://twitchapps.com/tmi/" target="_blank">here</a> to generate an oauth token.</span>
                 </div>
             </div>
 
@@ -42,11 +43,24 @@
             <!-- Text input-->
             <div class="form-group">
                 <label class="col-md-4 control-label" for="channel">Channel</label>
-                <div class="col-md-4">
-                    <input id="channel" name="Channel" type="text" placeholder="channel" class="form-control input-md" required="" value="@Model.channel">
+                <div class="col-md-8">
+                    <input id="channel" name="Channel" type="text" placeholder="channel" class="form-control input-md" required="required" value="@Model.channel">
 
                 </div>
             </div>
+            
+            @* https://twitchtokengenerator.com/ *@
+            <!-- Text input-->
+            <div class="form-group">
+                <label class="col-md-4 control-label" for="channel">Channel token</label>
+                <div class="col-md-8">
+                    <input id="channelToken" name="ChannelToken" type="text" placeholder="token" class="form-control input-md" required="required" value="@Model.channelToken">
+                    <span class="help-block">Token from channel owner. </span>
+                    <span class="help-block">Log in to twitch with your <b>Twitch user</b> (channel owner) and click <a href="https://twitchtokengenerator.com/" target="_blank">here</a> to generate an oauth token. </span>
+                    <span class="help-block">You need the <b>user_read</b> and <b>channel_editor</b> to be able to change stream title, game and delay.</span>
+                </div>
+            </div>
+
 
             <!-- Button -->
             <div class="form-group">

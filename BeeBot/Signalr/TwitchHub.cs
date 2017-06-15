@@ -16,6 +16,7 @@ using Microsoft.AspNet.SignalR;
 using Newtonsoft.Json;
 using TwitchLib;
 using TwitchLib.Events.Client;
+using TwitchLib.Models.API.v5.Games;
 using TwitchLib.Models.Client;
 using YTBot.Context;
 using YTBot.Models;
@@ -190,17 +191,18 @@ namespace BeeBot.Signalr
             
             try
             {
-                TwitchLib.TwitchAPI.Settings.Validators.SkipDynamicScopeValidation = true;
+                //TwitchLib.TwitchAPI.Settings.Validators.SkipDynamicScopeValidation = true;
                 TwitchLib.TwitchAPI.Settings.ClientId = "gokkk5ean0yksozv0ctvljwqpceuin";
-                
-                var token = "ubbe00pu1oes12385pznxql6xb200l";
-                //TwitchLib.TwitchAPI.Settings.ClientId = token;
-                TwitchLib.TwitchAPI.Settings.AccessToken = token; //GetClientContainer().Client.ConnectionCredentials.TwitchOAuth;
 
-                var tokenChannelId = TwitchAPI.Channels.v5.GetChannel(token).Result.Id;
+                var username = ContextService.GetUser(Context.User.Identity.Name);
+                var bs = ContextService.GetBotUserSettingsForUser(username);
+                var token = bs.ChannelToken;
+                TwitchLib.TwitchAPI.Settings.AccessToken = token; 
+
+                var channelId = await TwitchAPI.Channels.v5.GetChannel(token);
                 //var channelResult = TwitchAPI.Channels.v5.UpdateChannel(tokenChannelId.ToString(), title, game, null, null, token).Result;
 
-                TwitchLib.Models.API.v5.Channels.Channel x = await TwitchAPI.Channels.v5.UpdateChannel(title, game);
+                TwitchLib.Models.API.v5.Channels.Channel x = await TwitchAPI.Channels.v5.UpdateChannel(channelId.Id.ToString(), title, game);
 
                 Clients.Caller.StreamInfoSaveCallback("1", "Channel updated");
             }
@@ -212,6 +214,7 @@ namespace BeeBot.Signalr
 
             
         }
+
 
         public void Reconnect(string username, string password, string channel)
         {

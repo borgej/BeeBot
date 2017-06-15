@@ -341,3 +341,7 @@ textarea {
         margin-top:10px;
     }		
 }
+
+.easy-autocomplete {
+    z-index: 30000 !important;
+}

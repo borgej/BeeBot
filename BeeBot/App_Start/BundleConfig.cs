@@ -23,6 +23,7 @@ namespace BeeBot
                 "~/Scripts/tether/tether.js",
                 "~/Scripts/bootstrap.js",
                 "~/Scripts/respond.js",
+                "~/Scripts/jquery.easy-autocomplete.js",
                 "~/Scripts/jquery.amaran.min.js"));
 
             bundles.Add(new ScriptBundle("~/bundles/signalr").Include(
@@ -34,7 +35,9 @@ namespace BeeBot
                 "~/Content/font-awesome.css",
                 "~/Content/site.css",
                 "~/Content/amaran.min.css",
-                "~/Content/animate.min.css"));
+                "~/Content/animate.min.css",
+                "~/Content/easy-autocomplete.css",
+                "~/Content/easy-autocomplete.themes.css"));
         }
     }
 }

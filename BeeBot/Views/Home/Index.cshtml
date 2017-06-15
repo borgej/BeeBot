@@ -163,9 +163,9 @@
 
         </div>
         <div class="col">
-            <div class="col-md streamCard">
-                <div class="card streamCardDiv">
-                    <div class="card card-block">
+            <div class="col-md streamCard" style="overflow: visible !important">
+                <div class="card streamCardDiv" style="overflow: visible !important">
+                    <div class="card card-block" style="overflow: visible !important">
                         <h4 class="card-title"><i class="fa fa-window-minimize"></i> Stream</h4>
                         <div class="card-text">
                             @*<form action="#" method="post">
@@ -185,14 +185,14 @@
                                 <label class="mr-sm-1 mb-0" for="streamTitle">Title</label>
                                 <input type="text" class="form-control mr-sm-1 mb-2 mb-sm-0 col-sm-6" id="streamTitle" name="streamTitle">
                                 <label class="mr-sm-1 mb-0" for="last_name">Game</label>
-                                <input type="text" class="form-control mr-sm-1 mb-2 mb-sm-0 col-sm-3" id="streamGame" name="streamGame">
+                                <input type="text" class="form-control mr-sm-1 mb-2 mb-sm-0 col-sm" id="streamGame" name="streamGame" style="z-index: 300000 !important;">
                                 <button id="streamInfoSaveButton" type="button" class="btn btn-info mt-2 mt-sm-0"><i class="fa fa-save"></i> Save</button>
                             </form>
                         </div>
                     </div>
                 </div>
             </div>
-            <div class="col-md chatCard">
+            <div class="col-md chatCard" style="z-index: -3000 !important;">
                 <div class="card chatCardDiv">
                     <div class="card card-block">
                         <h4 class="card-title"><i class="fa fa-window-minimize"></i> Chat</h4>
@@ -298,6 +298,36 @@
                 }
             });
         });
+
+        $("#streamGame").easyAutocomplete(
+            {
+                adjustWidth: false,
+                url: function(phrase) {
+                    return "@Url.Action("GetGames", "Home")";
+                },
+                getValue: "Name",
+
+                template: {
+                    type: "custom",
+                    method: function(value, item) {
+                        return "<img src='" + item.Box.Small + "' /> " + item.Name;
+                    }
+                },
+                ajaxSettings: {
+                    dataType: "json",
+                    method: "POST",
+                    data: {
+                        dataType: "json"
+                    }
+                },
+
+                preparePostData: function(data) {
+                    data.phrase = $("#streamGame").val();
+                    return data;
+                },
+                requestDelay: 400
+            }
+        );
 
 
     });
@@ -460,8 +490,9 @@
             var game = $("#streamGame").val();
             var channel = $("#botConnectButton").data("channel");
             twitchHub.server.saveStreamInfo(title, game, channel);
-            
+
         });
+
 
 
     })()

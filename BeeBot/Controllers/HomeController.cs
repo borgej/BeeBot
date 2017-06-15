@@ -1,12 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Web;
+using System.Web.Helpers;
 using System.Web.Mvc;
 using BeeBot.Models;
 using BeeBot.Signalr;
 using Microsoft.ApplicationInsights.WindowsServer;
 using Newtonsoft.Json;
+using TwitchLib.Models.API.v5.Games;
+using YTBot.Migrations;
 using YTBot.Models;
 using YTBot.Models.ViewModels;
 using YTBot.Services;
@@ -40,8 +44,8 @@ namespace BeeBot.Controllers
             };
 
             // send user to bot preferences page if not set
-            if (string.IsNullOrEmpty(userBotSettings.BotChannel) || string.IsNullOrEmpty(userBotSettings.BotUsername) ||
-                string.IsNullOrEmpty(userBotSettings.BotUsername))
+            if (string.IsNullOrWhiteSpace(userBotSettings.BotChannel) || string.IsNullOrWhiteSpace(userBotSettings.BotUsername) ||
+                string.IsNullOrWhiteSpace(userBotSettings.BotUsername))
             {
                 RedirectToAction("Preferences", new {message = "Please set your bot account and channel information"});
             }
@@ -140,7 +144,8 @@ namespace BeeBot.Controllers
             {
                 username = userBotSettings.BotUsername,
                 password = userBotSettings.BotPassword,
-                channel = userBotSettings.BotChannel 
+                channel = userBotSettings.BotChannel ,
+                channelToken = userBotSettings.ChannelToken
             };
 
             ViewBag.Message = message;
@@ -148,7 +153,7 @@ namespace BeeBot.Controllers
             return View(model);
         }
 
-        public ActionResult PreferencesSave(string botusername, string passwordinput, string channel)
+        public ActionResult PreferencesSave(string botusername, string passwordinput, string channel, string channelToken)
         {
 
             try
@@ -158,7 +163,8 @@ namespace BeeBot.Controllers
                     User = ContextService.GetUser(User.Identity.Name),
                     BotUsername = botusername ?? "",
                     BotPassword = passwordinput ?? "",
-                    BotChannel = channel ?? ""
+                    BotChannel = channel ?? "",
+                    ChannelToken = channelToken ?? ""
                 };
 
                 ContextService.SetBotUserSettingsForUser(botUserSettings);
@@ -176,6 +182,26 @@ namespace BeeBot.Controllers
         public ActionResult Triggers()
         {
             return View();
+        }
+
+
+        public async Task<JsonResult> GetGames(string phrase)
+        {
+            Game[] games = new Game[0];
+            if (phrase.Length <= 3)
+            {
+                return Json(games);
+            }
+
+            TwitchLib.TwitchAPI.Settings.ClientId = "gokkk5ean0yksozv0ctvljwqpceuin";
+            var gamesResult = await TwitchLib.TwitchAPI.Search.v5.SearchGames(phrase, null);
+
+            var output = new List<object>();
+
+            var settings = new JsonSerializerSettings();
+            settings.StringEscapeHandling = StringEscapeHandling.EscapeHtml;
+
+            return Json(gamesResult.Games);
         }
 
     }

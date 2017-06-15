@@ -11,5 +11,7 @@ namespace BeeBot.Models
         public string password { get; set; }
         public string channel { get; set; }
 
+        public string channelToken { get; set; }
+
     }
 }

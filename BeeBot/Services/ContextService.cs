@@ -105,6 +105,7 @@ namespace YTBot.Services
                     dbSettings.BotChannel = botUserSettings.BotChannel;
                     dbSettings.BotUsername = botUserSettings.BotUsername;
                     dbSettings.BotPassword = botUserSettings.BotPassword;
+                    dbSettings.ChannelToken = botUserSettings.ChannelToken;
                 }
                 else
                 {
