@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data.Entity.Core.Mapping;
 using System.Diagnostics;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Security.Policy;
 using System.Text.RegularExpressions;
 using System.Threading;
@@ -18,6 +19,7 @@ using TwitchLib;
 using TwitchLib.Events.Client;
 using TwitchLib.Models.API.v5.Games;
 using TwitchLib.Models.Client;
+using WebGrease.Css.Visitor;
 using YTBot.Context;
 using YTBot.Models;
 using YTBot.Services;
@@ -37,7 +39,7 @@ namespace BeeBot.Signalr
         private ConnectionCredentials ConnCred { get; set; }
         public TwitchClient Client { get; set; }
 
-        private const int SLEEPSECONDS = 1;
+        private const int Sleepseconds = 1;
 
 
 
@@ -170,7 +172,7 @@ namespace BeeBot.Signalr
                     message = "",
                     warning = ""
                 };
-
+                GetStreamInfo();
                 Clients.Caller.BotStatus(botStatus);
 
             }
@@ -178,6 +180,29 @@ namespace BeeBot.Signalr
             {
                 ConsoleLog(e.Message);
             }
+        }
+
+        public async Task GetStreamInfo()
+        {
+            //TwitchLib.TwitchAPI.Settings.Validators.SkipDynamicScopeValidation = true;
+            TwitchLib.TwitchAPI.Settings.ClientId = "gokkk5ean0yksozv0ctvljwqpceuin";
+
+            var uname = ContextService.GetUser(Context.User.Identity.Name);
+            var bs = ContextService.GetBotUserSettingsForUser(uname);
+            var token = bs.ChannelToken;
+            TwitchLib.TwitchAPI.Settings.AccessToken = token;
+
+            var channel = await TwitchAPI.Channels.v5.GetChannel(token);
+
+            var streamStatus = new StreamStatusVM();
+
+            
+            streamStatus.Game = channel.Game;
+            streamStatus.Title = channel.Status;
+
+
+            Clients.Caller.SetStreamInfo(streamStatus);
+            ConsoleLog("Retrieved stream title and game");
         }
 
         /// <summary>
@@ -468,9 +493,10 @@ namespace BeeBot.Signalr
         /// <param name="chatmessage"></param>
         public void ChatMessageTriggerCheck(ChatMessage chatmessage)
         {
-            var triggers = ContextService.GetTriggers(Context.User.Identity.Name).Where(t => t.Active == true);
+            
             // loot name
             var bcs = ContextService.GetBotChannelSettings(ContextService.GetUser(Context.User.Identity.Name));
+            var triggers = bcs.Triggers;
             if (bcs.Loyalty != null && bcs.Loyalty.LoyaltyName != null &&
                 !string.IsNullOrWhiteSpace(bcs.Loyalty.LoyaltyName))
             {
@@ -746,41 +772,77 @@ namespace BeeBot.Signalr
                                             "!ban [username] (streamer/mod) - Ban user from channel  \n");
                 }
             }
-            
 
-            
 
-            if (triggers.Any(t => t.TriggerName.Equals(chatmessage.Message.Split(' ').FirstOrDefault())))
+
+            if (chatmessage.Message.StartsWith("!"))
             {
-                var trigger =
-                    triggers.FirstOrDefault(t => t.TriggerName.Equals(chatmessage.Message.Split(' ').FirstOrDefault()));
-                switch (trigger.TriggerType)
+                if (triggers.Any(t => t.TriggerName.ToLower().Equals(chatmessage.Message.Split(' ').FirstOrDefault().ToLower().Replace("!", "")) && t.Active != null && t.Active.Value == true))
                 {
-                    // Chat response
-                    case TriggerType.Message:
-                        // TODO: something here
-                        break;
-                    // Game response
-                    case TriggerType.Game:
-                        // TODO: something here
-                        break;
-                    // Quote response
-                    case TriggerType.Quote:
-                        // TODO: something here
-                        break;
-                    // Statistic response
-                    case TriggerType.Statistic:
-                        // TODO: something here
-                        break;
-                    case TriggerType.Loyalty:
-                        // TODO: something here
-                        break;
-                    default:
-                        // TODO: something here
-                        break;
+                    var trigger =
+                        triggers.FirstOrDefault(t => t.TriggerName.ToLower().Equals(chatmessage.Message.ToLower().Split(' ').FirstOrDefault().Replace("!", "")));
+                    switch (trigger.TriggerType)
+                    {
+                        // Chat response
+                        case TriggerType.Message:
+                            if (trigger.StreamerCanTrigger.Value)
+                            {
+                                if (chatmessage.IsBroadcaster)
+                                {
+                                    GetClient().SendMessage(trigger.TriggerResponse);
+                                    Thread.Sleep(400);
+                                    break;
+                                }
+                            }
+                            if (trigger.ModCanTrigger.Value)
+                            {
+                                if (chatmessage.IsModerator)
+                                {
+                                    GetClient().SendMessage(trigger.TriggerResponse);
+                                    Thread.Sleep(400);
+                                    break;
+                                }
+                            }
+                            if (trigger.SubCanTrigger.Value)
+                            {
+                                if (chatmessage.IsSubscriber)
+                                {
+                                    GetClient().SendMessage(trigger.TriggerResponse);
+                                    Thread.Sleep(400);
+                                    break;
+                                }
+                            }
+                            if (trigger.ViewerCanTrigger.Value)
+                            {
+                                GetClient().SendMessage(trigger.TriggerResponse);
+                                Thread.Sleep(400);
+                                break;
+                            }
+
+                            break;
+                        // Game response
+                        case TriggerType.Game:
+                            // TODO: something here
+                            break;
+                        // Quote response
+                        case TriggerType.Quote:
+                            // TODO: something here
+                            break;
+                        // Statistic response
+                        case TriggerType.Statistic:
+                            // TODO: something here
+                            break;
+                        case TriggerType.Loyalty:
+                            // TODO: something here
+                            break;
+                        default:
+                            // TODO: something here
+                            break;
+                    }
+
                 }
-                
             }
+            
         }
 
         private void LoyaltyAdmin(string message)
@@ -824,7 +886,7 @@ namespace BeeBot.Signalr
             {
                 color = "#" + color;
             }
-            if (color.Length < 1)
+            if (color.Length < 2)
             {
                 // red color for bot
                 color += "b30000";
@@ -863,10 +925,18 @@ namespace BeeBot.Signalr
         }
 
 
+        /// <summary>
+        /// Worker thread that runs Loyalty collecting and Timers
+        /// </summary>
+        /// <param name="arg"></param>
         public void TrackLoyaltyAndTimers(object arg)
         {
+            ContextService = new ContextService();
+            
             var wtarg = (WorkerThreadArg)arg;
             ApplicationUser User = ContextService.GetUser(wtarg.Username);
+
+            ContextService.TimersResetLastRun(User.UserName);
 
             Stopwatch stopWatch = new Stopwatch();
             stopWatch.Start();
@@ -876,25 +946,46 @@ namespace BeeBot.Signalr
 
             while (true)
             {
+                // Update context
+                ContextService = new ContextService();
+                
 
                 while (wtarg.Client == null)
                 {
-                    Thread.Sleep(SLEEPSECONDS);
+                    Thread.Sleep(Sleepseconds);
                 }
                 while (wtarg.Client != null && wtarg.Client.IsConnected == false)
                 {
-                    Thread.Sleep(SLEEPSECONDS);
+                    Thread.Sleep(Sleepseconds);
                 }
 
+                // Thread variables
                 // Update database connector
-                ContextService = new ContextService();
+                
+                var botChannelSettings = ContextService.GetBotChannelSettings(User);
 
                 // Timers
-                // TODO
+                foreach (var timer in botChannelSettings.Timers)
+                {
+                    if (timer.TimerLastRun != null && (timer.Active.HasValue && timer.Active.Value) &&
+                        Convert.ToDateTime(timer.TimerLastRun.Value.AddMinutes((timer.TimerInterval))) <=
+                        DateTime.Now)
+                    {
+                        // show message in chat
+                        wtarg.Client.SendMessage(timer.TimerResponse);
+
+                        // update timer
+                        ContextService.TimerStampLastRun(timer.Id, User.UserName);
+
+                        // Small sleep between messages
+                        Thread.Sleep(500);
+                    } 
+                }
+
 
 
                 // Loyalty 
-                var botChannelSettings = ContextService.GetBotChannelSettings(User);
+                
                 if (botChannelSettings != null && botChannelSettings.Loyalty != null && botChannelSettings.Loyalty.Track == true)
                 {
 
@@ -909,7 +1000,7 @@ namespace BeeBot.Signalr
                 }
 
                 // chill for a second
-                Thread.Sleep(SLEEPSECONDS);
+                Thread.Sleep(Sleepseconds);
             }
 
         }

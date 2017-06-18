@@ -59,6 +59,7 @@ namespace YTBot.Models
         public string TimerResponse { get; set; }
         public int TimerInterval { get; set; }
         public bool? Active { get; set; }
+        public DateTime? TimerLastRun { get; set; }
     }
 
     public class Trigger   
@@ -72,7 +73,7 @@ namespace YTBot.Models
         public bool? SubCanTrigger { get; set; }
         public bool? ViewerCanTrigger { get; set; }
         
-        public string TruggerResponse { get; set; }
+        public string TriggerResponse { get; set; }
         public bool? Active { get; set; }
     }
 

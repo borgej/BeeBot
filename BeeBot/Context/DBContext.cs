@@ -25,5 +25,10 @@ namespace YTBot.Context
 
         public DbSet<BotUserSettings> BotUserSettings { get; set; }
         public DbSet<BotChannelSettings> BotChannelSettings { get; set; }
+        public DbSet<StreamViewer> Viewers { get; set; }
+        public DbSet<Timer> Timers { get; set; }
+        public DbSet<Trigger> Triggers { get; set; }
+        
+        
     }
 }

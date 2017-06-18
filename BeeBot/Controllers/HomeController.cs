@@ -35,12 +35,16 @@ namespace BeeBot.Controllers
             // get users bot settings
             var userBotSettings = ContextService.GetBotUserSettingsForUser(ContextService.GetUser(User.Identity.Name));
             var userLoyalty = ContextService.GetBotChannelSettings(ContextService.GetUser(User.Identity.Name)).Loyalty;
+            var timers = ContextService.GetTimers(ContextService.GetUser(User.Identity.Name));
+            var triggers = ContextService.GetTriggers(ContextService.GetUser(User.Identity.Name));
 
             var loyalty = userLoyalty ?? new Loyalty();
             var dashboardViewModel = new DashboardViewModel()
             {
                 BotUserSettings = userBotSettings,
-                LoyaltySettings = loyalty
+                LoyaltySettings = loyalty,
+                Timers = timers,
+                Triggers = triggers
             };
 
             // send user to bot preferences page if not set
@@ -92,6 +96,55 @@ namespace BeeBot.Controllers
             catch (Exception exception)
             {
                 return Json(new { data = "-1", message = "Error on update: " + exception.Message }, JsonRequestBehavior.AllowGet);
+            }
+        }
+
+        [HttpPost]
+        public ActionResult TimerSave(string timerId, string timerName, string timerMessage, string timerInterval, string timerActive)
+        {
+            int idInt = 0;
+
+            if (!string.IsNullOrWhiteSpace(timerId))
+            {
+                idInt = Convert.ToInt32(timerId);
+            }
+            
+            try
+            {
+                bool activeTimerBool = !string.IsNullOrEmpty(timerActive) && timerActive.Equals("1");
+                var timer = new YTBot.Models.Timer()
+                {
+                    Id = idInt,
+                    Active = activeTimerBool,
+                    TimerInterval = Convert.ToInt32(timerInterval),
+                    TimerName = timerName,
+                    TimerResponse = timerMessage
+                };
+
+                var savedTimer = ContextService.SaveTimer(timer, User.Identity.Name);
+                return Json(new { data = "1", message = "Saved timer", timerId = savedTimer.Id }, JsonRequestBehavior.AllowGet);
+            }
+            catch (Exception e)
+            {
+                return Json(new { data = "-1", message = e.Message }, JsonRequestBehavior.AllowGet);
+            }
+            
+        }
+
+        [HttpPost]
+        public ActionResult TimerDelete(string timerId)
+        {
+            try
+            {
+                var idInt = Convert.ToInt32(timerId);
+
+                ContextService.DeleteTimer(idInt, User.Identity.Name);
+
+                return Json(new { data = "1", message = "Deleted timer" }, JsonRequestBehavior.AllowGet);
+            }
+            catch (Exception e)
+            {
+                return Json(new { data = "-1", message = e.Message }, JsonRequestBehavior.AllowGet);
             }
         }
 
@@ -204,5 +257,56 @@ namespace BeeBot.Controllers
             return Json(gamesResult.Games);
         }
 
+        public ActionResult TriggerDelete(string triggerId)
+        {
+            try
+            {
+                var idInt = Convert.ToInt32(triggerId);
+
+                ContextService.DeleteTrigger(idInt, User.Identity.Name);
+
+                return Json(new { data = "1", message = "Deleted trigger" }, JsonRequestBehavior.AllowGet);
+            }
+            catch (Exception e)
+            {
+                return Json(new { data = "-1", message = e.Message }, JsonRequestBehavior.AllowGet);
+            }
+        }
+
+        public ActionResult TriggerSave(string triggerId, string triggername, string triggerMessage, string mod, string viewer, string triggerActive)
+        {
+            int idInt = 0;
+
+            if (!string.IsNullOrWhiteSpace(triggerId))
+            {
+                idInt = Convert.ToInt32(triggerId);
+            }
+
+            try
+            {
+                bool activeTriggerBool = !string.IsNullOrEmpty(triggerActive) && triggerActive.Equals("1");
+                bool modsTriggerBool = !string.IsNullOrEmpty(mod) && mod.Equals("1");
+                bool viewerTriggerBool = !string.IsNullOrEmpty(viewer) && viewer.Equals("1");
+                var trigger = new YTBot.Models.Trigger()
+                {
+                    Id = idInt,
+                    Active = activeTriggerBool,
+                    ModCanTrigger = modsTriggerBool,
+                    ViewerCanTrigger = viewerTriggerBool,
+                    StreamerCanTrigger = true,
+                    SubCanTrigger = viewerTriggerBool,
+                    TriggerName = triggername,
+                    TriggerType = TriggerType.Message,
+                    TriggerResponse = triggerMessage
+                };
+
+                var savedTrigger = ContextService.SaveTrigger(trigger, User.Identity.Name);
+                return Json(new { data = "1", message = "Saved trigger", triggerId = savedTrigger.Id }, JsonRequestBehavior.AllowGet);
+            }
+            catch (Exception e)
+            {
+                return Json(new { data = "-1", message = e.Message }, JsonRequestBehavior.AllowGet);
+            }
+        }
     }
 }

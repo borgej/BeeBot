@@ -1,59 +1,321 @@
 ﻿@model YTBot.Models.ViewModels.DashboardViewModel
-
-<div class="">
-
-    <!-- Example row of columns -->
-    <div class="row">
-        <div class="col-md-2">
-            <h4 class="">Menu</h4>
-            <div class="btn-group-vertical menuButtons">
-                <button type="button" class="btn btn-primary-outline" id="chatToggleButton">Chat</button>
-                <button type="button" class="btn btn-primary-outline" id="consoleToggleButton">Console</button>
-                <button type="button" class="btn btn-primary-outline" id="usersToggleButton">Users</button>
-                <button type="button" class="btn btn-primary-outline" id="loyaltyToggleButton">Loyalty points</button>
-                <button type="button" class="btn btn-primary-outline" id="chatPrefsToggleButton">Chat prefs</button>
-                <button type="button" class="btn btn-primary-outline" id="triggersToggleButton">Triggers</button>
-                <button type="button" class="btn btn-primary-outline" id="timersToggleButton">Timers</button>
-                <button type="button" class="btn btn-primary-outline" id="pollsToggleButton">Polls</button>
-
+<div class="row">
+    <div class="col-md text-center">
+        <h4 class=""></h4>
+        <div class="btn-group menuButtons btn-block" role="group">
+            <button type="button" class="btn btn-primary-outline col-md" id="consoleToggleButton"><i class="fa fa-tv"></i> Console</button>
+            <button type="button" class="btn btn-primary-outline col-md" id="chatPrefsToggleButton"><i class="fa fa-cog"></i> Chat prefs</button>
+            <button type="button" class="btn btn-primary-outline col-md" id="loyaltyToggleButton"><i class="fa fa-money"></i> Loyalty points</button>
+            <button type="button" class="btn btn-primary-outline col-md" id="triggersToggleButton"><i class="fa fa-reorder"></i> Triggers</button>
+            <button type="button" class="btn btn-primary-outline col-md" id="timersToggleButton"><i class="fa fa-clock-o"></i> Timers</button>
+            <button type="button" class="btn btn-primary-outline col-md" id="pollsToggleButton"><i class="fa fa-bar-chart"></i> Polls</button>
+            <button type="button" class="btn btn-primary-outline col-md" id="streamToggleButton"><i class="fa fa-video-camera"></i> Stream</button>
+            <button type="button" class="btn btn-primary-outline col-md" id="usersToggleButton"><i class="fa fa-users"></i> Users</button>
+            <button type="button" class="btn btn-primary-outline col-md" id="chatToggleButton"><i class="fa fa-commenting-o "></i> Chat</button>
+        </div>
+    </div>
+</div>
+<div class="row">
+    
+    <div class="col-md-5">
+        <div class="card botStatusCard">
+            <div class="card card-block">
+                <h4 class="card-title"><i class="fa fa-play"></i> Bot controls<i class="fa fa-window-minimize float-right card-title-icon"></i></h4>
+                <div class="btn-group botButtons">
+                    <button id="botConnectButton" type="button" class="btn btn-success" data-username="@Model.BotUserSettings.BotUsername" data-password="@Model.BotUserSettings.BotPassword" data-channel="@Model.BotUserSettings.BotChannel"><i class="fa fa-plug"></i> Connect</button>
+                    <button id="botReconnectButton" type="button" class="btn btn-default" data-username="@Model.BotUserSettings.BotUsername" data-password="@Model.BotUserSettings.BotPassword" data-channel="@Model.BotUserSettings.BotChannel"><i class="fa fa-refresh"></i> Re-connect</button>
+                    <button id="botDisconnectButton" type="button" class="btn btn-danger"><i class="fa fa-window-close"></i> Disconnect</button>
+                </div>
+                <div class="">
+                    <div>
+                        <span id="botMsg" class="badge badge-default dontshow"></span>
+                    </div>
+                    <div>
+                        <span id="botWarningMsg" class="badge badge-warning dontshow"></span>
+                    </div>
+                    <div>
+                        <span id="botinfoMsg" class="badge badge-info dontshow"></span>
+                    </div>
+                </div>
 
             </div>
         </div>
-        <div class="col">
-            <div class="card botStatusCard">
-                <div class="card card-block">
-                    <h4 class="card-title"><i class="fa fa-window-minimize"></i> Bot controls</h4>
-                    <div class="btn-group botButtons">
-                        <button id="botConnectButton" type="button" class="btn btn-success" data-username="@Model.BotUserSettings.BotUsername" data-password="@Model.BotUserSettings.BotPassword" data-channel="@Model.BotUserSettings.BotChannel"><i class="fa fa-plug"></i> Connect</button>
-                        <button id="botReconnectButton" type="button" class="btn btn-secondary" data-username="@Model.BotUserSettings.BotUsername" data-password="@Model.BotUserSettings.BotPassword" data-channel="@Model.BotUserSettings.BotChannel"><i class="fa fa-plug"></i> Re-connect</button>
-                        <button id="botDisconnectButton" type="button" class="btn btn-warning"><i class="fa fa-window-close"></i> Disconnect</button>
+        <div class="card consoleStatusCard">
+            <div class="card card-block">
+                <h4 class="card-title"><i class="fa fa-tv"></i> Console <i class="fa fa-window-minimize float-right"></i></h4>
+                <div class="consoleLog pre-scrollable">
+
+                </div>
+
+            </div>
+        </div>
+
+        <div class="card loyaltyCard">
+            <div class="card card-block">
+                <h4 class="card-title"><i class="fa fa-money"></i> Loyalty points <i class="fa fa-window-minimize float-right"></i></h4>
+                <form id="loyaltyForm">
+                    <div class="card-text">
+                        <div class="form-check">
+                            <label class="form-check-label">
+                                @{
+                                    var track = "";
+                                    if (Model.LoyaltySettings.Track != null)
+                                    {
+                                        if (Model.LoyaltySettings.Track == true)
+                                        {
+                                            track = "checked";
+                                        }
+                                    }
+                                }
+                                <input class="form-check-input" type="checkbox" id="track" name="track" @track value="1">
+                                Track loyalty
+                            </label>
+                        </div>
+                        <div class="row">
+                            <div class="col-5">
+                                <label for="loyaltyName">Loyaltyname</label>
+                            </div>
+                            <div class="col-4">
+                                <input id="loyaltyName" name="loyaltyName" type="text" class="form-control" placeholder="" value="@Model.LoyaltySettings.LoyaltyName">
+                            </div>
+
+                        </div>
+                        <div class="row">
+                            <div class="col-5">
+                                <label for="loyaltyValue">Give users</label>
+                            </div>
+                            <div class="col-2">
+                                <input type="text" id="loyaltyValue" name="loyaltyValue" class="form-control" placeholder="" value="@Model.LoyaltySettings.LoyaltyValue">
+                            </div>
+                            <div class="col-2">
+                                <p>units</p>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-5">
+                                <label for="loyaltyValue">Every </label>
+                            </div>
+                            <div class="col-2">
+                                <input type="text" id="loyaltyInterval" name="loyaltyInterval" class="form-control" placeholder="" value="@Model.LoyaltySettings.LoyaltyInterval">
+                            </div>
+                            <div class="col-2">
+                                <p>minute</p>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md">
+                                <button type="button" id="btnLoyaltySave" class="btn btn-secondary float-right"><i class="fa fa-save"></i></button>
+                            </div>
+                        </div>
                     </div>
-                    <div class="">
+                </form>
+            </div>
+        </div>
+        <div class="card chatPrefsCard">
+            <div class="card card-block">
+                <h4 class="card-title"><i class="fa fa-cog"></i> Chat prefs <i class="fa fa-window-minimize float-right"></i></h4>
+                <p class="card-text"></p>
+
+            </div>
+        </div>
+        <div class="card triggersCard">
+            <div class="card card-block">
+                <h4 class="card-title"><i class="fa fa-reorder"></i> Triggers <i class="fa fa-window-minimize float-right"></i></h4>
+                <div class="card-text">
+                    <div class="triggersContent">
+                        @{
+                            var triggerChecked = "";
+                            var modsChecked = "";
+                            var viwerChecked = "";
+                            foreach (var trigger in Model.Triggers)
+                            {
+                                if (trigger.Active != null && trigger.Active.Value)
+                                {
+                                    triggerChecked = "checked";
+                                }
+                                if (trigger.ModCanTrigger != null && trigger.ModCanTrigger.Value)
+                                {
+                                    modsChecked = "checked";
+                                }
+                                if (trigger.ViewerCanTrigger != null && trigger.ViewerCanTrigger.Value)
+                                {
+                                    viwerChecked = "checked";
+                                }
+                                <form class="triggerForm">
+                                    <div class="card card-block bg-faded">
+                                        <div class="form-inline">
+                                            
+                                            <input type="text" class="triggerId dontshow" id="" name="triggerId" value="@trigger.Id">
+                                            <label for="timerName" class="col-form-label mr-1">Trigger</label>
+                                            <input type="text" class="form-control triggerName col-sm-auto mr-3" id="" name="triggerName" placeholder="" value="@trigger.TriggerName">
+                                            
+                                            <label class="form-check-label col-form-label" >
+                                                <input class="form-check-input triggerActive" type="checkbox" name="triggerActive" value="1" @triggerChecked>
+                                                Active?
+                                            </label>
+                                        </div>
+                                        
+                                        <div class="form-group">
+                                            <div class="">
+                                                <label for="triggerMessage" class="col-form-label">Message</label>
+                                                <textarea type="text" name="triggerMessage" class="form-control triggerMessage" id="" placeholder="">@trigger.TriggerResponse</textarea>
+                                            </div>
+                                        </div>
+                                       
+                                        <div class="inline">
+                                            <div class="">
+                                                <label class="form-check-label col-form-label" >
+                                                    <input class="form-check-input mod" type="checkbox" name="mod" value="1" @modsChecked>
+                                                    Mods can trigger
+                                                </label>
+                                                <label class="form-check-label col-form-label" >
+                                                    <input class="form-check-input viewer" type="checkbox" name="viewer" value="1" @viwerChecked>
+                                                    Viewers can trigger
+                                                </label>
+                                                <span class="float-right">
+                                                    <button class="btn btn-secondary triggerSaveButton" onclick="triggerSaveButton(this);" type="button"><i class="fa fa-save"></i></button>
+                                                    <button class="btn btn-danger triggerDeleteButton " onclick="triggerDeleteButton(this);" type="button"><i class="fa fa-times"></i></button>
+                                                    <button class="btn btn-default triggerRemoveButton dontshow" onclick="triggerRemoveButton(this);" type="button"><i class="fa fa-times"></i></button>
+                                                </span>
+                                            </div>
+                                            
+                                        </div>
+                                    </div>
+                                </form>
+                            }
+                        }
+                    </div>
+                    <div class="triggersAdded"></div>
+                    <div>
                         <div>
-                            <span id="botMsg" class="badge badge-default dontshow"></span>
-                        </div>
-                        <div>
-                            <span id="botWarningMsg" class="badge badge-warning dontshow"></span>
-                        </div>
-                        <div>
-                            <span id="botinfoMsg" class="badge badge-info dontshow"></span>
+                            <div class="float-right">
+                                <button class="btn btn-secondary" id="addTriggerButton"><i class="fa fa-plus"></i> Add trigger</button>
+                            </div>
                         </div>
                     </div>
+                </div>
+
+            </div>
+        </div>
+        <div class="card timersCard ">
+            <div class="card card-block ">
+                <h4 class="card-title"><i class="fa fa-clock-o"></i> Timers <i class="fa fa-window-minimize float-right"></i></h4>
+                <div class="card-text ">
+                    <div class="timersContent">
+                        @{
+                            var timerChecked = "";
+                            foreach (var timer in Model.Timers)
+                            {
+                                <form class="timerForm">
+
+                                    <div class="card card-block bg-faded">
+
+                                        <div class="form-inline">
+
+
+                                            <input type="text" class="timerId dontshow" id="" name="timerId" value="@timer.Id">
+                                            <label for="timerName" class="col-form-label mr-1">Name</label>
+                                            <input type="text" class="form-control timerName col-sm-auto mr-3" id="" name="timerName" placeholder="" value="@timer.TimerName">
+
+                                            <label for="timerInterval" class="col-form-label mr-1">Interval</label>
+                                            <div class=""><input type="text" class="form-control timerInterval mr-1 col-sm-3" name="timerInterval" placeholder="" value="@timer.TimerInterval">mins</div>
+
+                                        </div>
+
+                                        <div class="form-group">
+
+                                            <div class="">
+
+                                                <label for="timerMessage" class="col-form-label">Message</label>
+                                                <textarea type="text" name="timerMessage" class="form-control timerMessage" id="" placeholder="">@timer.TimerResponse</textarea>
+                                            </div>
+                                        </div>
+
+                                        <div class="inline">
+
+                                            <div class="">
+
+                                                <label class="form-check-label col-form-label">
+                                                    @if (timer.Active != null && timer.Active.Value)
+                                                    {
+                                                        timerChecked = "checked";
+                                                    }
+                                                    <input class="form-check-input timerActive" type="checkbox" name="timerActive" @timerChecked value="1">
+                                                    Active?
+                                                </label>
+                                                <span class="float-right">
+
+                                                    <button class="btn btn-secondary timerSaveButton" onclick="timerSaveButton(this);" type="button"><i class="fa fa-save"></i></button>
+                                                    <button class="btn btn-danger timerDeleteButton" onclick="timerDeleteButton(this);" type="button"><i class="fa fa-times"></i></button>
+                                                </span>
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                </form>
+                            }
+                        }
+                    </div>
+                    <div class="timersAdded"></div>
+                    <div>
+                        <div>
+                            <div class=" addButton float-right">
+                                <button class="btn btn-secondary" id="addTimerButton"><i class="fa fa-plus"></i> Add timer</button>
+                            </div>
+                        </div>
+                    </div>
+
+
 
                 </div>
             </div>
-            <div class="card consoleStatusCard">
+            <div class="card pollsCard">
                 <div class="card card-block">
-                    <h4 class="card-title"><i class="fa fa-window-minimize"></i> Console</h4>
-                    <div class="consoleLog pre-scrollable">
+                    <h4 class="card-title"><i class="fa fa-bar-chart"></i> Polls <i class="fa fa-window-minimize float-right"></i></h4>
+                    <p class="card-text"></p>
 
-                    </div>
 
                 </div>
             </div>
-            <div class="card usersStatusCard">
+
+
+        </div>
+    </div>
+    <div class="col-md-7">
+        <div class="col-md streamCard" style="overflow: visible !important">
+            <div class="card streamCardDiv" style="overflow: visible !important">
+                <div class="card card-block" style="overflow: visible !important">
+                    <h4 class="card-title"><i class="fa fa-video-camera"></i> Stream <i class="fa fa-window-minimize float-right"></i></h4>
+                    <div class="card-text">
+                        @*<form action="#" method="post">
+                                <fieldset class="form-group">
+                                    <label for="streamTitle">Title</label>
+                                    <input type="text" class="form-control" id="streamTitle" name="streamTitle">
+                                    <label for="streamGame">Game</label>
+                                    <input type="text" class="form-control" id="streamGame" name="streamGame">
+                                </fieldset>
+                                <fieldset class="form-group">
+
+                                </fieldset>
+                                <button type="button" class="btn btn-info float-right">Save</button>
+                            </form>*@
+
+                        <form action="#" class="form-inline">
+                            <label class="mr-sm-1 mb-0" for="streamTitle">Title</label>
+                            <input type="text" class="form-control mr-sm-1 mb-2 mb-sm-0 col-sm-6" id="streamTitle" name="streamTitle">
+                            <label class="mr-sm-1 mb-0" for="last_name">Game</label>
+                            <input type="text" class="form-control mr-sm-1 mb-2 mb-sm-0 col-sm" id="streamGame" name="streamGame" style="z-index: 300000 !important;">
+                            <button id="streamInfoSaveButton" type="button" class="btn btn-secondary mt-2 mt-sm-0"><i class="fa fa-save"></i></button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md usersStatusCard">
+            <div class="card">
                 <div class="card card-block">
-                    <h4 class="card-title"><i class="fa fa-window-minimize"></i> Users</h4>
+                    <h4 class="card-title"><i class="fa fa-users"></i> Users <i class="fa fa-window-minimize float-right"></i></h4>
                     <div class="usersCard">
                         <div class="usersCount">
                             0
@@ -63,142 +325,16 @@
                         </div>
 
                     </div>
-
                 </div>
+
             </div>
-            <div class="card loyaltyCard">
-                <div class="card card-block">
-                    <h4 class="card-title"><i class="fa fa-window-minimize"></i> Loyalty points</h4>
-                    <form id="loyaltyForm">
-                        <div class="card-text">
-                            <div class="form-check">
-                                <label class="form-check-label">
-                                    @{
-                                        var track = "";
-                                        if (Model.LoyaltySettings.Track != null)
-                                        {
-                                            if (Model.LoyaltySettings.Track == true)
-                                            {
-                                                track = "checked";
-                                            }
-                                        }
-                                    }
-                                    <input class="form-check-input" type="checkbox" id="track" name="track" @track value="1">
-                                    Track loyalty
-                                </label>
-                            </div>
-                            <div class="row">
-                                <div class="col-5">
-                                    <label for="loyaltyName">Loyaltyname</label>
-                                </div>
-                                <div class="col-4">
-                                    <input id="loyaltyName" name="loyaltyName" type="text" class="form-control" placeholder="" value="@Model.LoyaltySettings.LoyaltyName">
-                                </div>
-
-                            </div>
-                            <div class="row">
-                                <div class="col-5">
-                                    <label for="loyaltyValue">Give users</label>
-                                </div>
-                                <div class="col-2">
-                                    <input type="text" id="loyaltyValue" name="loyaltyValue" class="form-control" placeholder="" value="@Model.LoyaltySettings.LoyaltyValue">
-                                </div>
-                                <div class="col-2">
-                                    <p>units</p>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-5">
-                                    <label for="loyaltyValue">Every </label>
-                                </div>
-                                <div class="col-2">
-                                    <input type="text" id="loyaltyInterval" name="loyaltyInterval" class="form-control" placeholder="" value="@Model.LoyaltySettings.LoyaltyInterval">
-                                </div>
-                                <div class="col-2">
-                                    <p>minute</p>
-                                </div>
-                            </div>
-
-                            <div class="row">
-                                <div class="col-md">
-                                    <button type="button" id="btnLoyaltySave" class="btn btn-info float-right"><i class="fa fa-save"></i> Save</button>
-                                </div>
-                            </div>
-                        </div>
-                    </form>
-                </div>
-            </div>
-            <div class="card chatPrefsCard">
-                <div class="card card-block">
-                    <h4 class="card-title"><i class="fa fa-window-minimize"></i> Chat prefs</h4>
-                    <p class="card-text"></p>
-
-                </div>
-            </div>
-            <div class="card triggersCard">
-                <div class="card card-block">
-                    <h4 class="card-title"><i class="fa fa-window-minimize"></i> Triggers</h4>
-                    <p class="card-text"></p>
-
-
-                </div>
-            </div>
-            <div class="card timersCard">
-                <div class="card card-block">
-                    <h4 class="card-title"><i class="fa fa-window-minimize"></i> Timers</h4>
-                    <p class="card-text"></p>
-
-
-                </div>
-            </div>
-            <div class="card pollsCard">
-                <div class="card card-block">
-                    <h4 class="card-title"><i class="fa fa-window-minimize"></i> Polls</h4>
-                    <p class="card-text"></p>
-
-
-                </div>
-            </div>
-
-
         </div>
-        <div class="col">
-            <div class="col-md streamCard" style="overflow: visible !important">
-                <div class="card streamCardDiv" style="overflow: visible !important">
-                    <div class="card card-block" style="overflow: visible !important">
-                        <h4 class="card-title"><i class="fa fa-window-minimize"></i> Stream</h4>
-                        <div class="card-text">
-                            @*<form action="#" method="post">
-                                <fieldset class="form-group">
-                                    <label for="streamTitle">Title</label>
-                                    <input type="text" class="form-control" id="streamTitle" name="streamTitle">
-                                    <label for="streamGame">Game</label>
-                                    <input type="text" class="form-control" id="streamGame" name="streamGame">
-                                </fieldset>
-                                <fieldset class="form-group">
-                                    
-                                </fieldset>
-                                <button type="button" class="btn btn-info float-right">Save</button>
-                            </form>*@
-                            
-                            <form action="#" class="form-inline">
-                                <label class="mr-sm-1 mb-0" for="streamTitle">Title</label>
-                                <input type="text" class="form-control mr-sm-1 mb-2 mb-sm-0 col-sm-6" id="streamTitle" name="streamTitle">
-                                <label class="mr-sm-1 mb-0" for="last_name">Game</label>
-                                <input type="text" class="form-control mr-sm-1 mb-2 mb-sm-0 col-sm" id="streamGame" name="streamGame" style="z-index: 300000 !important;">
-                                <button id="streamInfoSaveButton" type="button" class="btn btn-info mt-2 mt-sm-0"><i class="fa fa-save"></i> Save</button>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md chatCard" style="z-index: -3000 !important;">
-                <div class="card chatCardDiv">
-                    <div class="card card-block">
-                        <h4 class="card-title"><i class="fa fa-window-minimize"></i> Chat</h4>
-                        <div class="chatText pre-scrollable">
+        <div class="col-md chatCard" style="z-index: -3000 !important;">
+            <div class="card chatCardDiv">
+                <div class="card card-block">
+                    <h4 class="card-title"><i class="fa fa-commenting-o "></i> Chat <i class="fa fa-window-minimize float-right"></i></h4>
+                    <div class="chatText pre-scrollable">
 
-                        </div>
                     </div>
                 </div>
             </div>
@@ -207,8 +343,20 @@
 </div>
 
 
+
+
+
+
 <script type="text/javascript">
     $(document).ready(function () {
+
+
+        $("#darkModeButton").click(function () {
+            //alert("darkMode");
+            $("body").toggleClass("inverted");
+            $(".card-title").toggleClass("invertedCardTitle");
+            $(".usersCount").toggleClass("invertedCardTitle");
+        });
 
         $("#chatToggleButton").click(function () {
             toggleButton(this);
@@ -242,17 +390,112 @@
             toggleButton(this);
             $(".pollsCard").toggle();
         });
-        $("#chatTpollsToggleButtonoggleButton").click(function () {
+
+        $("#streamToggleButton").click(function () {
             toggleButton(this);
-            $(".chchatCardat").toggle();
+            $(".streamCard").toggle();
         });
 
+        
 
         // Make each header clickable so content is toggled
         $(".card-title").click(function () {
             $(this).next().toggle();
-            $(this).find("i").toggleClass("fa-window-minimize").toggleClass("fa-window-maximize");
+            $(this).find("i").last().toggleClass("fa-window-minimize").toggleClass("fa-window-maximize");
 
+        });
+
+        $("#addTriggerButton").click(function() {
+            var triggerDiv = '\
+                <form class="triggerForm">\
+                <div class="card card-block bg-faded">\
+                <div class="form-inline">\
+                \
+                <input type="text" class="triggerId dontshow" id="" name="triggerId">\
+                <label for="timerName" class="col-form-label mr-1">Trigger</label>\
+                <input type="text" class="form-control triggerName col-sm-auto mr-3" id="" name="triggerName" placeholder="">\
+                \
+                <label class="form-check-label col-form-label" >\
+                <input class="form-check-input triggerActive" type="checkbox" name="triggerActive" value="1">\
+                Active?\
+                </label>\
+                </div>\
+                \
+                <div class="form-group">\
+                <div class="">\
+                <label for="triggerMessage" class="col-form-label">Message</label>\
+                <textarea type="text" name="triggerMessage" class="form-control triggerMessage" id="" placeholder=""></textarea>\
+                </div>\
+                </div>\
+                \
+                <div class="inline">\
+                <div class="">\
+                <label class="form-check-label col-form-label" >\
+                <input class="form-check-input mod" type="checkbox" name="mod" value="1">\
+                Mods can trigger\
+                </label>\
+                <label class="form-check-label col-form-label" >\
+                <input class="form-check-input viewer" type="checkbox" name="viewer" value="1">\
+                Viewers can trigger\
+                </label>\
+                <span class="float-right">\
+                <button class="btn btn-secondary triggerSaveButton" onclick="triggerSaveButton(this);" type="button"><i class="fa fa-save"></i></button>\
+                <button class="btn btn-danger triggerDeleteButton dontshow" onclick="triggerDeleteButton(this);" type="button"><i class="fa fa-times"></i></button>\
+                <button class="btn btn-secondary triggerRemoveButton" onclick="triggerRemoveButton(this);" type="button"><i class="fa fa-times"></i></button>\
+                </span>\
+                </div>\
+            \
+                </div>\
+                </div>\
+                </form>\
+                ';
+
+            $(".triggersAdded").append(triggerDiv);
+        });
+
+        $("#addTimerButton").click(function() {
+
+
+            var timerDiv = '\
+                <form class="timerForm">\
+                <div class="card card-block bg-faded">\
+                <div class="form-inline">\
+                \
+                <input type="text" class="timerId dontshow" id="" name="timerId">\
+                <label for="timerName" class="col-form-label mr-1">Name</label>\
+                <input type="text" class="form-control timerName col-sm-auto mr-3" id="" name="timerName" placeholder="">\
+                \
+                <label for="timerInterval" class="col-form-label mr-1">Interval</label>\
+                <div class=""><input type="text" class="form-control timerInterval mr-1 col-sm-3" name="timerInterval" placeholder="">mins</div>\
+                \
+                </div>\
+                \
+                <div class="form-group">\
+                <div class="">\
+                <label for="timerMessage" class="col-form-label">Message</label>\
+                <textarea type="text" name="timerMessage" class="form-control timerMessage" id="" placeholder=""></textarea>\
+                </div>\
+                </div>\
+                \
+                <div class="inline">\
+                <div class="">\
+                <label class="form-check-label col-form-label" >\
+                <input class="form-check-input timerActive" type="checkbox" name="timerActive" value="1">\
+                Active?\
+                </label>\
+                <span class="float-right">\
+                <button class="btn btn-secondary timerSaveButton" onclick="timerSaveButton(this);" type="button"><i class="fa fa-save"></i></button>\
+                <button class="btn btn-danger timerDeleteButton dontshow" onclick="timerDeleteButton(this);" type="button"><i class="fa fa-times"></i></button>\
+                <button class="btn btn-secondary timerRemoveButton" onclick="timerRemoveButton(this);" type="button"><i class="fa fa-times"></i></button>\
+                </span>\
+                </div>\
+            \
+                </div>\
+                </div>\
+                </form>\
+                ';
+
+            $(".timersAdded").append(timerDiv);
         });
 
 
@@ -261,6 +504,8 @@
         $("#btnLoyaltySave").click(function () {
             console.log("Clicked btnLoyaltySave");
             var loyaltyData = $("#loyaltyForm").serialize();
+
+            $(this).find("i").toggleClass("fa-spinner fa-spin");
 
             $.ajax({
                 type: "POST",
@@ -297,6 +542,7 @@
                     }
                 }
             });
+            $(this).find("i").toggleClass("fa-spinner fa-spin");
         });
 
         $("#streamGame").easyAutocomplete(
@@ -329,11 +575,205 @@
             }
         );
 
-
+        $("#chatPrefsToggleButton").click();
+        $("#pollsToggleButton").click();
     });
 
+    function timerSaveButton(elem) {
+        var data = $(elem).closest("form").serialize();
+
+        // save
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("TimerSave")',
+            data: data,
+            dataType: "json",
+            success: function (response) {
+                if (response.data == "1") {
+                    // show delete button
+                    $(elem).closest("form").find(".timerDeleteButton").removeClass("dontshow");
+                    // remove cancel button
+                    $(elem).closest("form").find(".timerRemoveButton").addClass("dontshow");
+                    // insert returned Id in timerId
+                    $(elem).closest("form").find(".timerId").val(response.timerId);
+
+                    $.amaran({
+                        'theme': 'colorful',
+                        'content'   :{
+                            bgcolor:'#27ae60',
+                            color:'#fff',
+                            message: response.message,
+                        },
+                        'closeOnClick':false,
+                        'inEffect':'slideTop',
+                        'outEffect':'slideLeft'
+                    });
+                } else {
+                    $.amaran({
+                        'theme': 'colorful',
+                        'content': {
+                            bgcolor: '##ff3300',
+                            color: '#fff',
+                            message: response.message,
+                        },
+                        'closeOnClick': false,
+                        'inEffect': 'slideTop',
+                        'outEffect': 'slideLeft'
+                    });
+                }
+            }
+        });
+
+        console.log("Timer form: " + data);
+    }
+
+    function timerDeleteButton(elem) {
+
+        var data = $(elem).closest("form").serialize();
+
+        console.log("Timer form deleted: " + data);
+
+        // save
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("TimerDelete")',
+            data: data,
+            dataType: "json",
+            success: function (response) {
+                if (response.data == "1") {
+                    $(elem).closest("form").remove();
+
+                    $.amaran({
+                        'theme': 'colorful',
+                        'content'   :{
+                            bgcolor:'#27ae60',
+                            color:'#fff',
+                            message: response.message,
+                        },
+                        'closeOnClick':false,
+                        'inEffect':'slideTop',
+                        'outEffect':'slideLeft'
+                    });
+                } else {
+                    $.amaran({
+                        'theme': 'colorful',
+                        'content': {
+                            bgcolor: '##ff3300',
+                            color: '#fff',
+                            message: response.message,
+                        },
+                        'closeOnClick': false,
+                        'inEffect': 'slideTop',
+                        'outEffect': 'slideLeft'
+                    });
+                }
+            }
+        });
+
+    }
 
 
+
+    function timerRemoveButton(elem) {
+        $(elem).closest("form").remove();
+    }
+
+    function triggerSaveButton(elem) {
+        var data = $(elem).closest("form").serialize();
+
+        // save
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("TriggerSave")',
+            data: data,
+            dataType: "json",
+            success: function (response) {
+                if (response.data == "1") {
+                    // show delete button
+                    $(elem).closest("form").find(".triggerDeleteButton").removeClass("dontshow");
+                    // remove cancel button
+                    $(elem).closest("form").find(".triggerRemoveButton").addClass("dontshow");
+                    // insert returned Id in timerId
+                    $(elem).closest("form").find(".triggerId").val(response.triggerId);
+
+                    $.amaran({
+                        'theme': 'colorful',
+                        'content'   :{
+                            bgcolor:'#27ae60',
+                            color:'#fff',
+                            message: response.message,
+                        },
+                        'closeOnClick':false,
+                        'inEffect':'slideTop',
+                        'outEffect':'slideLeft'
+                    });
+                } else {
+                    $.amaran({
+                        'theme': 'colorful',
+                        'content': {
+                            bgcolor: '##ff3300',
+                            color: '#fff',
+                            message: response.message,
+                        },
+                        'closeOnClick': false,
+                        'inEffect': 'slideTop',
+                        'outEffect': 'slideLeft'
+                    });
+                }
+            }
+        });
+
+        console.log("Trigger form: " + data);
+    }
+
+    function triggerDeleteButton(elem) {
+
+        var data = $(elem).closest("form").serialize();
+
+        console.log("Trigger form deleted: " + data);
+
+        // save
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("TriggerDelete")',
+            data: data,
+            dataType: "json",
+            success: function (response) {
+                if (response.data == "1") {
+                    $(elem).closest("form").remove();
+
+                    $.amaran({
+                        'theme': 'colorful',
+                        'content'   :{
+                            bgcolor:'#27ae60',
+                            color:'#fff',
+                            message: response.message,
+                        },
+                        'closeOnClick':false,
+                        'inEffect':'slideTop',
+                        'outEffect':'slideLeft'
+                    });
+                } else {
+                    $.amaran({
+                        'theme': 'colorful',
+                        'content': {
+                            bgcolor: '##ff3300',
+                            color: '#fff',
+                            message: response.message,
+                        },
+                        'closeOnClick': false,
+                        'inEffect': 'slideTop',
+                        'outEffect': 'slideLeft'
+                    });
+                }
+            }
+        });
+
+    }
+
+    function triggerRemoveButton(elem) {
+        $(elem).closest("form").remove();
+    }
 
     function toggleButton(elem) {
         $(elem).toggleClass("btn-primary-outline").toggleClass("btn-secondary");
@@ -430,6 +870,30 @@
 
         };
 
+        twitchHub.client.SetStreamInfo = function(streamStatus) {
+            console.log("Stream title: " + streamStatus.Title);
+            console.log("Streams game: " + streamStatus.Game);
+
+            $("#streamTitle").val(streamStatus.Title);
+            $("#streamGame").val(streamStatus.Game);
+
+            if (streamStatus.Status != "" && streamStatus.Game != "") {
+                $.amaran({
+                    'theme': 'colorful',
+                    'content'   :{
+                        bgcolor:'#27ae60',
+                        color:'#fff',
+                        message: "Updated stream title and game",
+                    },
+                    'closeOnClick':false,
+                    'inEffect':'slideTop',
+                    'outEffect':'slideLeft'
+                });
+            }
+
+
+        }
+
         twitchHub.client.StreamInfoSaveCallback = function(data, message) {
             if (data == "1") {
                 $.amaran({
@@ -458,6 +922,8 @@
                     'outEffect': 'slideLeft'
                 });
             }
+
+            $("#streamInfoSaveButton").find("i").toggleClass("fa-spinner fa-spin");
         }
 
         //Button click jquery handler
@@ -490,6 +956,8 @@
             var game = $("#streamGame").val();
             var channel = $("#botConnectButton").data("channel");
             twitchHub.server.saveStreamInfo(title, game, channel);
+
+            $(this).find("i").toggleClass("fa-spinner fa-spin");
 
         });
 

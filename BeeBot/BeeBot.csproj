@@ -285,8 +285,17 @@
     <Compile Include="Migrations\201706142159533_AddedChannelToken.Designer.cs">
       <DependentUpon>201706142159533_AddedChannelToken.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201706162344294_TimerAddedLastRun.cs" />
+    <Compile Include="Migrations\201706162344294_TimerAddedLastRun.Designer.cs">
+      <DependentUpon>201706162344294_TimerAddedLastRun.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201706171837057_TriggerChangedResponseMessageObjectName.cs" />
+    <Compile Include="Migrations\201706171837057_TriggerChangedResponseMessageObjectName.Designer.cs">
+      <DependentUpon>201706171837057_TriggerChangedResponseMessageObjectName.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\BotChannelSettings.cs" />
+    <Compile Include="Models\ViewModels\StreamStatusVM.cs" />
     <Compile Include="Models\TwitchClientContainer.cs" />
     <Compile Include="Models\ViewModels\AccountViewModel.cs" />
     <Compile Include="Models\ViewModels\BotStatusVM.cs" />
@@ -458,6 +467,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201706142159533_AddedChannelToken.resx">
       <DependentUpon>201706142159533_AddedChannelToken.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201706162344294_TimerAddedLastRun.resx">
+      <DependentUpon>201706162344294_TimerAddedLastRun.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201706171837057_TriggerChangedResponseMessageObjectName.resx">
+      <DependentUpon>201706171837057_TriggerChangedResponseMessageObjectName.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

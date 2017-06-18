@@ -22,7 +22,7 @@ h5 {
     border: none;
     border-radius: .28571429rem;
     box-shadow: 0 1px 3px 0 #d4d4d5, 0 0 0 1px #d4d4d5;
-    max-height: 400px !important;
+    
 }
 
 .card-block {
@@ -45,7 +45,20 @@ h5 {
     font-size: 1.28571429em;
     font-weight: 700;
     line-height: 1.2857em;
+    background-color: #a9a9a9;
+    cursor: pointer;
+    padding: 5px 5px 5px 10px
 }
+
+.card-title i {
+    padding: 5px;
+}
+
+.card-title :hover {
+    /*border: 1px solid #4d4c4c;*/
+    background-color: #d3d3d3;
+}
+
 
 .card-text {
     clear: both;
@@ -121,9 +134,12 @@ h5 {
 
 
 body {
-    padding-top: 66px;
+    padding-top:40px;
     padding-bottom: 20px;
+    background-color: #f2f2f2;
 }
+
+
 
 /* Set padding to keep content from hitting the edges */
 .body-content {
@@ -163,12 +179,16 @@ textarea {
 }
 
 .menuButtons {
-    width: 90% !important;
-    margin-left: 10px;
-    margin-right: 10px;
-    margin-bottom: 10px;
+    margin-bottom: 20px;
 }
 
+.menuBittons :hover{
+    cursor: pointer !important;
+}
+
+.btn {
+    cursor: pointer;
+}
 .consoleLog {
     min-height: 50px;
     margin-bottom: 10px;
@@ -210,11 +230,6 @@ textarea {
 
 .chatHostMsg {
     background-color: dodgerblue;
-}
-
-
-.card-title {
-    cursor: pointer;
 }
 
 .dontshow {
@@ -345,3 +360,41 @@ textarea {
 .easy-autocomplete {
     z-index: 30000 !important;
 }
+
+.timerForm {
+    margin-bottom: 10px;   
+}
+
+.triggerForm {
+    margin-bottom: 10px;
+}
+
+.clearCardHeight {
+    display: table;
+}
+
+.inverted {
+    background-color: #4D4C4C !important;
+    color: #ffffff !important;
+    filter: invert(100%);
+    -webkit-filter: invert(100%); /* Safari */
+}
+
+.invertedCardTitle {
+
+    color: #ffffff !important;
+    filter: invert(100%);
+    -webkit-filter: invert(100%); /* Safari */
+}
+
+.inverted h1, .inverted h2, .inverted h3, .inverted h4{
+    /*color: #ffffff;*/
+}
+
+.menuButtons {
+    width: 100%;
+}
+
+
+
+

@@ -153,10 +153,28 @@ namespace YTBot.Services
                 return null;
             }
 
+            try
+            {
+                var botChannelSettings = Context.BotChannelSettings.FirstOrDefault(b => b.User.Id == user.Id);
 
-            var botChannelSettings = Context.BotChannelSettings.FirstOrDefault(b => b.User.Id == user.Id);
+                return botChannelSettings;
+            }
+            catch (Exception e)
+            {
+                int retries = 0;
 
-            return botChannelSettings;
+                BotChannelSettings botChannelSettings = null;
+
+                while (retries < 3 || botChannelSettings != null)
+                {
+                    botChannelSettings = Context.BotChannelSettings.FirstOrDefault(b => b.User.Id == user.Id);
+                }
+
+                return botChannelSettings;
+            }
+            
+
+            
         }
 
         /// <summary>
@@ -270,7 +288,7 @@ namespace YTBot.Services
             var triggers = new List<Trigger>();
 
 
-            var userTriggers = Context.BotChannelSettings.FirstOrDefault(u => u.User.Id == user.Id).Triggers;
+            var userTriggers = Context.BotChannelSettings.Include("Triggers").FirstOrDefault(u => u.User.Id == user.Id).Triggers;
 
             if (userTriggers != null)
             {
@@ -302,7 +320,7 @@ namespace YTBot.Services
             var timers = new List<Timer>();
 
 
-            var userTimers = Context.BotChannelSettings.FirstOrDefault(u => u.User.Id == user.Id).Timers;
+            var userTimers = Context.BotChannelSettings.Include("Timers").FirstOrDefault(u => u.User.Id == user.Id).Timers;
 
             if (userTimers != null)
             {
@@ -380,6 +398,128 @@ namespace YTBot.Services
             Context.SaveChanges();
 
 
+        }
+
+
+        /// <summary>
+        /// Save timer
+        /// </summary>
+        /// <param name="timer">Timer object</param>
+        /// <param name="username">Username as string</param>
+        /// <returns></returns>
+        public Timer SaveTimer(Timer timer, string username)
+        {
+            var bcs = GetBotChannelSettings(GetUser(username));
+
+            if (timer.Id == 0)
+            {
+                timer.TimerLastRun = DateTime.Now.AddSeconds(2);
+                bcs.Timers.Add(timer);
+            }
+            else
+            {
+                
+                var dbTimer = bcs.Timers.SingleOrDefault(t => t.Id == timer.Id);
+
+                dbTimer.Active = timer.Active;
+                dbTimer.TimerInterval = timer.TimerInterval;
+                dbTimer.TimerName = timer.TimerName;
+                dbTimer.TimerResponse = timer.TimerResponse;
+                dbTimer.TimerLastRun = DateTime.Now;
+            }
+
+            Context.SaveChanges();
+
+            return timer;
+        }
+
+        /// <summary>
+        /// Delete timer
+        /// </summary>
+        /// <param name="id">Timer id</param>
+        /// <param name="username">Username as string</param>
+        public void DeleteTimer(int id, string username)
+        {
+            var bcs = GetBotChannelSettings(GetUser(username));
+
+            bcs.Timers.Remove(Context.Timers.SingleOrDefault(t => t.Id == id));
+
+            Context.Timers.Remove(Context.Timers.SingleOrDefault(t => t.Id == id));
+
+            Context.SaveChanges();
+        }
+
+        /// <summary>
+        /// Stamp Timer last run variable
+        /// </summary>
+        /// <param name="id">Timer id</param>
+        /// <param name="username">Username as string</param>
+        /// <returns></returns>
+        public DateTime TimerStampLastRun(int id, string username)
+        {
+            var bcs = GetBotChannelSettings(GetUser(username));
+
+            var timer = bcs.Timers.SingleOrDefault(t => t.Id == id);
+            timer.TimerLastRun = DateTime.Now;
+
+            Context.SaveChanges();
+
+            return Convert.ToDateTime(timer.TimerLastRun);
+        }
+
+        /// <summary>
+        /// Stamp all Timers with last run DateTime.now
+        /// </summary>
+        /// <param name="username">Username as string</param>
+        public void TimersResetLastRun(string username)
+        {
+            var bcs = GetBotChannelSettings(GetUser(username));
+
+            foreach (var timer in bcs.Timers)
+            {
+                timer.TimerLastRun = DateTime.Now.AddSeconds(+2);
+            }
+
+            Context.SaveChanges();
+        }
+
+        public void DeleteTrigger(int id, string username)
+        {
+            var bcs = GetBotChannelSettings(GetUser(username));
+
+            bcs.Triggers.Remove(Context.Triggers.SingleOrDefault(t => t.Id == id));
+
+            Context.Triggers.Remove(Context.Triggers.SingleOrDefault(t => t.Id == id));
+
+            Context.SaveChanges();
+        }
+
+        public Trigger SaveTrigger(Trigger trigger, string username)
+        {
+            var bcs = GetBotChannelSettings(GetUser(username));
+
+            if (trigger.Id == 0)
+            {
+                bcs.Triggers.Add(trigger);
+            }
+            else
+            {
+
+                var dbTrigger = bcs.Triggers.SingleOrDefault(t => t.Id == trigger.Id);
+
+                dbTrigger.Active = trigger.Active;
+                dbTrigger.TriggerName = trigger.TriggerName;
+                dbTrigger.TriggerResponse = trigger.TriggerResponse;
+                dbTrigger.ModCanTrigger = trigger.ModCanTrigger;
+                dbTrigger.ViewerCanTrigger = trigger.ViewerCanTrigger;
+                dbTrigger.StreamerCanTrigger = trigger.StreamerCanTrigger;
+                dbTrigger.SubCanTrigger = trigger.ViewerCanTrigger;
+                dbTrigger.TriggerType = trigger.TriggerType;
+            }
+
+            Context.SaveChanges();
+
+            return trigger;
         }
     }
 }
