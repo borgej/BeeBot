@@ -16,7 +16,7 @@ namespace YTBot.Models
         
         public virtual Loyalty Loyalty { get; set; }
 
-        public virtual List<StreamViewer> StreamViewers { get; set; }
+        public List<StreamViewer> StreamViewers { get; set; }
 
         public virtual List<Trigger> Triggers { get; set; }
 
@@ -67,14 +67,22 @@ namespace YTBot.Models
         public int Id { get; set; }
         public string TriggerName { get; set; }
         public TriggerType TriggerType {get; set; }
+        public string TriggerResponse { get; set; }
         // Trigger restrictions
         public bool? StreamerCanTrigger { get; set; }
         public bool? ModCanTrigger { get; set; }
         public bool? SubCanTrigger { get; set; }
         public bool? ViewerCanTrigger { get; set; }
-        
-        public string TriggerResponse { get; set; }
         public bool? Active { get; set; }
+        public virtual List<Quote> TriggerQoute { get; set; }
+    }
+
+    public class Quote
+    {
+        public int Id { get; set; }
+        public string QuoteMsg { get; set; }
+        public string QuoteBy { get; set; }
+        public DateTime? QuoteAdded { get; set; }
     }
 
     public enum TriggerType 

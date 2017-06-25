@@ -17,6 +17,7 @@ namespace YTBot.Models
         public string Channel { get; set; }
         public ApplicationUser User { get; set; }
         public TwitchClient Client { get; set; }
+        public TwitchPubSub PubSubClient { get; set; }
         public Thread WorkerThread { get; set; }
 
         public ContextService ContextService { get; set; }

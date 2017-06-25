@@ -33,6 +33,7 @@ namespace BeeBot
                 "~/Content/bootstrap.css",
                 "~/Content/tether/tether.css",
                 "~/Content/font-awesome.css",
+                "~/Content/font-awesome-animation.min.css",
                 "~/Content/site.css",
                 "~/Content/amaran.min.css",
                 "~/Content/animate.min.css",

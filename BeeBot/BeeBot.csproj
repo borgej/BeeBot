@@ -184,8 +184,8 @@
       <Private>True</Private>
       <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.3\lib\net45\System.Web.WebPages.Razor.dll</HintPath>
     </Reference>
-    <Reference Include="TwitchLib, Version=1.4.9.5190, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\TwitchLib.1.4.9\lib\net45\TwitchLib.dll</HintPath>
+    <Reference Include="TwitchLib, Version=1.5.2.39613, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\TwitchLib.1.5.2\lib\net45\TwitchLib.dll</HintPath>
     </Reference>
     <Reference Include="WebGrease">
       <Private>True</Private>
@@ -293,6 +293,10 @@
     <Compile Include="Migrations\201706171837057_TriggerChangedResponseMessageObjectName.Designer.cs">
       <DependentUpon>201706171837057_TriggerChangedResponseMessageObjectName.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201706201954023_AddedQuotes.cs" />
+    <Compile Include="Migrations\201706201954023_AddedQuotes.Designer.cs">
+      <DependentUpon>201706201954023_AddedQuotes.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\BotChannelSettings.cs" />
     <Compile Include="Models\ViewModels\StreamStatusVM.cs" />
@@ -328,6 +332,8 @@
     <Content Include="Content\easy-autocomplete.min.css" />
     <Content Include="Content\easy-autocomplete.themes.css" />
     <Content Include="Content\easy-autocomplete.themes.min.css" />
+    <Content Include="Content\font-awesome-animation.css" />
+    <Content Include="Content\font-awesome-animation.min.css" />
     <Content Include="Content\font-awesome.css" />
     <Content Include="Content\font-awesome.min.css" />
     <Content Include="Content\moderatorBadge.png" />
@@ -473,6 +479,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201706171837057_TriggerChangedResponseMessageObjectName.resx">
       <DependentUpon>201706171837057_TriggerChangedResponseMessageObjectName.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201706201954023_AddedQuotes.resx">
+      <DependentUpon>201706201954023_AddedQuotes.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

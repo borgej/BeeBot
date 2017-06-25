@@ -33,6 +33,7 @@ h5 {
     border: none;
     border-top: 1px solid rgba(34, 36, 38, .1);
     box-shadow: none;
+    
 }
 
 .card-img-top {
@@ -47,7 +48,8 @@ h5 {
     line-height: 1.2857em;
     background-color: #a9a9a9;
     cursor: pointer;
-    padding: 5px 5px 5px 10px
+    padding: 5px 5px 5px 10px;
+    border-radius: 3px;
 }
 
 .card-title i {
@@ -78,6 +80,9 @@ h5 {
     background: #fff;
 }
 
+.consoleStatusCard .usersStatusCard {
+    max-height: 200px;
+}
 .card-inverse .btn {
     border: 1px solid rgba(0, 0, 0, .05);
 }
@@ -191,6 +196,7 @@ textarea {
 }
 .consoleLog {
     min-height: 50px;
+    max-height: 100px;
     margin-bottom: 10px;
 }
 
@@ -245,11 +251,23 @@ textarea {
 }
 
 .userTimedOut {
-    background-color: coral;
+    background-color: #87ceeb;
 }
 
-.userbanned {
-    background-color: orchid;
+.userBanned {
+    background-color: #cd853f;
+}
+
+.userDonated {
+    background-color: yellow;
+}
+
+.userFollowed {
+    background-color: #008000;
+}
+
+.userSubbed {
+    background-color: deeppink;
 }
 
 .usersCard {
@@ -266,6 +284,31 @@ textarea {
     
     height: 130px;
     width: 70%;
+}
+
+
+
+.eventConsole {
+    height: 130px;
+    width: 98%;
+}
+
+.folSubCount {
+    float: left !important;
+    margin-left: 30%;
+    font-size: 50px;
+    text-align: center;
+    height: 100%;
+    vertical-align: center;
+}
+
+.donCount {
+    float: right !important;
+    margin-right: 30%;
+    font-size: 50px;
+    text-align: center;
+    height: 100%;
+    vertical-align: center;
 }
 
 .usersCount {
@@ -331,16 +374,16 @@ textarea {
     margin-top: 0px !important;
     margin-bottom: 0px !important;
 }
-.omb_login .omb_loginOr .omb_spanOr {
-    display: block;
-    position: absolute;
-    left: 50%;
-    top: -0.6em;
-    margin-left: -1.5em;
-    background-color: white;
-    width: 3em;
-    text-align: center;
-}			
+    .omb_login .omb_loginOr .omb_spanOr {
+        display: block;
+        position: absolute;
+        left: 50%;
+        top: -0.6em;
+        margin-left: -1.5em;
+        background-color: #f2f2f2;
+        width: 3em;
+        text-align: center;
+    }			
 
 .omb_login .omb_loginForm .input-group.i {
     width: 2em;
@@ -395,6 +438,19 @@ textarea {
     width: 100%;
 }
 
+.channelNameHeader {
+    font-size: 20px !important;
+    font-weight: bold;
+}
 
+.channelOnlineOfflineStatus {
+    font-size: 15px;
+}
 
+.channelOnline {
+    background-color: red;
+}
 
+.channelOffline {
+    background-color: #a9a9a9;
+}

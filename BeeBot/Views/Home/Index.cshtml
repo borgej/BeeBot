@@ -1,4 +1,15 @@
 ﻿@model YTBot.Models.ViewModels.DashboardViewModel
+
+
+<div class="row ">
+    <div class="col-md text-center channelBar dontshow">
+        <span class="channelNameHeader "></span>
+        <i class="fa onlineOfflineIcon"></i>
+        <span class="channelOnlineOfflineStatus text-center"></span>
+        <i class="fa fa-clock-o"></i>
+        <span class="channelUptimeTime text-center"></span>
+    </div>
+</div>
 <div class="row">
     <div class="col-md text-center">
         <h4 class=""></h4>
@@ -11,6 +22,7 @@
             <button type="button" class="btn btn-primary-outline col-md" id="pollsToggleButton"><i class="fa fa-bar-chart"></i> Polls</button>
             <button type="button" class="btn btn-primary-outline col-md" id="streamToggleButton"><i class="fa fa-video-camera"></i> Stream</button>
             <button type="button" class="btn btn-primary-outline col-md" id="usersToggleButton"><i class="fa fa-users"></i> Users</button>
+            <button type="button" class="btn btn-primary-outline col-md" id="streamEventButton"><i class="fa fa-exclamation-circle "></i> Stream events</button>
             <button type="button" class="btn btn-primary-outline col-md" id="chatToggleButton"><i class="fa fa-commenting-o "></i> Chat</button>
         </div>
     </div>
@@ -115,7 +127,37 @@
         <div class="card chatPrefsCard">
             <div class="card card-block">
                 <h4 class="card-title"><i class="fa fa-cog"></i> Chat prefs <i class="fa fa-window-minimize float-right"></i></h4>
-                <p class="card-text"></p>
+                <div class="card-text">
+                    <div class="inline">
+                        <div class="">
+                            <label class="form-check-label col-form-label mr-sm-5">
+                                <input class="form-check-input viewerOnlyChat" type="checkbox" name="viewerOnlyChat" value="1" />
+                                Viewers only chat (10 mins)
+                            </label>
+                            <label class="form-check-label col-form-label mr-sm-5">
+                                <input class="form-check-input linksAllowedChat" type="checkbox" name="linksAllowedChat" value="1" />
+                                Links allowed
+                            </label>
+                            
+                            <label class="form-check-label col-form-label mr-sm-5">
+                                <input class="form-check-input slowModeChat" type="checkbox" name="slowModeChat" value="1" />
+                                Slow mode
+                            </label>
+                            @*<label class="form-check-label col-form-label">
+                                <input class="form-check-input mod" type="checkbox" name="mod" value="1" />
+                                Viewers only chat?
+                            </label>
+                            <label class="form-check-label col-form-label">
+                                <input class="form-check-input viewer" type="checkbox" name="viewer" value="1" />
+                                Links allowed?
+                            </label>*@
+                            <span class="float-right">
+                                <button class="btn btn-secondary chatPrefButton" onclick="triggerSaveChatPref(this);" type="button"><i class="fa fa-save"></i></button>
+                            </span>
+                        </div>
+                                            
+                    </div>
+                </div>
 
             </div>
         </div>
@@ -301,13 +343,36 @@
                                 <button type="button" class="btn btn-info float-right">Save</button>
                             </form>*@
 
-                        <form action="#" class="form-inline">
-                            <label class="mr-sm-1 mb-0" for="streamTitle">Title</label>
-                            <input type="text" class="form-control mr-sm-1 mb-2 mb-sm-0 col-sm-6" id="streamTitle" name="streamTitle">
-                            <label class="mr-sm-1 mb-0" for="last_name">Game</label>
-                            <input type="text" class="form-control mr-sm-1 mb-2 mb-sm-0 col-sm" id="streamGame" name="streamGame" style="z-index: 300000 !important;">
-                            <button id="streamInfoSaveButton" type="button" class="btn btn-secondary mt-2 mt-sm-0"><i class="fa fa-save"></i></button>
+                        <form action="#" class="">
+                            <div class="form-group row">
+                                <label class=" col-sm-1 col-form-label" for="streamTitle">Title</label>
+                                <div class="col-sm">
+                                    <input type="text" class="form-control  col-sm" id="streamTitle" name="streamTitle">    
+                                </div>
+                            </div>   
+                            <div class="form-group row">
+                                <label class=" col-sm-1 col-form-label" for="streamGame">Game</label>
+                                <div class="col-sm">
+                                    <input type="text" class="form-control col-sm" id="streamGame" name="streamGame" style="z-index: 300000 !important;">
+                                </div>
+                                <label class=" col-sm-1 col-form-label" for="streamGame">Delay</label>
+                                <div class="col-sm-3">
+                                    <input type="text" class="form-control col-sm" id="streamDelay" name="streamGame" style="z-index: 300000 !important;">
+                                </div>
+                               
+                            </div>
+                            <div class="form-group row">
+                                <label class="form-check-label ml-md-4 col-form-label" for="streamMatureCheckbox">
+
+                                    <input class="form-check-input streamMatureCheckbox" disabled readonly type="checkbox" name="streamMatureCheckbox" id="streamMatureCheckbox"  value="1">
+                                    Mature?
+                                </label>
+                                <div class="col-sm">
+                                    <button id="streamInfoSaveButton" type="button" class="btn btn-secondary float-right"><i class="fa fa-save"></i></button>
+                                </div>
+                            </div>
                         </form>
+
                     </div>
                 </div>
             </div>
@@ -329,12 +394,42 @@
 
             </div>
         </div>
-        <div class="col-md chatCard" style="z-index: -3000 !important;">
-            <div class="card chatCardDiv">
+        <div class="col-md streamEventsCard">
+            <div class="card">
                 <div class="card card-block">
-                    <h4 class="card-title"><i class="fa fa-commenting-o "></i> Chat <i class="fa fa-window-minimize float-right"></i></h4>
-                    <div class="chatText pre-scrollable">
+                    <h4 class="card-title"><i class="fa fa-exclamation-circle "></i> Stream events <i class="fa fa-window-minimize float-right"></i></h4>
+                    <div class="eventCard">
+                        <div class="row">
+                            <div class="eventConsole col-md-auto pre-scrollable ">
 
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 folSubDiv">
+                                <div class="folSubCount">
+                                    <span class="folCount">0</span> / <span class="subCount">0</span>
+                                </div>
+                            </div>
+                        
+                            <div class="col-md-6 donCountDiv">
+                                <div class="donCount">0</div>
+                                
+                            </div>
+                                
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+        <div class="col-md chatCard">
+            <div class="card">
+                <div class="card chatCardDiv">
+                    <div class="card card-block">
+                        <h4 class="card-title"><i class="fa fa-commenting-o "></i> Chat <i class="fa fa-window-minimize float-right"></i></h4>
+                        <div class="chatText pre-scrollable">
+
+                        </div>
                     </div>
                 </div>
             </div>
@@ -348,6 +443,9 @@
 
 
 <script type="text/javascript">
+
+    var inverted = false;
+
     $(document).ready(function () {
 
 
@@ -356,6 +454,13 @@
             $("body").toggleClass("inverted");
             $(".card-title").toggleClass("invertedCardTitle");
             $(".usersCount").toggleClass("invertedCardTitle");
+            $(".consoleLog").toggleClass("invertedCardTitle");
+            $(".chatMsg").toggleClass("invertedCardTitle");
+            if (inverted) {
+                inverted = false;
+            } else {
+                inverted = true;
+            }
         });
 
         $("#chatToggleButton").click(function () {
@@ -394,6 +499,11 @@
         $("#streamToggleButton").click(function () {
             toggleButton(this);
             $(".streamCard").toggle();
+        });
+
+        $("#streamEventButton").click(function () {
+            toggleButton(this);
+            $(".streamEventsCard").toggle();
         });
 
         
@@ -575,8 +685,10 @@
             }
         );
 
-        $("#chatPrefsToggleButton").click();
+        
         $("#pollsToggleButton").click();
+        $("#chatPrefsToggleButton").click();
+        $("#streamEventButton").click();
     });
 
     function timerSaveButton(elem) {
@@ -779,6 +891,12 @@
         $(elem).toggleClass("btn-primary-outline").toggleClass("btn-secondary");
     }
 
+    function clearUsers() {
+        $(".usersCount").text("0");
+
+        $(".usersConnInfo").html("");
+    }
+
 
     (function () {
         // Defining a connection to the server hub.
@@ -799,14 +917,65 @@
             $(".chatText").append(serverTime + "<br>");
         };
 
-        twitchHub.client.Hello = function (hello) {
-            $(".chatText").append(hello + "<br>");
+
+        twitchHub.client.UpdateChannelBar = function (streamStatus) {
+            console.log("UpdateChannelBar triggered");
+
+            $("#streamTitle").val(streamStatus.Title);
+            $("#streamGame").val(streamStatus.Game);
+            $("#streamDelay").val(streamStatus.Delay);
+            $(".channelNameHeader").html(streamStatus.Channel);
+
+            if (streamStatus.Online) {
+                if ($(".channelOnlineOfflineStatus").html() != "LIVE") {
+                    $(".channelOnlineOfflineStatus").html("LIVE");
+                    $(".onlineOfflineIcon").addClass("fa-video-camera faa-flash animated");
+                    $(".onlineOfflineIcon").removeClass("fa-stop");
+                    $(".channelBar").removeClass("channelOffline");
+                    $(".channelBar").addClass("channelOnline");
+                    
+                }
+                if (streamStatus.Uptime != null) {
+                    var timeSpan = streamStatus.Uptime.split(".")[0];
+                    var timeSplit = timeSpan.split(":");
+                    var hour = timeSplit[0];
+                    var mins = timeSplit[1];
+                    var secs = timeSplit[2];
+                    $(".channelUptimeTime").html(hour+":"+mins+":"+secs);
+                }
+                
+            } else {
+                if ($(".channelOnlineOfflineStatus").html() != "OFFLINE") {
+                    $(".channelOnlineOfflineStatus").html("OFFLINE");
+                    $(".onlineOfflineIcon").removeClass("fa-video-camera faa-flash animated");
+                    $(".onlineOfflineIcon").addClass("fa-stop");
+                    $(".channelBar").addClass("channelOffline");
+                    $(".channelBar").removeClass("channelOnline");
+                    $(".channelUptimeTime").html("--:--");
+                }
+                
+                
+            }
+            //$(".channelBar").removeClass("dontshow");  // remove?
+            
+
+            if (streamStatus.Mature) {
+                $('.streamMatureCheckbox').attr('checked', true);
+            } else {
+                $('.streamMatureCheckbox').attr('checked', false);
+            }  
         };
 
         twitchHub.client.ChatShow = function (msg) {
+            
             $(".chatText").append(msg);
 
             var objDiv = document.getElementsByClassName("chatText")[0];
+
+            if (inverted) {
+                $(".chatText").find(".chatMsg").last().toggleClass("invertedCardTitle");
+            } 
+
             objDiv.scrollTop = objDiv.scrollHeight;
         };
 
@@ -828,6 +997,41 @@
             $(".consoleLog").append(log + "<br>");
             var objDiv = document.getElementsByClassName("consoleLog")[0];
             objDiv.scrollTop = objDiv.scrollHeight;
+        };
+
+        twitchHub.client.folEvent = function (event) {
+            var value = 0;
+
+            if (log.indexOf("(followed)") != -1) {
+                value = parseInt($(".folSubCount").text()) + 1;
+            }
+            else if (log.indexOf("(disconnected)") != -1) {
+                if (parseInt($(".usersCount").text()) > 0) {
+                    value = parseInt($(".usersCount").text()) - 1;
+                } else {
+                    value = 0;
+                }
+
+            }
+
+            console.log("Users: " + value.toString());
+
+            $(".usersCount").text(value.toString());
+
+            $(".usersConnInfo").append(event.message);
+            var objDiv = document.getElementsByClassName("usersConnInfo")[0];
+            objDiv.scrollTop = objDiv.scrollHeight;
+        };
+
+        twitchHub.client.donationEvent = function (event) {
+            var value = 0;
+
+            value = parseInt($(".donCount").text());
+
+            console.log("Donation: " + event.user + " " + event.value.toString());
+
+            $(".donCount").text(value+event.value);
+
         };
 
         twitchHub.client.UsersConnLog = function (log) {
@@ -873,9 +1077,36 @@
         twitchHub.client.SetStreamInfo = function(streamStatus) {
             console.log("Stream title: " + streamStatus.Title);
             console.log("Streams game: " + streamStatus.Game);
+            console.log("Mature?: " + streamStatus.Mature);
+            console.log("Stream delay: " + streamStatus.Delay);
+
 
             $("#streamTitle").val(streamStatus.Title);
             $("#streamGame").val(streamStatus.Game);
+            $("#streamDelay").val(streamStatus.Delay);
+            $(".channelNameHeader").html(streamStatus.Channel);
+
+            if (streamStatus.Online) {
+                $(".channelOnlineOfflineStatus").html("LIVE");
+                $(".onlineOfflineIcon").addClass("fa-video-camera faa-flash animated");
+                $(".onlineOfflineIcon").removeClass("fa-stop");
+                $(".channelBar").removeClass("channelOffline");
+                $(".channelBar").addClass("channelOnline");
+            } else {
+                $(".channelOnlineOfflineStatus").html("OFFLINE");
+                $(".onlineOfflineIcon").removeClass("fa-video-camera faa-flash animated");
+                $(".onlineOfflineIcon").addClass("fa-stop");
+                $(".channelBar").addClass("channelOffline");
+                $(".channelBar").removeClass("channelOnline");
+            }
+            $(".channelBar").removeClass("dontshow");
+            
+
+            if (streamStatus.Mature) {
+                $('.streamMatureCheckbox').attr('checked', true);
+            } else {
+                $('.streamMatureCheckbox').attr('checked', false);
+            }
 
             if (streamStatus.Status != "" && streamStatus.Game != "") {
                 $.amaran({
@@ -940,13 +1171,14 @@
             var username = $(this).data("username");
             var password = $(this).data("password");
             var channel = $(this).data("channel");
+            clearUsers();
             twitchHub.server.reconnect(username, password, channel);
         });
 
         $("#botDisconnectButton").click(function () {
-            // Call SignalR hub method
-
+            clearUsers();
             twitchHub.server.disconnectBot();
+            $(".channelBar").toggleClass("dontshow");
         });
 
         $("#streamInfoSaveButton").click(function() {
@@ -954,8 +1186,15 @@
 
             var title = $("#streamTitle").val();
             var game = $("#streamGame").val();
+            var mature = $(".streamMatureCheckbox").attr('checked');
+            var matureInt;
+            if (mature) {
+                matureInt = 1;
+            } else {
+                matureInt = 0;
+            }
             var channel = $("#botConnectButton").data("channel");
-            twitchHub.server.saveStreamInfo(title, game, channel);
+            twitchHub.server.saveStreamInfo(title, game, channel, matureInt);
 
             $(this).find("i").toggleClass("fa-spinner fa-spin");
 

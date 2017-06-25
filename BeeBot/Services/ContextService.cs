@@ -11,7 +11,7 @@ using YTBot.Models;
 
 namespace YTBot.Services
 {
-    public class ContextService
+    public class ContextService : IDisposable
     {
         public ApplicationDbContext Context{ get; set; }
 
@@ -38,6 +38,7 @@ namespace YTBot.Services
                 return null;
             }
 
+            Context = new ApplicationDbContext();
 
             var botUserSettings = Context.BotUserSettings.FirstOrDefault(b => b.User.Id == user.Id);
 
@@ -68,7 +69,7 @@ namespace YTBot.Services
             {
                 var bcs = new BotChannelSettings()
                 {
-                    User = user,
+                    User = GetUser(user.UserName),
                     StreamViewers = new List<StreamViewer>(),
                     Timers = new List<Timer>(),
                     Triggers = new List<Trigger>(),
@@ -147,6 +148,8 @@ namespace YTBot.Services
         /// <returns>BotChannelSettings</returns>
         public BotChannelSettings GetBotChannelSettings(ApplicationUser user)
         {
+            Context = new ApplicationDbContext();
+
             if (user == null)
             {
                 //throw new Exception("No user object given");
@@ -155,22 +158,23 @@ namespace YTBot.Services
 
             try
             {
-                var botChannelSettings = Context.BotChannelSettings.FirstOrDefault(b => b.User.Id == user.Id);
+                var botChannelSettings = Context.BotChannelSettings.Include("Loyalty").Include("Triggers").Include("Timers").Include("Triggers.TriggerQoute").Include("StreamViewers").FirstOrDefault(b => b.User.Id == user.Id);
 
                 return botChannelSettings;
             }
             catch (Exception e)
             {
-                int retries = 0;
+                //int retries = 0;
 
-                BotChannelSettings botChannelSettings = null;
+                //BotChannelSettings botChannelSettings = null;
 
-                while (retries < 3 || botChannelSettings != null)
-                {
-                    botChannelSettings = Context.BotChannelSettings.FirstOrDefault(b => b.User.Id == user.Id);
-                }
+                //while (retries < 3 || botChannelSettings != null)
+                //{
+                //    botChannelSettings = Context.BotChannelSettings.FirstOrDefault(b => b.User.Id == user.Id);
+                //}
 
-                return botChannelSettings;
+                //return botChannelSettings;
+                return null;
             }
             
 
@@ -194,13 +198,29 @@ namespace YTBot.Services
         {
             if (twitchusername == null)
             {
-                return GetBotChannelSettings(GetUser(username))
-                    .StreamViewers.SingleOrDefault(u => u.TwitchUserId == twitchId);
+                try
+                {
+                    var s = GetBotChannelSettings(GetUser(username)).StreamViewers;
+                    return s.SingleOrDefault(u => u.TwitchUserId == twitchId);
+                }
+                catch (Exception e)
+                {
+                    return null;
+                }
+                
             }
             else
             {
-                return GetBotChannelSettings(GetUser(username))
-                    .StreamViewers.SingleOrDefault(u => u.TwitchUsername.ToLower() == twitchusername.ToLower());
+                try
+                {
+                    var s = GetBotChannelSettings(GetUser(username)).StreamViewers;
+                    return s.SingleOrDefault(u => u.TwitchUsername.ToLower() == twitchusername.ToLower());
+                }
+                catch (Exception e)
+                {
+                    return null;
+                }
+
             }
 
         }
@@ -211,8 +231,10 @@ namespace YTBot.Services
         /// <param name="user">ApplicationUser</param>
         /// <param name="viewers">Viewers currently in channel</param>
         /// <param name="loyaltyPoints">Points to give to the user(s), or null for periodic channel loyalty</param>
-        public void AddLoyalty(ApplicationUser user, string channel, List<StreamViewer> viewers, int? loyaltyPoints = null)
+        public void AddLoyalty(ApplicationUser user, string channel, IEnumerable<StreamViewer> viewers, int? loyaltyPoints = null)
         {
+            Context = new ApplicationDbContext();
+
             var botChannelSettings = GetBotChannelSettings(user);
 
             if (botChannelSettings.StreamViewers == null)
@@ -224,7 +246,7 @@ namespace YTBot.Services
             {
                 foreach (var viewer in viewers)
                 {
-                    var dbViewer = botChannelSettings.StreamViewers.FirstOrDefault(v => v.TwitchUserId == viewer.TwitchUserId && v.Channel.ToLower() == channel.ToLower());
+                    var dbViewer = botChannelSettings.StreamViewers.FirstOrDefault(v => v.TwitchUsername.ToLower() == viewer.TwitchUsername.ToLower() && v.Channel.ToLower() == channel.ToLower());
 
                     if (dbViewer != null)
                     {
@@ -241,7 +263,7 @@ namespace YTBot.Services
                         viewer.AllTimePoints = Convert.ToInt32(loyaltyPoints);
                         viewer.Channel = channel;
 
-                        Context.BotChannelSettings.FirstOrDefault(b => b.User.Id == user.Id).StreamViewers.Add(viewer);
+                        Context.BotChannelSettings.Include("StreamViewers").FirstOrDefault(b => b.User.Id == user.Id).StreamViewers.Add(viewer);
                     }
                 }
             }
@@ -251,7 +273,7 @@ namespace YTBot.Services
                 {
                     foreach (var viewer in viewers)
                     {
-                        var dbViewer = botChannelSettings.StreamViewers.FirstOrDefault(v => v.TwitchUserId == viewer.TwitchUserId && v.Channel.ToLower() == channel.ToLower());
+                        var dbViewer = botChannelSettings.StreamViewers.FirstOrDefault(v => v.TwitchUsername.ToLower() == viewer.TwitchUsername.ToLower() && v.Channel.ToLower() == channel.ToLower());
 
                         if (dbViewer != null)
                         {
@@ -267,7 +289,7 @@ namespace YTBot.Services
                             viewer.CurrentPoints = botChannelSettings.Loyalty.LoyaltyValue;
                             viewer.AllTimePoints = botChannelSettings.Loyalty.LoyaltyValue;
                             viewer.Channel = channel;
-                            Context.BotChannelSettings.FirstOrDefault(b => b.User.Id == user.Id).StreamViewers.Add(viewer);
+                            Context.BotChannelSettings.Include("StreamViewers").FirstOrDefault(b => b.User.Id == user.Id).StreamViewers.Add(viewer);
                         }
                     }
                 }
@@ -285,6 +307,8 @@ namespace YTBot.Services
         /// <returns>List of triggers</returns>
         public List<Trigger> GetTriggers(ApplicationUser user)
         {
+            Context = new ApplicationDbContext();
+
             var triggers = new List<Trigger>();
 
 
@@ -305,6 +329,8 @@ namespace YTBot.Services
         /// <returns>List of triggers</returns>
         public List<Trigger> GetTriggers(string username)
         {
+            Context = new ApplicationDbContext();
+
             var user = Context.Users.FirstOrDefault(u => u.UserName == username);
 
             return GetTriggers(user);
@@ -317,6 +343,8 @@ namespace YTBot.Services
         /// <returns>List of timers</returns>
         public List<YTBot.Models.Timer> GetTimers(ApplicationUser user)
         {
+            Context = new ApplicationDbContext();
+
             var timers = new List<Timer>();
 
 
@@ -337,6 +365,8 @@ namespace YTBot.Services
         /// <returns>List of timers</returns>
         public List<YTBot.Models.Timer> GetTimers(string username)
         {
+            Context = new ApplicationDbContext();
+
             var user = Context.Users.FirstOrDefault(u => u.UserName == username);
 
             return GetTimers(user);
@@ -350,6 +380,8 @@ namespace YTBot.Services
         [OutputCache(Duration = 3600, VaryByParam = "username")]
         public ApplicationUser GetUser(string username)
         {
+            Context = new ApplicationDbContext();
+
             return Context.Users.SingleOrDefault(u => u.UserName.ToLower().Equals(username.ToLower()));
         }
 
@@ -362,6 +394,8 @@ namespace YTBot.Services
         /// <returns>Loyalty</returns>
         public Loyalty SetLoyalty(ApplicationUser user, Loyalty loyalty)
         {
+            Context = new ApplicationDbContext();
+
             var channelSettings = GetBotChannelSettings(user);
 
             if (channelSettings.Loyalty == null)
@@ -389,6 +423,8 @@ namespace YTBot.Services
         /// <param name="streamViewer">StreamViewer</param>
         public void StampLastGamble(ApplicationUser user, string channel, StreamViewer streamViewer)
         {
+            Context = new ApplicationDbContext();
+
             var bcs = GetBotChannelSettings(user);
 
             var viewer = bcs.StreamViewers.SingleOrDefault(
@@ -409,6 +445,8 @@ namespace YTBot.Services
         /// <returns></returns>
         public Timer SaveTimer(Timer timer, string username)
         {
+            Context = new ApplicationDbContext();
+
             var bcs = GetBotChannelSettings(GetUser(username));
 
             if (timer.Id == 0)
@@ -440,6 +478,8 @@ namespace YTBot.Services
         /// <param name="username">Username as string</param>
         public void DeleteTimer(int id, string username)
         {
+            Context = new ApplicationDbContext();
+
             var bcs = GetBotChannelSettings(GetUser(username));
 
             bcs.Timers.Remove(Context.Timers.SingleOrDefault(t => t.Id == id));
@@ -457,6 +497,8 @@ namespace YTBot.Services
         /// <returns></returns>
         public DateTime TimerStampLastRun(int id, string username)
         {
+            Context = new ApplicationDbContext();
+
             var bcs = GetBotChannelSettings(GetUser(username));
 
             var timer = bcs.Timers.SingleOrDefault(t => t.Id == id);
@@ -473,9 +515,11 @@ namespace YTBot.Services
         /// <param name="username">Username as string</param>
         public void TimersResetLastRun(string username)
         {
+            Context = new ApplicationDbContext();
+
             var bcs = GetBotChannelSettings(GetUser(username));
 
-            foreach (var timer in bcs.Timers)
+            foreach (var timer in bcs.Timers.ToList())
             {
                 timer.TimerLastRun = DateTime.Now.AddSeconds(+2);
             }
@@ -485,6 +529,8 @@ namespace YTBot.Services
 
         public void DeleteTrigger(int id, string username)
         {
+            Context = new ApplicationDbContext();
+
             var bcs = GetBotChannelSettings(GetUser(username));
 
             bcs.Triggers.Remove(Context.Triggers.SingleOrDefault(t => t.Id == id));
@@ -496,6 +542,8 @@ namespace YTBot.Services
 
         public Trigger SaveTrigger(Trigger trigger, string username)
         {
+            Context = new ApplicationDbContext();
+
             var bcs = GetBotChannelSettings(GetUser(username));
 
             if (trigger.Id == 0)
@@ -520,6 +568,16 @@ namespace YTBot.Services
             Context.SaveChanges();
 
             return trigger;
+        }
+
+        public virtual void Dispose()
+        {
+            var disposableServiceProvider = Context as IDisposable;
+
+            if (disposableServiceProvider != null)
+            {
+                disposableServiceProvider.Dispose();
+            }
         }
     }
 }

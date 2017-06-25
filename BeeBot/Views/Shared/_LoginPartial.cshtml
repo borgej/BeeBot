@@ -8,10 +8,10 @@
     <ul class="navbar-nav mr-auto">
         <li>
             @*@Html.ActionLink("Hello " + User.Identity.GetUserName() + "!", "Index", "Manage", routeValues: null, htmlAttributes: new { title = "Manage" })*@
-            <a href="#" class="btn btn-secondary" style="margin-right: 10px;" id="darkModeButton"><i class="fa fa-moon-o"></i> Dark mode</a>
-            <a href="@Url.Action("Index", "Manage")" class="btn btn-secondary" style="margin-right: 10px;"><i class="fa fa-cog"></i> User settings</a>
+            <a href="#" class="btn btn-secondary btn-sm" style="margin-right: 10px;" id="darkModeButton"><i class="fa fa-moon-o"></i> Dark mode BETA</a>
+            <a href="@Url.Action("Index", "Manage")" class="btn btn-secondary btn-sm" style="margin-right: 10px;"><i class="fa fa-cog"></i> User settings</a>
         </li>
-        <li><a href="javascript:document.getElementById('logoutForm').submit()" class="btn btn-secondary"><i class="fa fa-sign-out"></i> Log off</a></li>
+        <li><a href="javascript:document.getElementById('logoutForm').submit()" class="btn btn-secondary btn-sm"><i class="fa fa-sign-out"></i> Log off</a></li>
     </ul>
     }
 }
