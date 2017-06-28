@@ -8,7 +8,6 @@ using System.Web.Helpers;
 using System.Web.Mvc;
 using BeeBot.Models;
 using BeeBot.Signalr;
-using Microsoft.ApplicationInsights.WindowsServer;
 using Newtonsoft.Json;
 using TwitchLib.Models.API.v5.Games;
 using YTBot.Migrations;
