@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Data.Entity.Core.Mapping;
 using System.Diagnostics;
 using System.Linq;
@@ -216,9 +217,9 @@ namespace BeeBot.Signalr
 		public async Task GetStreamInfo()
 		{
 			//TwitchLib.TwitchAPI.Settings.Validators.SkipDynamicScopeValidation = true;
-			TwitchLib.TwitchAPI.Settings.ClientId = "gokkk5ean0yksozv0ctvljwqpceuin";
+			TwitchLib.TwitchAPI.Settings.ClientId = ConfigurationManager.AppSettings["clientId"];
 
-			var uname = ContextService.GetUser(Context.User.Identity.Name);
+            var uname = ContextService.GetUser(Context.User.Identity.Name);
 			var bs = ContextService.GetBotUserSettingsForUser(uname);
 			var token = bs.ChannelToken;
 			TwitchLib.TwitchAPI.Settings.AccessToken = token;
@@ -251,9 +252,9 @@ namespace BeeBot.Signalr
 			try
 			{
 				//TwitchLib.TwitchAPI.Settings.Validators.SkipDynamicScopeValidation = true;
-				TwitchLib.TwitchAPI.Settings.ClientId = "gokkk5ean0yksozv0ctvljwqpceuin";
+				TwitchLib.TwitchAPI.Settings.ClientId = ConfigurationManager.AppSettings["clientId"];
 
-				var username = ContextService.GetUser(Context.User.Identity.Name);
+                var username = ContextService.GetUser(Context.User.Identity.Name);
 				var bs = ContextService.GetBotUserSettingsForUser(username);
 				var token = bs.ChannelToken;
 				TwitchLib.TwitchAPI.Settings.AccessToken = token; 
@@ -471,12 +472,24 @@ namespace BeeBot.Signalr
 			Clients.Caller.ConsoleLog(DateTime.Now.ToString("HH:mm:ss").ToString() + " - " + e.Error.Message);
 		}
 
-		/// <summary>
-		/// Send chat message to Client
-		/// </summary>
-		/// <param name="sender"></param>
-		/// <param name="e"></param>
-		public void ChatShowMessage(object sender, OnMessageReceivedArgs e)
+	    public void UpdateChattersAndCommands()
+	    {
+	        var ccontainer = GetClientContainer();
+
+	        var topCommands = ccontainer.CommandsUsed.OrderByDescending(k => k.Value).Take(3);
+	        var topChatters = ccontainer.ChattersCount.OrderByDescending(k => k.Value).Take(10);
+
+            var retval = new { topcommands = topCommands, topchatters = topChatters};
+	        Clients.Caller.ChattersAndCommands(retval);
+
+	    }
+
+        /// <summary>
+        /// Send chat message to Client
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        public void ChatShowMessage(object sender, OnMessageReceivedArgs e)
 		{
 			Regex r = new Regex(@"(https?://[^\s]+)");
 
@@ -500,6 +513,7 @@ namespace BeeBot.Signalr
 			}
 
 			// 
+            
 			Clients.Caller.ChatShow(msg);
 
 		}
@@ -1047,11 +1061,6 @@ namespace BeeBot.Signalr
 			
 		}
 
-		private void LoyaltyAdmin(string message)
-		{
-			
-		}
-
 
 		/// <summary>
 		/// Add html color to username
@@ -1186,8 +1195,8 @@ namespace BeeBot.Signalr
 								if (stopWatch.Elapsed.Minutes % botChannelSettings.Loyalty.LoyaltyInterval == 0 &&
 									lastLoyaltyElapsedMinutes != stopWatch.Elapsed.Minutes)
 								{
-                                    TwitchLib.TwitchAPI.Settings.ClientId = "gokkk5ean0yksozv0ctvljwqpceuin";
-								    var uname = ContextService.GetUser(Context.User.Identity.Name);
+                                    TwitchLib.TwitchAPI.Settings.ClientId = ConfigurationManager.AppSettings["clientId"];
+                                    var uname = ContextService.GetUser(Context.User.Identity.Name);
 								    var bs = ContextService.GetBotUserSettingsForUser(uname);
 								    var token = bs.ChannelToken;
 								    TwitchLib.TwitchAPI.Settings.AccessToken = token;
@@ -1244,6 +1253,7 @@ namespace BeeBot.Signalr
 
                         }
 						UpdateChannelBar();
+                        UpdateChattersAndCommands();
 
 					}
 					catch (Exception e)
@@ -1339,8 +1349,8 @@ namespace BeeBot.Signalr
 		{
 			var users = new List<StreamViewer>();
 
-			var test = TwitchLib.TwitchAPI.Settings.ClientId = "gokkk5ean0yksozv0ctvljwqpceuin";
-			var streamUsers = TwitchAPI.Undocumented.GetChatters(channel).Result;
+			var test = TwitchLib.TwitchAPI.Settings.ClientId = ConfigurationManager.AppSettings["clientId"];
+            var streamUsers = TwitchAPI.Undocumented.GetChatters(channel).Result;
 
 			foreach (var user in streamUsers)
 			{
@@ -1360,6 +1370,60 @@ namespace BeeBot.Signalr
 
 			return users;
 		}
+
+        /// <summary>
+        /// Log chat messages to list
+        /// </summary>
+        /// <param name="username">string</param>
+        /// <param name="msg">string</param>
+        /// <returns>Chatlog as List of strings this session chat messages</returns>
+	    private List<string> AddToChatLog(string username, string msg)
+	    {
+	        var chatMessage = DateTime.Now.ToString("HH:mm:ss").ToString() + " - " +
+	                  username + ": " + msg;
+
+	        var ccontainer = GetClientContainer();
+            ccontainer.ChatLog.Add(chatMessage);
+
+            // +1 #topChatters
+            AddToChatters(username);
+
+            return ccontainer.ChatLog;
+	    }
+
+        /// <summary>
+        /// Add +1 chat message to chatter
+        /// Disregard streamer and bot
+        /// </summary>
+        /// <param name="username"></param>
+        /// <returns>ChatterCount dictionary</returns>
+	    private Dictionary<string, int> AddToChatters(string username)
+	    {
+            
+
+	        var ccontainer = GetClientContainer();
+	        var bcs = ccontainer.ContextService.GetBotUserSettingsForUser(ccontainer.ContextService.GetUser(Context.User.Identity.Name));
+
+	        if (username.ToLower().Equals(ccontainer.Channel) || (username.ToLower().Equals(bcs.BotUsername)))
+	        {
+	            return ccontainer.ChattersCount;
+
+	        }
+
+            if (ccontainer.ChattersCount.ContainsKey(username))
+	        {
+	            ccontainer.ChattersCount[username]++;
+
+	        }
+	        else
+	        {
+	            ccontainer.ChattersCount[username] = 1;
+	        }
+
+
+	        return ccontainer.ChattersCount;
+	    }
+
 
 		private async void Wait(int Seconds)
 		{

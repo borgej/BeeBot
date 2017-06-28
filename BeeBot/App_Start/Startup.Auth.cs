@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Configuration;
 using BeeBot.App_Start;
 using BeeBot.Models;
 using Microsoft.AspNet.Identity;
@@ -53,8 +54,8 @@ namespace BeeBot
 
             app.UseTwitchAuthentication(new TwitchAuthenticationOptions()
             {
-                ClientId = "gokkk5ean0yksozv0ctvljwqpceuin",
-                ClientSecret = "1e0p2pttaf7072fwp67u0jtbj3emmz",
+                ClientId = ConfigurationManager.AppSettings["clientId"],
+                ClientSecret = ConfigurationManager.AppSettings["clientSecret"],
                 Provider = new TwitchAuthenticationProvider()
             });
 

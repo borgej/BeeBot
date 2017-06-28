@@ -22,7 +22,7 @@
             <button type="button" class="btn btn-primary-outline col-md" id="pollsToggleButton"><i class="fa fa-bar-chart"></i> Polls</button>
             <button type="button" class="btn btn-primary-outline col-md" id="streamToggleButton"><i class="fa fa-video-camera"></i> Stream</button>
             <button type="button" class="btn btn-primary-outline col-md" id="usersToggleButton"><i class="fa fa-users"></i> Users</button>
-            <button type="button" class="btn btn-primary-outline col-md" id="streamEventButton"><i class="fa fa-exclamation-circle "></i> Stream events</button>
+            <button type="button" class="btn btn-primary-outline col-md" id="chatCommandButton"><i class="fa fa-exclamation-circle "></i> User stats</button>
             <button type="button" class="btn btn-primary-outline col-md" id="chatToggleButton"><i class="fa fa-commenting-o "></i> Chat</button>
         </div>
     </div>
@@ -394,7 +394,7 @@
 
             </div>
         </div>
-        <div class="col-md streamEventsCard">
+        <div class="col-md chattersCommandsCard">
             <div class="card">
                 <div class="card card-block">
                     <h4 class="card-title"><i class="fa fa-exclamation-circle "></i> Stream events <i class="fa fa-window-minimize float-right"></i></h4>
@@ -501,9 +501,9 @@
             $(".streamCard").toggle();
         });
 
-        $("#streamEventButton").click(function () {
+        $("#chatCommandButton").click(function () {
             toggleButton(this);
-            $(".streamEventsCard").toggle();
+            $(".chattersCommandsCard").toggle();
         });
 
         
@@ -999,40 +999,13 @@
             objDiv.scrollTop = objDiv.scrollHeight;
         };
 
-        twitchHub.client.folEvent = function (event) {
-            var value = 0;
+        twitchHub.client.ChattersAndCommands = function (obj) {
+            console.log(obj);
 
-            if (log.indexOf("(followed)") != -1) {
-                value = parseInt($(".folSubCount").text()) + 1;
-            }
-            else if (log.indexOf("(disconnected)") != -1) {
-                if (parseInt($(".usersCount").text()) > 0) {
-                    value = parseInt($(".usersCount").text()) - 1;
-                } else {
-                    value = 0;
-                }
-
-            }
-
-            console.log("Users: " + value.toString());
-
-            $(".usersCount").text(value.toString());
-
-            $(".usersConnInfo").append(event.message);
-            var objDiv = document.getElementsByClassName("usersConnInfo")[0];
-            objDiv.scrollTop = objDiv.scrollHeight;
-        };
-
-        twitchHub.client.donationEvent = function (event) {
-            var value = 0;
-
-            value = parseInt($(".donCount").text());
-
-            console.log("Donation: " + event.user + " " + event.value.toString());
-
-            $(".donCount").text(value+event.value);
 
         };
+
+
 
         twitchHub.client.UsersConnLog = function (log) {
             var value = 0;

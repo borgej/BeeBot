@@ -194,6 +194,7 @@ namespace YTBot.Services
             AddLoyalty(user, channel, viewList, loyaltyPoints);
         }
 
+        [OutputCache(Duration = 5, VaryByParam = "username, twitchusername")]
         public StreamViewer GetLoyaltyForUser(string username, string twitchId, string twitchusername = null)
         {
             if (twitchusername == null)
@@ -327,6 +328,7 @@ namespace YTBot.Services
         /// </summary>
         /// <param name="user"></param>
         /// <returns>List of triggers</returns>
+        [OutputCache(Duration = 10, VaryByParam = "username")]
         public List<Trigger> GetTriggers(string username)
         {
             Context = new ApplicationDbContext();
@@ -357,12 +359,13 @@ namespace YTBot.Services
 
             return timers;
         }
-
+        
         /// <summary>
         /// Get list of timers defined for the user
         /// </summary>
         /// <param name="user"></param>
         /// <returns>List of timers</returns>
+        [OutputCache(Duration = 10, VaryByParam = "username")]
         public List<YTBot.Models.Timer> GetTimers(string username)
         {
             Context = new ApplicationDbContext();

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
@@ -246,7 +247,7 @@ namespace BeeBot.Controllers
                 return Json(games);
             }
 
-            TwitchLib.TwitchAPI.Settings.ClientId = "gokkk5ean0yksozv0ctvljwqpceuin";
+            TwitchLib.TwitchAPI.Settings.ClientId = ConfigurationManager.AppSettings["clientId"];
             var gamesResult = await TwitchLib.TwitchAPI.Search.v5.SearchGames(phrase, null);
 
             var output = new List<object>();
