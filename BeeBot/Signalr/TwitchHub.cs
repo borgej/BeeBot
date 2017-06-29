@@ -414,12 +414,6 @@ namespace BeeBot.Signalr
 			}
 		}
 
-		public void GiveLoggedInUsers(string users)
-		{
-
-		}
-
-
 		/// <summary>
 		/// Check if Client is still connected
 		/// </summary>
@@ -510,9 +504,9 @@ namespace BeeBot.Signalr
 				msg = "<div class=\"chatMsg\">" + msg + "</div>";
 			}
 
-			// 
-            
-			Clients.Caller.ChatShow(msg);
+            // Add to chat log
+		    AddToChatLog(e.ChatMessage.Username, e.ChatMessage.Message);
+            Clients.Caller.ChatShow(msg);
 
 		}
 
@@ -553,8 +547,8 @@ namespace BeeBot.Signalr
 			Clients.Caller.ChatShow(msg);
 
 		}
-
-		private void ChatMessageTriggerCheck(object sender, OnChatCommandReceivedArgs e)
+        #region Trigger checking
+        private void ChatMessageTriggerCheck(object sender, OnChatCommandReceivedArgs e)
 		{
 			ChatMessageTriggerCheck(e.Command.ChatMessage, e);
 		}
@@ -567,7 +561,7 @@ namespace BeeBot.Signalr
 		{
 			try
 			{
-
+			    AddToCommands(chatmessage.Message);
 				// loot name
 				var bcs = ContextService.GetBotChannelSettings(ContextService.GetUser(Context.User.Identity.Name));
 
@@ -1058,14 +1052,14 @@ namespace BeeBot.Signalr
 			
 			
 		}
+#endregion
 
-
-		/// <summary>
-		/// Add html color to username
-		/// </summary>
-		/// <param name="msg">ChatMessage</param>
-		/// <returns>String formatted span</returns>
-		private string FormatUsername(ChatMessage msg)
+        /// <summary>
+        /// Add html color to username
+        /// </summary>
+        /// <param name="msg">ChatMessage</param>
+        /// <returns>String formatted span</returns>
+        private string FormatUsername(ChatMessage msg)
 		{
 			var color = msg.Color;
 			string badges = "";
@@ -1400,13 +1394,13 @@ namespace BeeBot.Signalr
             
 
 	        var ccontainer = GetClientContainer();
-	        var bcs = ccontainer.ContextService.GetBotUserSettingsForUser(ccontainer.ContextService.GetUser(Context.User.Identity.Name));
+	        //var bcs = ccontainer.ContextService.GetBotUserSettingsForUser(ccontainer.ContextService.GetUser(Context.User.Identity.Name));
 
-	        if (username.ToLower().Equals(ccontainer.Channel) || (username.ToLower().Equals(bcs.BotUsername)))
-	        {
-	            return ccontainer.ChattersCount;
+	        //if (username.ToLower().Equals(ccontainer.Channel) || (username.ToLower().Equals(bcs.BotUsername)))
+	        //{
+	        //    return ccontainer.ChattersCount;
 
-	        }
+	        //}
 
             if (ccontainer.ChattersCount.ContainsKey(username))
 	        {
@@ -1421,6 +1415,28 @@ namespace BeeBot.Signalr
 
 	        return ccontainer.ChattersCount;
 	    }
+
+	    private Dictionary<string, int> AddToCommands(string command)
+	    {
+	        var ccontainer = GetClientContainer();
+	        var bcs =
+	            ccontainer.ContextService.GetBotUserSettingsForUser(
+	                ccontainer.ContextService.GetUser(Context.User.Identity.Name));
+
+	        if(ccontainer.CommandsUsed.ContainsKey(command.ToLower()))
+
+	        {
+                ccontainer.CommandsUsed.Add(command.ToLower(), 1);
+
+	        }
+	        else
+	        {
+	            ccontainer.CommandsUsed[command.ToLower()] = 1;
+	        }
+
+
+	        return ccontainer.CommandsUsed;
+        }
 
 
 		private async void Wait(int Seconds)

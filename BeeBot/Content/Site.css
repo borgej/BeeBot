@@ -454,3 +454,21 @@ textarea {
 .channelOffline {
     background-color: #a9a9a9;
 }
+
+.commandsList {
+    height: 50px !important;
+}
+
+.commandsList span {
+        margin-left: 20px;
+        margin-right: 20px;
+    }
+
+.usersList {
+    height: 50 px !important;
+}
+
+.usersList span {
+    margin-left: 20px;
+    margin-right: 20px;
+}
