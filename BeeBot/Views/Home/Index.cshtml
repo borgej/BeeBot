@@ -409,10 +409,10 @@
                             
                         </div>
                         <div class="row">
-                            <div class="commandsList col-md-6 ">
+                            <div class="usersList  col-md-6 ">
 
                             </div>
-                            <div class="usersList col-md-6 ">
+                            <div class="commandsList col-md-6 ">
 
                             </div>
                         </div>
@@ -688,7 +688,7 @@
         
         $("#pollsToggleButton").click();
         $("#chatPrefsToggleButton").click();
-        $("#chatCommandButton").click();
+        //$("#chatCommandButton").click();
     });
 
     function timerSaveButton(elem) {
@@ -900,13 +900,24 @@
     function updateCommands(list) {
         var html = "";
         console.log(list);
+        var i = 0;
+        var className = "";
         $.each(list, function (index, value) {
-            html += "<div class='command'>"
+            html += "<div class='command'>";
             $.each(value, function (index2, value2) {
+                if (i == 0) {
+                    className = "commandName";
+                }
+                else {
+                    className = "commandCount";
+                }
 
-                html += "<span>" + value2 + "<span>";
+                html += "<span class='" + className +"'>" + value2 + "</span>";
+                i++;
             });
             html += "</div>";
+            i = 0;
+            className = "";
         });
 
 
@@ -917,12 +928,21 @@
     function updateChatters(list) {
         var html = "";
         console.log(list);
+        var i = 0;
+        var className = "";
         $.each(list, function (index, value) {
-            html+= "<div class='chatter'>"
+            html += "<div class='chatter'>";
             $.each(value, function(index2, value2) {
-
-                html += "<span>" + value2 + "<span>";
+                if (i == 0) {
+                    className = "chatterName";
+                } else {
+                    className = "chatCount";
+                }
+                html += "<span class='" + className +"'>" + value2 + "</span>";
+                i++;
             });
+            i = 0;
+            className = "";
             html += "</div>";
         });
             

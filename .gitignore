@@ -1,0 +1,10 @@
+﻿################################################################################
+# This .gitignore file was automatically created by Microsoft(R) Visual Studio.
+################################################################################
+
+/BeeBot/bin
+/BeeBot/obj
+/BeeBot.Tests/bin/Debug
+/BeeBot.Tests/obj/Debug/BeeBot.Tests.csproj.FileListAbsolute.txt
+/BeeBot.Tests/obj/Debug
+/BeeBot.Tests/obj/Release

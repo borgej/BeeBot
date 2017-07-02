@@ -42,9 +42,10 @@ namespace BeeBot.Signalr
 
 		private const int Sleepseconds = 1;
 
+	    private const int NUMTOPCHATTERS = 5;
+	    private const int NUMTOPCOMMANDS = 5;
 
-
-		public TwitchHub()
+        public TwitchHub()
 		{
 			ContextService = new ContextService();
 
@@ -468,8 +469,8 @@ namespace BeeBot.Signalr
 	    {
 	        var ccontainer = GetClientContainer();
 
-	        var topCommands = ccontainer.CommandsUsed.OrderByDescending(k => k.Value).Take(3);
-	        var topChatters = ccontainer.ChattersCount.OrderByDescending(k => k.Value).Take(10);
+	        var topCommands = ccontainer.CommandsUsed.OrderByDescending(k => k.Value).Take(NUMTOPCOMMANDS);
+	        var topChatters = ccontainer.ChattersCount.OrderByDescending(k => k.Value).Take(NUMTOPCHATTERS);
 
             var retval = new { topcommands = topCommands, topchatters = topChatters};
 	        Clients.Caller.ChattersAndCommands(retval);
@@ -505,7 +506,7 @@ namespace BeeBot.Signalr
 			}
 
             // Add to chat log
-		    AddToChatLog(e.ChatMessage.Username, e.ChatMessage.Message);
+		    AddToChatLog(e.ChatMessage.DisplayName, e.ChatMessage.Message);
             Clients.Caller.ChatShow(msg);
 
 		}
@@ -563,7 +564,9 @@ namespace BeeBot.Signalr
 			{
 			    AddToCommands(chatmessage.Message);
 				// loot name
-				var bcs = ContextService.GetBotChannelSettings(ContextService.GetUser(Context.User.Identity.Name));
+			    var user = ContextService.GetUser(Context.User.Identity.Name);
+
+                var bcs = ContextService.GetBotChannelSettings(user);
 
 				if (bcs == null)
 				{
@@ -1419,14 +1422,11 @@ namespace BeeBot.Signalr
 	    private Dictionary<string, int> AddToCommands(string command)
 	    {
 	        var ccontainer = GetClientContainer();
-	        var bcs =
-	            ccontainer.ContextService.GetBotUserSettingsForUser(
-	                ccontainer.ContextService.GetUser(Context.User.Identity.Name));
 
 	        if(ccontainer.CommandsUsed.ContainsKey(command.ToLower()))
 
 	        {
-                ccontainer.CommandsUsed.Add(command.ToLower(), 1);
+                ccontainer.CommandsUsed[command.ToLower()] = ccontainer.CommandsUsed[command.ToLower()] + 1;
 
 	        }
 	        else

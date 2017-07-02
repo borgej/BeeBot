@@ -431,7 +431,7 @@ textarea {
 }
 
 .inverted h1, .inverted h2, .inverted h3, .inverted h4{
-    /*color: #ffffff;*/
+    color: #ffffff;
 }
 
 .menuButtons {
@@ -456,7 +456,8 @@ textarea {
 }
 
 .commandsList {
-    height: 50px !important;
+    height: 100px !important;
+    padding-bottom: 5px !important;
 }
 
 .commandsList span {
@@ -465,10 +466,45 @@ textarea {
     }
 
 .usersList {
-    height: 50 px !important;
+    height: 100px !important;
+    padding-bottom: 5px !important;
 }
 
 .usersList span {
     margin-left: 20px;
     margin-right: 20px;
+}
+
+.commandName {
+    display: inline-block;
+    min-width: 200px !important;
+    background-color: #EFF0F1;
+    padding-left: 7px;
+    margin-right: 0px !important;
+}
+
+.chatterName {
+    display: inline-block;
+    min-width: 200px !important;
+    background-color: #EFF0F1;
+    padding-left: 7px;
+    margin-right: 0px !important;
+}
+
+.chatCount {
+    margin-left: 0px !important;
+    display: inline-block;
+    text-align: right;
+    min-width: 50px;
+    background-color: #EFF0F1;
+    padding-right: 10px;
+}
+
+.commandCount {
+    margin-left: 0px !important;
+    display: inline-block;
+    text-align: right;
+    min-width: 50px;
+    background-color: #EFF0F1;
+    padding-right: 10px;
 }
