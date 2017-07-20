@@ -37,6 +37,17 @@ namespace BeeBot.Controllers
             var userLoyalty = ContextService.GetBotChannelSettings(ContextService.GetUser(User.Identity.Name)).Loyalty;
             var timers = ContextService.GetTimers(ContextService.GetUser(User.Identity.Name));
             var triggers = ContextService.GetTriggers(ContextService.GetUser(User.Identity.Name));
+            var bannedWords = ContextService.GetBotChannelSettings(ContextService.GetUser(User.Identity.Name))
+                .BannedWords;
+            if (bannedWords == null)
+            {
+                bannedWords = new List<BannedWord>();
+            }
+            var stringBannedWords = new List<string>();
+            foreach (var bannedWord in bannedWords)
+            {
+                stringBannedWords.Add(bannedWord.Word);
+            }
 
             var loyalty = userLoyalty ?? new Loyalty();
             var dashboardViewModel = new DashboardViewModel()
@@ -44,7 +55,8 @@ namespace BeeBot.Controllers
                 BotUserSettings = userBotSettings,
                 LoyaltySettings = loyalty,
                 Timers = timers,
-                Triggers = triggers
+                Triggers = triggers, 
+                BannedWords = string.Join(",", stringBannedWords)
             };
 
             // send user to bot preferences page if not set

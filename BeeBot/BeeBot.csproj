@@ -280,6 +280,10 @@
     <Compile Include="Migrations\201706201954023_AddedQuotes.Designer.cs">
       <DependentUpon>201706201954023_AddedQuotes.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201707201650188_AddedBannedWords.cs" />
+    <Compile Include="Migrations\201707201650188_AddedBannedWords.Designer.cs">
+      <DependentUpon>201707201650188_AddedBannedWords.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\BotChannelSettings.cs" />
     <Compile Include="Models\TwitchClientContainer.cs" />
@@ -465,6 +469,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201706201954023_AddedQuotes.resx">
       <DependentUpon>201706201954023_AddedQuotes.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201707201650188_AddedBannedWords.resx">
+      <DependentUpon>201707201650188_AddedBannedWords.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

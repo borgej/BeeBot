@@ -21,6 +21,7 @@ using TwitchLib.Extensions.Client;
 using TwitchLib.Models.API.v5.Channels;
 using TwitchLib.Models.API.v5.Games;
 using TwitchLib.Models.Client;
+using WebGrease.Css.Extensions;
 using YTBot.Context;
 using YTBot.Models;
 using YTBot.Services;
@@ -74,6 +75,74 @@ namespace BeeBot.Signalr
 
 			return base.OnConnected();
 		}
+
+        /// <summary>
+        /// Save banned words list
+        /// </summary>
+        /// <param name="words">csv list of words</param>
+        /// <param name="channel">channel name</param>
+	    public void SaveBannedWords(string words, string channel)
+	    {
+	        try
+	        {
+	            var username = ContextService.GetUser(Context.User.Identity.Name);
+
+	            var bcs = ContextService.GetBotChannelSettings(username);
+
+	            if (bcs.BannedWords == null)
+	            {
+	                bcs.BannedWords = new List<BannedWord>();
+	            }
+	            else
+	            {
+	                var dbWords = bcs.BannedWords.ToList();
+
+	                foreach (var bannedWord in dbWords)
+	                {
+	                    ContextService.Context.BannedWords.Remove(bannedWord);
+	                }
+
+	            }
+	            var csvWords = words.Split(',');
+
+	            foreach (var word in csvWords)
+	            {
+	                var trimmedWord = word.Trim().ToLower();
+	                var newWord = new BannedWord();
+	                newWord.Word = trimmedWord;
+	                bcs.BannedWords.Add(newWord);
+
+	            }
+
+	            ContextService.Context.SaveChanges();
+
+	            Clients.Caller.SavedBannedWords(new { message = "Saved", data = "1" });
+	            Clients.Caller.ConsoleLog("Saved banned words list");
+	        }
+	        catch (Exception e)
+	        {
+	            Clients.Caller.SavedBannedWords(new { message = "Error: " + e.Message, data = "-1" });
+            }
+	        
+        }
+
+	    public void ImportDefaultBannedWords()
+	    {
+	        var bannedWords = ConfigurationManager.AppSettings["bannedWords"];
+
+	        var words = bannedWords.Split(',');
+
+            var bannedWordsNew = new List<BannedWord>();
+
+	        foreach (var w in words)
+	        {
+	            var t = new BannedWord();
+	            t.Word = w.ToLower();
+                bannedWordsNew.Add(t);
+	        }
+
+            Clients.Caller.ImportBannedWords(bannedWordsNew);
+	    }
 
 		/// <summary>
 		/// Client sent connect to channel
@@ -504,6 +573,22 @@ namespace BeeBot.Signalr
 			{
 				msg = "<div class=\"chatMsg\">" + msg + "</div>";
 			}
+
+		    var username = ContextService.GetUser(Context.User.Identity.Name);
+		    var bcs = ContextService.GetBotChannelSettings(username);
+            // Check for banned words in chat message
+		    var wordsInMessage = e.ChatMessage.Message.ToLower().Split(' ');
+		    foreach (var word in wordsInMessage)
+		    {
+		        if (bcs.BannedWords.Contains(new BannedWord {Word = word}))
+		        {
+		            var client = GetClient();
+		            var timeout = new TimeSpan(0, 0, 1, 0);
+		            var message = "Careful with your words there mate! Timed out for  " + Convert.ToString(timeout.Minutes) + " minutes";
+		            var joinedChannel = client.GetJoinedChannel(Channel);
+		            client.TimeoutUser(joinedChannel, e.ChatMessage.DisplayName.ToLower(), timeout, message);
+                }
+		    }
 
             // Add to chat log
 		    AddToChatLog(e.ChatMessage.DisplayName, e.ChatMessage.Message);

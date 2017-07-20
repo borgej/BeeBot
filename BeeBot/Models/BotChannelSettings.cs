@@ -21,9 +21,12 @@ namespace YTBot.Models
         public virtual List<Trigger> Triggers { get; set; }
 
         public virtual List<Timer> Timers { get; set; }
+        public virtual List<BannedWord> BannedWords { get; set; }
 
         public virtual ApplicationUser User { get; set; }
     }
+
+    
 
     public class StreamViewer
     {
@@ -92,5 +95,11 @@ namespace YTBot.Models
         Statistic = 2,
         Game = 3,
         Loyalty = 4
+    }
+
+    public class BannedWord
+    {
+        public int Id { get; set; }
+        public string Word { get; set; }
     }
 }

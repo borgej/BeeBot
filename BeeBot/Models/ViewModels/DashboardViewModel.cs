@@ -14,5 +14,7 @@ namespace YTBot.Models.ViewModels
         public List<Timer> Timers { get; set; }
 
         public List<Trigger> Triggers { get; set; }
+
+        public string BannedWords { get; set; }
     }
 }

@@ -240,89 +240,104 @@
 
             </div>
         </div>
-        <div class="card timersCard ">
-            <div class="card card-block ">
-                <h4 class="card-title"><i class="fa fa-clock-o"></i> Timers <i class="fa fa-window-minimize float-right"></i></h4>
-                <div class="card-text ">
-                    <div class="timersContent">
-                        @{
-                            var timerChecked = "";
-                            foreach (var timer in Model.Timers)
-                            {
-                                <form class="timerForm">
+    <div class="card timersCard ">
+        <div class="card card-block ">
+            <h4 class="card-title"><i class="fa fa-clock-o"></i> Timers <i class="fa fa-window-minimize float-right"></i></h4>
+            <div class="card-text ">
+                <div class="timersContent">
+                    @{
+                        var timerChecked = "";
+                        foreach (var timer in Model.Timers)
+                        {
+                            <form class="timerForm">
 
-                                    <div class="card card-block bg-faded">
+                                <div class="card card-block bg-faded">
 
-                                        <div class="form-inline">
+                                    <div class="form-inline">
 
 
-                                            <input type="text" class="timerId dontshow" id="" name="timerId" value="@timer.Id">
-                                            <label for="timerName" class="col-form-label mr-1">Name</label>
-                                            <input type="text" class="form-control timerName col-sm-auto mr-3" id="" name="timerName" placeholder="" value="@timer.TimerName">
+                                        <input type="text" class="timerId dontshow" id="" name="timerId" value="@timer.Id">
+                                        <label for="timerName" class="col-form-label mr-1">Name</label>
+                                        <input type="text" class="form-control timerName col-sm-auto mr-3" id="" name="timerName" placeholder="" value="@timer.TimerName">
 
-                                            <label for="timerInterval" class="col-form-label mr-1">Interval</label>
-                                            <div class=""><input type="text" class="form-control timerInterval mr-1 col-sm-3" name="timerInterval" placeholder="" value="@timer.TimerInterval">mins</div>
+                                        <label for="timerInterval" class="col-form-label mr-1">Interval</label>
+                                        <div class=""><input type="text" class="form-control timerInterval mr-1 col-sm-3" name="timerInterval" placeholder="" value="@timer.TimerInterval">mins</div>
 
-                                        </div>
+                                    </div>
 
-                                        <div class="form-group">
+                                    <div class="form-group">
 
-                                            <div class="">
+                                        <div class="">
 
-                                                <label for="timerMessage" class="col-form-label">Message</label>
-                                                <textarea type="text" name="timerMessage" class="form-control timerMessage" id="" placeholder="">@timer.TimerResponse</textarea>
-                                            </div>
-                                        </div>
-
-                                        <div class="inline">
-
-                                            <div class="">
-
-                                                <label class="form-check-label col-form-label">
-                                                    @if (timer.Active != null && timer.Active.Value)
-                                                    {
-                                                        timerChecked = "checked";
-                                                    }
-                                                    <input class="form-check-input timerActive" type="checkbox" name="timerActive" @timerChecked value="1">
-                                                    Active?
-                                                </label>
-                                                <span class="float-right">
-
-                                                    <button class="btn btn-secondary timerSaveButton" onclick="timerSaveButton(this);" type="button"><i class="fa fa-save"></i></button>
-                                                    <button class="btn btn-danger timerDeleteButton" onclick="timerDeleteButton(this);" type="button"><i class="fa fa-times"></i></button>
-                                                </span>
-                                            </div>
-
+                                            <label for="timerMessage" class="col-form-label">Message</label>
+                                            <textarea type="text" name="timerMessage" class="form-control timerMessage" id="" placeholder="">@timer.TimerResponse</textarea>
                                         </div>
                                     </div>
-                                </form>
-                            }
+
+                                    <div class="inline">
+
+                                        <div class="">
+
+                                            <label class="form-check-label col-form-label">
+                                                @if (timer.Active != null && timer.Active.Value)
+                                                {
+                                                    timerChecked = "checked";
+                                                }
+                                                <input class="form-check-input timerActive" type="checkbox" name="timerActive" @timerChecked value="1">
+                                                Active?
+                                            </label>
+                                            <span class="float-right">
+
+                                                <button class="btn btn-secondary timerSaveButton" onclick="timerSaveButton(this);" type="button"><i class="fa fa-save"></i></button>
+                                                <button class="btn btn-danger timerDeleteButton" onclick="timerDeleteButton(this);" type="button"><i class="fa fa-times"></i></button>
+                                            </span>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </form>
                         }
-                    </div>
-                    <div class="timersAdded"></div>
+                    }
+                </div>
+                <div class="timersAdded"></div>
+                <div>
                     <div>
-                        <div>
-                            <div class=" addButton float-right">
-                                <button class="btn btn-secondary" id="addTimerButton"><i class="fa fa-plus"></i> Add timer</button>
-                            </div>
+                        <div class=" addButton float-right">
+                            <button class="btn btn-secondary" id="addTimerButton"><i class="fa fa-plus"></i> Add timer</button>
                         </div>
                     </div>
-
-
-
                 </div>
+
+
+
             </div>
-            <div class="card pollsCard">
-                <div class="card card-block">
-                    <h4 class="card-title"><i class="fa fa-bar-chart"></i> Polls <i class="fa fa-window-minimize float-right"></i></h4>
-                    <p class="card-text"></p>
-
-
-                </div>
-            </div>
-
-
         </div>
+        <div class="card pollsCard">
+            <div class="card card-block">
+                <h4 class="card-title"><i class="fa fa-bar-chart"></i> Polls <i class="fa fa-window-minimize float-right"></i></h4>
+                <p class="card-text"></p>
+
+
+            </div>
+        </div>
+
+
+    </div>
+    <div class="card bannedWordCard">
+        <div class="card card-block">
+            <h4 class="card-title"><i class="fa fa-list"></i> Banned Words <i class="fa fa-window-minimize float-right"></i></h4>
+            <div class="card-text">
+                
+                <fieldset class="form-group">
+                    <label for="bannedWordsInput">Banned words:</label>
+                    <input class="form-control col-md-12" type="text" id="bannedWordsInput" name="bannedWordsInput" value="@Model.BannedWords"/>
+                    <p>Banned words, seperate each word by comma.</p>
+                    <button class="btn btn-default" id="importBannedWordButton"><i class="fa fa-download"></i> Import default words</button>
+                    <button class="btn btn-default" id="saveBannedWordButton"><i class="fa fa-save"></i> Save list</button>
+                </fieldset>
+            </div>
+        </div>
+    </div>
     </div>
     <div class="col-md-7">
         <div class="col-md streamCard" style="overflow: visible !important">
@@ -1099,6 +1114,42 @@
 
         };
 
+        
+        twitchHub.client.SavedBannedWords = function (retval) {
+            
+            if (retval.data == "1") {
+                console.log("Banned words save: " + retval.message);
+                $.amaran({
+                    'theme': 'colorful',
+                    'content'   :{
+                        bgcolor:'#27ae60',
+                        color:'#fff',
+                        message: response.message,
+                    },
+                    'closeOnClick':false,
+                    'inEffect':'slideTop',
+                    'outEffect':'slideLeft'
+                });
+            } else {
+                console.log("Banned words save: " + retval.message);
+                $.amaran({
+                    'theme': 'colorful',
+                    'content': {
+                        bgcolor: '#ff3300',
+                        color: '#fff',
+                        message: response.message,
+                    },
+                    'closeOnClick': false,
+                    'inEffect': 'slideTop',
+                    'outEffect': 'slideLeft'
+                });
+            }
+            
+
+
+
+        };
+
         twitchHub.client.SetStreamInfo = function(streamStatus) {
             console.log("Stream title: " + streamStatus.Title);
             console.log("Streams game: " + streamStatus.Game);
@@ -1181,6 +1232,17 @@
 
             $("#streamInfoSaveButton").find("i").toggleClass("fa-spinner fa-spin");
         }
+
+        twitchHub.client.ImportBannedWords = function (bannedWords) {
+            console.log(bannedWords);
+
+            var words = [];
+            $.each(bannedWords, function( index, value ) {
+                words.push(value.Word);
+            });
+
+            $("#bannedWordsInput").val(words.join());
+        };
         
         //Button click jquery handler
         $("#botConnectButton").click(function () {
@@ -1223,6 +1285,18 @@
 
             $(this).find("i").toggleClass("fa-spinner fa-spin");
 
+        });
+
+        $("#saveBannedWordButton").click(function () {
+            // Call SignalR hub method
+            var words = $("#bannedWordsInput").val();
+            var channel = $(this).data("channel");
+
+            twitchHub.server.saveBannedWords(words, channel);
+        });
+        $("#importBannedWordButton").click(function () {
+
+            twitchHub.server.importDefaultBannedWords();
         });
 
 

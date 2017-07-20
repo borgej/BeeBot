@@ -29,6 +29,7 @@ namespace YTBot.Context
         public DbSet<Timer> Timers { get; set; }
         public DbSet<Trigger> Triggers { get; set; }
         public DbSet<Quote> Quotes { get; set; }
+        public DbSet<BannedWord> BannedWords { get; set; }
 
 
     }
