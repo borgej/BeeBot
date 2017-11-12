@@ -7,5 +7,6 @@ namespace YTBot.BotGames
 {
     public class Love
     {
+
     }
 }

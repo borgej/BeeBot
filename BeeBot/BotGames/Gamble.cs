@@ -5,6 +5,9 @@ using System.Web;
 
 namespace YTBot.BotGames
 {
+    /// <summary>
+    /// Depricated
+    /// </summary>
     public class Gamble
     {
     }

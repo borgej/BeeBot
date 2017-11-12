@@ -20,10 +20,12 @@
             <button type="button" class="btn btn-primary-outline col-md" id="triggersToggleButton"><i class="fa fa-reorder"></i> Triggers</button>
             <button type="button" class="btn btn-primary-outline col-md" id="timersToggleButton"><i class="fa fa-clock-o"></i> Timers</button>
             <button type="button" class="btn btn-primary-outline col-md" id="pollsToggleButton"><i class="fa fa-bar-chart"></i> Polls</button>
+            <button type="button" class="btn btn-primary-outline col-md" id="bannedWordsToggleButton"><i class="fa fa-list "></i> Banned words</button>
             <button type="button" class="btn btn-primary-outline col-md" id="streamToggleButton"><i class="fa fa-video-camera"></i> Stream</button>
             <button type="button" class="btn btn-primary-outline col-md" id="usersToggleButton"><i class="fa fa-users"></i> Users</button>
             <button type="button" class="btn btn-primary-outline col-md" id="chatCommandButton"><i class="fa fa-exclamation-circle "></i> Chat stats</button>
             <button type="button" class="btn btn-primary-outline col-md" id="chatToggleButton"><i class="fa fa-commenting-o "></i> Chat</button>
+            
         </div>
     </div>
 </div>
@@ -33,7 +35,7 @@
         <div class="card botStatusCard">
             <div class="card card-block">
                 <h4 class="card-title"><i class="fa fa-play"></i> Bot controls<i class="fa fa-window-minimize float-right card-title-icon"></i></h4>
-                <div class="btn-group botButtons">
+                <div class="btn-group botButtons " >
                     <button id="botConnectButton" type="button" class="btn btn-success" data-username="@Model.BotUserSettings.BotUsername" data-password="@Model.BotUserSettings.BotPassword" data-channel="@Model.BotUserSettings.BotChannel"><i class="fa fa-plug"></i> Connect</button>
                     <button id="botReconnectButton" type="button" class="btn btn-default" data-username="@Model.BotUserSettings.BotUsername" data-password="@Model.BotUserSettings.BotPassword" data-channel="@Model.BotUserSettings.BotChannel"><i class="fa fa-refresh"></i> Re-connect</button>
                     <button id="botDisconnectButton" type="button" class="btn btn-danger"><i class="fa fa-window-close"></i> Disconnect</button>
@@ -315,7 +317,41 @@
         <div class="card pollsCard">
             <div class="card card-block">
                 <h4 class="card-title"><i class="fa fa-bar-chart"></i> Polls <i class="fa fa-window-minimize float-right"></i></h4>
-                <p class="card-text"></p>
+                <div class="card-text">
+                    <div class="addPollDiv" style="display: none;">
+                        <form class="pollForm">
+                            <div class="card card-block bg-faded">
+                                <div class="form-inline">
+                                
+                                    <label for="pollTitle" class="col-form-label mr-1">Title</label>
+                                    <input type="text" class="form-control pollTitle col-sm-auto mr-3" id="" name="pollTitle" placeholder="">
+                                    <label for="pollOptions" class="col-form-label mr-1">Options</label>
+                                    <input type="text" class="form-control pollOptions col-sm-auto mr-3" id="" name="pollTitle" placeholder="option1,option2,option3">
+                                
+                                    <div class="inline">
+                                        <div class="">
+                                            <span class="float-right">
+                                                <button class="btn btn-secondary pollSaveButton" type="button" id="pollSaveButton"><i class="fa fa-save"></i></button>
+                                                <button class="btn btn-secondary pollRemoveButton" onclick="pollRemoveButton(this);" type="button"><i class="fa fa-times"></i></button>
+                                            </span>
+                                        </div>
+                                    
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="pollResultsDiv" style="display: none; ">
+                        <div class="chart-title"></div>
+                        <div class="ct-chart" style="min-height: 300px !important;"></div>
+                    </div>
+                    <div class="addButton float-right">
+                        <button class="btn btn-secondary" id="addPollButton"><i class="fa fa-plus"></i> Add poll</button>
+                    </div>
+
+                    
+                </div>
+                
 
 
             </div>
@@ -442,8 +478,20 @@
                 <div class="card chatCardDiv">
                     <div class="card card-block">
                         <h4 class="card-title"><i class="fa fa-commenting-o "></i> Chat <i class="fa fa-window-minimize float-right"></i></h4>
-                        <div class="chatText pre-scrollable">
+                        <div class="chatText pre-scrollable" style="display: none;">
 
+                        </div>
+                        @{
+                            var src = "http://www.twitch.tv/" + Model.BotUserSettings.BotChannel + "/chat";
+                        }
+                        <div class="embeddedChat">
+                            <iframe frameborder="0"
+                                    scrolling="yes"
+                                    id="@Model.BotUserSettings.BotChannel"
+                                    src="@src"
+                                    height="500"
+                                    width="100%">
+                            </iframe>
                         </div>
                     </div>
                 </div>
@@ -521,7 +569,17 @@
             $(".chattersCommandsCard").toggle();
         });
 
-        
+        $("#bannedWordsToggleButton").click(function() {
+            toggleButton(this);
+            $(".bannedWordCard").toggle();
+        });
+
+        $("#addPollButton").click(function() {
+            $(".addPollDiv").show();
+            $(".pollResultsDiv").hide();
+        });
+
+
 
         // Make each header clickable so content is toggled
         $(".card-title").click(function () {
@@ -700,11 +758,13 @@
             }
         );
 
-        
-        $("#pollsToggleButton").click();
+
+        //$("#pollsToggleButton").click();
         $("#chatPrefsToggleButton").click();
         //$("#chatCommandButton").click();
     });
+
+    
 
     function timerSaveButton(elem) {
         var data = $(elem).closest("form").serialize();
@@ -803,6 +863,12 @@
 
     function timerRemoveButton(elem) {
         $(elem).closest("form").remove();
+    }
+
+    function pollRemoveButton(elem) {
+        $(".addPollDiv").hide();
+        $(".pollForm").find("input[type=text], textarea").val("");
+
     }
 
     function triggerSaveButton(elem) {
@@ -960,8 +1026,8 @@
             className = "";
             html += "</div>";
         });
-            
-        
+
+
         html += "";
         $(".usersList").html(html);
     }
@@ -982,16 +1048,29 @@
         twitchHub.client.SendServerTime = function (serverTime) {
             // Set the received serverTime in the span to show in browser
 
-            $(".chatText").append(serverTime + "<br>");
+            //$(".chatText").append(serverTime + "<br>");
         };
 
 
         twitchHub.client.UpdateChannelBar = function (streamStatus) {
             console.log("UpdateChannelBar triggered");
 
-            $("#streamTitle").val(streamStatus.Title);
-            $("#streamGame").val(streamStatus.Game);
+            if (!$("#streamTitle").is(":focus")) {
+                $("#streamTitle").val(streamStatus.Title);
+            }
+            if (!$("#streamGame").is(":focus")) {
+                $("#streamGame").val(streamStatus.Game);
+            }
+                
             $("#streamDelay").val(streamStatus.Delay);
+
+            if (streamStatus.Mature) {
+                $('.streamMatureCheckbox').attr('checked', true);
+            } else {
+                $('.streamMatureCheckbox').attr('checked', false);
+            }
+            
+            
             $(".channelNameHeader").html(streamStatus.Channel);
 
             if (streamStatus.Online) {
@@ -1001,7 +1080,7 @@
                     $(".onlineOfflineIcon").removeClass("fa-stop");
                     $(".channelBar").removeClass("channelOffline");
                     $(".channelBar").addClass("channelOnline");
-                    
+
                 }
                 if (streamStatus.Uptime != null) {
                     var timeSpan = streamStatus.Uptime.split(".")[0];
@@ -1011,7 +1090,7 @@
                     var secs = timeSplit[2];
                     $(".channelUptimeTime").html(hour+":"+mins+":"+secs);
                 }
-                
+
             } else {
                 if ($(".channelOnlineOfflineStatus").html() != "OFFLINE") {
                     $(".channelOnlineOfflineStatus").html("OFFLINE");
@@ -1021,44 +1100,37 @@
                     $(".channelBar").removeClass("channelOnline");
                     $(".channelUptimeTime").html("--:--");
                 }
-                
-                
-            }
-            //$(".channelBar").removeClass("dontshow");  // remove?
-            
 
-            if (streamStatus.Mature) {
-                $('.streamMatureCheckbox').attr('checked', true);
-            } else {
-                $('.streamMatureCheckbox').attr('checked', false);
-            }  
+
+            }
+
         };
 
         twitchHub.client.ChatShow = function (msg) {
-            
-            $(".chatText").append(msg);
 
-            var objDiv = document.getElementsByClassName("chatText")[0];
+            //$(".chatText").append(msg);
 
-            if (inverted) {
-                $(".chatText").find(".chatMsg").last().toggleClass("invertedCardTitle");
-            } 
+            //var objDiv = document.getElementsByClassName("chatText")[0];
 
-            objDiv.scrollTop = objDiv.scrollHeight;
+            //if (inverted) {
+            //    $(".chatText").find(".chatMsg").last().toggleClass("invertedCardTitle");
+            //}
+
+            //objDiv.scrollTop = objDiv.scrollHeight;
         };
 
         twitchHub.client.DonationShow = function (msg) {
-            $(".chatText").append("<div class='donationMsg'>" + msg + "</span>");
+            //$(".chatText").append("<div class='donationMsg'>" + msg + "</span>");
 
-            var objDiv = document.getElementsByClassName("chatText")[0];
-            objDiv.scrollTop = objDiv.scrollHeight;
+            //var objDiv = document.getElementsByClassName("chatText")[0];
+            //objDiv.scrollTop = objDiv.scrollHeight;
         };
 
         twitchHub.client.HostShow = function (msg) {
-            $(".chatText").append("<div class='hostMsg'>" + msg + "</span>");
+            //$(".chatText").append("<div class='hostMsg'>" + msg + "</span>");
 
-            var objDiv = document.getElementsByClassName("chatText")[0];
-            objDiv.scrollTop = objDiv.scrollHeight;
+            //var objDiv = document.getElementsByClassName("chatText")[0];
+            //objDiv.scrollTop = objDiv.scrollHeight;
         };
 
         twitchHub.client.ConsoleLog = function (log) {
@@ -1114,9 +1186,9 @@
 
         };
 
-        
+
         twitchHub.client.SavedBannedWords = function (retval) {
-            
+
             if (retval.data == "1") {
                 console.log("Banned words save: " + retval.message);
                 $.amaran({
@@ -1144,7 +1216,7 @@
                     'outEffect': 'slideLeft'
                 });
             }
-            
+
 
 
 
@@ -1156,12 +1228,18 @@
             console.log("Mature?: " + streamStatus.Mature);
             console.log("Stream delay: " + streamStatus.Delay);
 
-
+            
             $("#streamTitle").val(streamStatus.Title);
             $("#streamGame").val(streamStatus.Game);
             $("#streamDelay").val(streamStatus.Delay);
+            if (streamStatus.Mature) {
+                $('.streamMatureCheckbox').attr('checked', true);
+            } else {
+                $('.streamMatureCheckbox').attr('checked', false);
+            }        
+            
+            
             $(".channelNameHeader").html(streamStatus.Channel);
-
             if (streamStatus.Online) {
                 $(".channelOnlineOfflineStatus").html("LIVE");
                 $(".onlineOfflineIcon").addClass("fa-video-camera faa-flash animated");
@@ -1176,13 +1254,9 @@
                 $(".channelBar").removeClass("channelOnline");
             }
             $(".channelBar").removeClass("dontshow");
-            
 
-            if (streamStatus.Mature) {
-                $('.streamMatureCheckbox').attr('checked', true);
-            } else {
-                $('.streamMatureCheckbox').attr('checked', false);
-            }
+
+            
 
             if (streamStatus.Status != "" && streamStatus.Game != "") {
                 $.amaran({
@@ -1243,14 +1317,79 @@
 
             $("#bannedWordsInput").val(words.join());
         };
-        
+
+        twitchHub.client.CreatedPoll = function(title, id) {
+            console.log("Created poll " + title + " with id " + id);
+        }
+
+        twitchHub.client.UpdatePoll = function(title, labels, series) {
+
+            var data = {
+                labels: labels,
+                series: series
+            };
+
+            var options = {
+                labelInterpolationFnc: function (value) {
+                    return value;
+                },
+                height: '270px'
+            };
+
+            var responsiveOptions = [
+
+                ['screen and (min-width:1024px)', {
+                    labelOffset: 0,
+                    chartPadding: 30
+                }]
+            ];
+
+            new Chartist.Pie('.ct-chart', data, options, responsiveOptions);
+            //$(".addPollDiv").hide();
+            $(".pollResultsDiv").show();
+            $(".chart-title").html(title);
+        }
+
+        twitchHub.client.CreatePoll = function(title, choices, series) {
+
+            $(".chart-title").html(title);
+
+            //var seriesFromChoices = Array.from({ length: choices.length }, () => (100 / choices.length));
+            var seriesFromChoices = Array.from({ length: choices.length });
+
+            var data = {
+                labels: choices,
+                //series: seriesFromChoices
+            };
+
+            var options = {
+                labelInterpolationFnc: function(value) {
+                    return value;
+                },
+                height: '270px'
+            };
+
+            var responsiveOptions = [
+                
+                ['screen and (min-width:1024px)', {
+                    labelOffset: 0,
+                    chartPadding: 30
+                }]
+            ];
+            
+            new Chartist.Pie('.ct-chart', data, options, responsiveOptions);
+            $(".addPollDiv").hide();
+            $(".pollResultsDiv").show();
+            
+        }
+
         //Button click jquery handler
         $("#botConnectButton").click(function () {
             // Call SignalR hub method
+
             var username = $(this).data("username");
             var password = $(this).data("password");
             var channel = $(this).data("channel");
-
             twitchHub.server.connectBot(username, password, channel);
         });
 
@@ -1258,7 +1397,7 @@
             var username = $(this).data("username");
             var password = $(this).data("password");
             var channel = $(this).data("channel");
-            clearUsers();
+
             twitchHub.server.reconnect(username, password, channel);
         });
 
@@ -1267,6 +1406,16 @@
             twitchHub.server.disconnectBot();
             $(".channelBar").toggleClass("dontshow");
         });
+
+        $("#pollSaveButton").click(function() {
+            var title = $(".pollTitle").val();
+            var options = $(".pollOptions").val();
+            // create poll
+            twitchHub.server.createStrawPoll(title, options);
+            $(".addPollDiv").hide();
+            $(".pollResultsDiv").show();
+        });
+        
 
         $("#streamInfoSaveButton").click(function() {
             console.log("Clicked streamInfoSaveButton");

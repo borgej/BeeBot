@@ -25,12 +25,14 @@ namespace YTBot.Models
         public List<string> ChatLog { get; set; }
         public Dictionary<string, int> CommandsUsed { get; set; }
         public Dictionary<string, int> ChattersCount { get; set; }
+        public List<int> Polls { get; set; }
 
         public TwitchClientContainer()
         {
             ChatLog = new List<string>();
             CommandsUsed = new Dictionary<string, int>();
             ChattersCount = new Dictionary<string, int>();
+            Polls = new List<int>();
         }
 
 

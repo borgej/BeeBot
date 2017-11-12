@@ -321,7 +321,7 @@ textarea {
 
 /* Fill card witdh with buttons */
 .botButtons > .btn{
-    width: 33% !important;
+    width: 50% !important;
 }
 
 .divCenter {

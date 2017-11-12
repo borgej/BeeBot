@@ -284,8 +284,22 @@
     <Compile Include="Migrations\201707201650188_AddedBannedWords.Designer.cs">
       <DependentUpon>201707201650188_AddedBannedWords.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201708071544412_IndexingOnStringVariables.cs" />
+    <Compile Include="Migrations\201708071544412_IndexingOnStringVariables.Designer.cs">
+      <DependentUpon>201708071544412_IndexingOnStringVariables.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201708121405350_OptimizedQuotes.cs" />
+    <Compile Include="Migrations\201708121405350_OptimizedQuotes.Designer.cs">
+      <DependentUpon>201708121405350_OptimizedQuotes.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
+    <Compile Include="Models\BannedWord.cs" />
     <Compile Include="Models\BotChannelSettings.cs" />
+    <Compile Include="Models\Loyalty.cs" />
+    <Compile Include="Models\Quote.cs" />
+    <Compile Include="Models\StreamViewer.cs" />
+    <Compile Include="Models\Timer.cs" />
+    <Compile Include="Models\Trigger.cs" />
     <Compile Include="Models\TwitchClientContainer.cs" />
     <Compile Include="Models\ViewModels\AccountViewModel.cs" />
     <Compile Include="Models\ViewModels\BotStatusVM.cs" />
@@ -315,6 +329,8 @@
     <Content Include="Content\bootstrap-reboot.min.css" />
     <Content Include="Content\bootstrap.css" />
     <Content Include="Content\bootstrap.min.css" />
+    <Content Include="Content\chartist.css" />
+    <Content Include="Content\chartist.min.css" />
     <Content Include="Content\easy-autocomplete.css" />
     <Content Include="Content\easy-autocomplete.min.css" />
     <Content Include="Content\easy-autocomplete.themes.css" />
@@ -357,7 +373,11 @@
     <Content Include="fonts\fontawesome-webfont.woff" />
     <Content Include="fonts\fontawesome-webfont.ttf" />
     <Content Include="fonts\fontawesome-webfont.eot" />
+    <Content Include="Content\chartist.css.map" />
     <None Include="Properties\PublishProfiles\CustomProfile.pubxml" />
+    <Content Include="Scripts\chartist.js" />
+    <Content Include="Scripts\chartist.min.js" />
+    <Content Include="Scripts\chartist.min.js.map" />
     <None Include="Scripts\jquery-3.1.1.intellisense.js" />
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />
@@ -384,7 +404,9 @@
     <Content Include="Scripts\tether\tether.js" />
     <Content Include="Scripts\tether\tether.min.js" />
     <Content Include="Scripts\Signalr.js" />
-    <Content Include="Web.config" />
+    <Content Include="Web.config">
+      <SubType>Designer</SubType>
+    </Content>
     <Content Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </Content>
@@ -472,6 +494,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201707201650188_AddedBannedWords.resx">
       <DependentUpon>201707201650188_AddedBannedWords.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201708071544412_IndexingOnStringVariables.resx">
+      <DependentUpon>201708071544412_IndexingOnStringVariables.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201708121405350_OptimizedQuotes.resx">
+      <DependentUpon>201708121405350_OptimizedQuotes.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

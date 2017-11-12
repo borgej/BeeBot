@@ -141,6 +141,108 @@ namespace YTBot.Services
             return botChannelSettings;
         }
 
+        public List<StreamViewer> TopLoyalty(ApplicationUser user, int topNumber) 
+        {
+            try
+            {
+                Context = new ApplicationDbContext();
+
+                var botChannelSettings = Context.BotChannelSettings.Include("StreamViewers").FirstOrDefault(b => b.User.Id == user.Id);
+
+                List<StreamViewer> topLoyalty = botChannelSettings.StreamViewers.OrderByDescending(p => p.CurrentPoints).Take(topNumber).ToList();
+
+                return topLoyalty;
+            }
+            catch (Exception e)
+            {
+                throw;
+            }
+        }
+
+        public List<Quote> GetQuotes(ApplicationUser user)
+        {
+            try
+            {
+                Context = new ApplicationDbContext();
+
+                var botChannelSettings = Context.BotChannelSettings.Include("Quotes").FirstOrDefault(b => b.User.Id == user.Id);
+
+                var qoutes = botChannelSettings.Quotes.ToList();
+
+                return qoutes;
+            }
+            catch (Exception e)
+            {
+                throw;
+            }
+        }
+
+        public Quote GetQuote(ApplicationUser user, int id)
+        {
+            try
+            {
+                Context = new ApplicationDbContext();
+
+                var botChannelSettings = Context.BotChannelSettings.Include("Quotes").FirstOrDefault(b => b.User.Id == user.Id);
+
+                var qoute = botChannelSettings.Quotes.SingleOrDefault(q => q.Nr == id);
+
+                return qoute;
+            }
+            catch (Exception e)
+            {
+                throw;
+            }
+        }
+
+        public Quote RemoveQuote(ApplicationUser user, int id)
+        {
+            try
+            {
+                Context = new ApplicationDbContext();
+
+                var botChannelSettings = Context.BotChannelSettings.Include("Quotes").FirstOrDefault(b => b.User.Id == user.Id);
+
+                var qoute = botChannelSettings.Quotes.SingleOrDefault(q => q.Nr == id);
+
+                return qoute;
+            }
+            catch (Exception e)
+            {
+                throw;
+            }
+        }
+
+        public Quote SaveQoute(ApplicationUser user, Quote quote)
+        {
+            try
+            {
+                Context = new ApplicationDbContext();
+
+                var quotes = GetQuotes(user);
+
+                quote.Nr = quotes.Count + 1;
+                Context.Quotes.Add(quote);
+                Context.SaveChanges();
+
+                return quote;
+            }
+            catch (Exception e)
+            {
+                throw;
+            }
+        }
+
+
+        public IEnumerable<StreamViewer> GetStreamViewers(ApplicationUser user, string channel)
+        {
+            Context = new ApplicationDbContext();
+            var botChannelSettings = Context.BotChannelSettings.Include("Loyalty").Include("Triggers").Include("Timers").Include("Quotes").FirstOrDefault(b => b.User.Id == user.Id);
+
+            return Context.Viewers.Where(s => s.Channel.ToLower().Equals(channel.ToLower()));
+
+        }
+
         /// <summary>
         /// Get BotChannelSettings for user
         /// </summary>
@@ -158,7 +260,8 @@ namespace YTBot.Services
 
             try
             {
-                var botChannelSettings = Context.BotChannelSettings.Include("Loyalty").Include("Triggers").Include("Timers").Include("Triggers.TriggerQoute").Include("StreamViewers").FirstOrDefault(b => b.User.Id == user.Id);
+                //var botChannelSettings = Context.BotChannelSettings.Include("Loyalty").Include("Triggers").Include("Timers").Include("Quotes").Include("StreamViewers").FirstOrDefault(b => b.User.Id == user.Id);
+                var botChannelSettings = Context.BotChannelSettings.Include("Loyalty").Include("Triggers").Include("Timers").Include("Quotes").FirstOrDefault(b => b.User.Id == user.Id);
 
                 return botChannelSettings;
             }
@@ -195,14 +298,13 @@ namespace YTBot.Services
         }
 
         [OutputCache(Duration = 5, VaryByParam = "username, twitchusername")]
-        public StreamViewer GetLoyaltyForUser(string username, string twitchId, string twitchusername = null)
+        public StreamViewer GetLoyaltyForUser(string username, string channel, string twitchId, string twitchusername = null)
         {
             if (twitchusername == null)
             {
                 try
                 {
-                    var s = GetBotChannelSettings(GetUser(username)).StreamViewers;
-                    return s.SingleOrDefault(u => u.TwitchUserId == twitchId);
+                    return Context.Viewers.SingleOrDefault(u => u.TwitchUserId == twitchId && u.Channel.ToLower() == channel.ToLower());
                 }
                 catch (Exception e)
                 {
@@ -214,8 +316,9 @@ namespace YTBot.Services
             {
                 try
                 {
-                    var s = GetBotChannelSettings(GetUser(username)).StreamViewers;
-                    return s.SingleOrDefault(u => u.TwitchUsername.ToLower() == twitchusername.ToLower());
+                    
+                    return Context.Viewers.SingleOrDefault(
+                        u => u.TwitchUsername.ToLower() == twitchusername.ToLower() && u.Channel.ToLower() == channel.ToLower());
                 }
                 catch (Exception e)
                 {
@@ -237,17 +340,19 @@ namespace YTBot.Services
             Context = new ApplicationDbContext();
 
             var botChannelSettings = GetBotChannelSettings(user);
+            var streamViewers = GetStreamViewers(user, channel);
 
-            if (botChannelSettings.StreamViewers == null)
+            if (streamViewers == null)
             {
-                botChannelSettings.StreamViewers = new List<StreamViewer>();
+                streamViewers = new List<StreamViewer>();
             }
 
             if (loyaltyPoints != null)
             {
                 foreach (var viewer in viewers)
                 {
-                    var dbViewer = botChannelSettings.StreamViewers.FirstOrDefault(v => v.TwitchUsername.ToLower() == viewer.TwitchUsername.ToLower() && v.Channel.ToLower() == channel.ToLower());
+                    var dbViewer = Context.Viewers.FirstOrDefault(v => v.TwitchUsername.ToLower() == viewer.TwitchUsername.ToLower() && v.Channel.ToLower() == channel.ToLower());
+
 
                     if (dbViewer != null)
                     {
@@ -274,7 +379,7 @@ namespace YTBot.Services
                 {
                     foreach (var viewer in viewers)
                     {
-                        var dbViewer = botChannelSettings.StreamViewers.FirstOrDefault(v => v.TwitchUsername.ToLower() == viewer.TwitchUsername.ToLower() && v.Channel.ToLower() == channel.ToLower());
+                        var dbViewer = Context.Viewers.FirstOrDefault(v => v.TwitchUsername.ToLower() == viewer.TwitchUsername.ToLower() && v.Channel.ToLower() == channel.ToLower());
 
                         if (dbViewer != null)
                         {
@@ -430,9 +535,9 @@ namespace YTBot.Services
 
             var bcs = GetBotChannelSettings(user);
 
-            var viewer = bcs.StreamViewers.SingleOrDefault(
-                s => s.Id == streamViewer.Id && s.Channel.ToLower() == channel.ToLower());
-            viewer.LastGamble = DateTime.Now;
+            var dbViewer = Context.Viewers.SingleOrDefault(s => s.Id == streamViewer.Id && s.Channel.ToLower() == channel.ToLower());
+
+            dbViewer.LastGamble = DateTime.Now;
 
             Context.SaveChanges();
 
