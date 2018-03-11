@@ -430,6 +430,11 @@ textarea {
     -webkit-filter: invert(100%); /* Safari */
 }
 
+.youtubePlayerIgnore {
+    filter: invert(0%) !important;
+    -webkit-filter: invert(0%) !important; /* Safari */
+}
+
 .inverted h1, .inverted h2, .inverted h3, .inverted h4{
     color: #ffffff;
 }
@@ -507,4 +512,42 @@ textarea {
     min-width: 50px;
     background-color: #EFF0F1;
     padding-right: 10px;
+}
+
+.playlistHeader {
+    font-size: 1.4em;
+}
+
+.playControl {
+    border: 1px solid grey !important;
+    border-radius: 0 !important;
+}
+
+.playlistContent {
+    padding-left: 3px !important;
+    list-style-type: none;
+}
+
+.playlistContent li {
+    margin-bottom: 3px;
+    background-color: #EFF0F1;
+    padding: 3px;
+    
+}
+
+.playlistContent li:hover {
+    cursor: pointer;
+    background-color: #87ceeb;
+}
+
+.playlistContent [data-playing="true"] {
+    background-color: #00ff7f !important;
+}
+
+.playlistContent [data-played="true"] {
+    background-color: #696969;
+}
+
+.rightMargin {
+    margin-right: 5px;
 }

@@ -41,6 +41,13 @@ namespace BeeBot
                 "~/Content/animate.min.css",
                 "~/Content/easy-autocomplete.css",
                 "~/Content/easy-autocomplete.themes.css"));
+
+            System.Web.Optimization.BundleTable.EnableOptimizations = false;
+
+            foreach (var bundle in BundleTable.Bundles)
+            {
+                bundle.Transforms.Clear();
+            }
         }
     }
 }

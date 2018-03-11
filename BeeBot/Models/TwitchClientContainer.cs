@@ -23,16 +23,26 @@ namespace YTBot.Models
         public ContextService ContextService { get; set; }
 
         public List<string> ChatLog { get; set; }
+        public List<string> Channelmods { get; set; }
         public Dictionary<string, int> CommandsUsed { get; set; }
         public Dictionary<string, int> ChattersCount { get; set; }
         public List<int> Polls { get; set; }
+        public bool ModsControlSongrequest { get; set; }
+
+        public RussianRoulette RRulette { get; set; }
+        public DateTime LastRussian { get; set; }
 
         public TwitchClientContainer()
         {
             ChatLog = new List<string>();
             CommandsUsed = new Dictionary<string, int>();
             ChattersCount = new Dictionary<string, int>();
+            Channelmods = new List<string>();
             Polls = new List<int>();
+            ModsControlSongrequest = false;
+            RRulette = null;
+            // initialize last russian run
+            LastRussian = DateTime.Now.AddMinutes(-10);
         }
 
 

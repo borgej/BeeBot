@@ -98,7 +98,7 @@ namespace BeeBot.BotGames
         // Procedure to shuffle the deck of cards
         static void shuffleDeck(ref PlayingCard[] deck)
         {
-            Random rnd = new Random(); // Creates new Random object
+            Random.Org.Random rnd = new Random.Org.Random(); // Creates new Random object
             PlayingCard temp; // Creates a variable for temporarily storing a PlayingCard
             int num; // Creates an integer variable for storing the randomly generated numbers
 

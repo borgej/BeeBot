@@ -357,6 +357,10 @@ namespace YTBot.Services
                     if (dbViewer != null)
                     {
                         dbViewer.CurrentPoints += Convert.ToInt32(loyaltyPoints);
+                        if (viewer.CurrentPoints < 0)
+                        {
+                            viewer.CurrentPoints = 0;
+                        }
                         if (dbViewer.CurrentPoints >= dbViewer.AllTimePoints)
                         {
                             dbViewer.AllTimePoints = dbViewer.CurrentPoints;
@@ -366,6 +370,10 @@ namespace YTBot.Services
                     else
                     {
                         viewer.CurrentPoints += Convert.ToInt32(loyaltyPoints);
+                        if (viewer.CurrentPoints < 0)
+                        {
+                            viewer.CurrentPoints = 0;
+                        }
                         viewer.AllTimePoints = Convert.ToInt32(loyaltyPoints);
                         viewer.Channel = channel;
 
@@ -384,6 +392,10 @@ namespace YTBot.Services
                         if (dbViewer != null)
                         {
                             dbViewer.CurrentPoints += botChannelSettings.Loyalty.LoyaltyValue;
+                            if (viewer.CurrentPoints < 0)
+                            {
+                                viewer.CurrentPoints = 0;
+                            }
                             if (dbViewer.CurrentPoints >= dbViewer.AllTimePoints)
                             {
                                 dbViewer.AllTimePoints = dbViewer.CurrentPoints;
@@ -393,6 +405,10 @@ namespace YTBot.Services
                         else
                         {
                             viewer.CurrentPoints = botChannelSettings.Loyalty.LoyaltyValue;
+                            if (viewer.CurrentPoints < 0)
+                            {
+                                viewer.CurrentPoints = 0;
+                            }
                             viewer.AllTimePoints = botChannelSettings.Loyalty.LoyaltyValue;
                             viewer.Channel = channel;
                             Context.BotChannelSettings.Include("StreamViewers").FirstOrDefault(b => b.User.Id == user.Id).StreamViewers.Add(viewer);
