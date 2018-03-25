@@ -67,7 +67,7 @@ namespace BeeBot.Controllers
             }
 
             // assert that
-            return View(dashboardViewModel);
+            return View("Indexv2",dashboardViewModel);
         }
 
         public ActionResult About()

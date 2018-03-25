@@ -30,6 +30,7 @@ namespace YTBot.Context
         public DbSet<Trigger> Triggers { get; set; }
         public DbSet<Quote> Quotes { get; set; }
         public DbSet<BannedWord> BannedWords { get; set; }
+        public DbSet<PlayListItem> PlaylistItems { get; set; }
 
 
     }

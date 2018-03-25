@@ -308,10 +308,15 @@
     <Compile Include="Migrations\201708121405350_OptimizedQuotes.Designer.cs">
       <DependentUpon>201708121405350_OptimizedQuotes.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201803252341535_AddedPlayList.cs" />
+    <Compile Include="Migrations\201803252341535_AddedPlayList.Designer.cs">
+      <DependentUpon>201803252341535_AddedPlayList.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\BannedWord.cs" />
     <Compile Include="Models\BotChannelSettings.cs" />
     <Compile Include="Models\Loyalty.cs" />
+    <Compile Include="Models\PlayListItem.cs" />
     <Compile Include="Models\Quote.cs" />
     <Compile Include="Models\RussianRoulette.cs" />
     <Compile Include="Models\StreamViewer.cs" />
@@ -448,7 +453,9 @@
     <Content Include="Web.Release.config">
       <DependentUpon>Web.config</DependentUpon>
     </Content>
-    <Content Include="Views\Web.config" />
+    <Content Include="Views\Web.config">
+      <SubType>Designer</SubType>
+    </Content>
     <Content Include="Views\_ViewStart.cshtml" />
     <Content Include="Views\Shared\Error.cshtml" />
     <Content Include="Views\Shared\_Layout.cshtml" />
@@ -477,10 +484,12 @@
     <Content Include="Views\Manage\VerifyPhoneNumber.cshtml" />
     <Content Include="Views\Shared\Lockout.cshtml" />
     <Content Include="Views\Shared\_LoginPartial.cshtml" />
+    <Content Include="Views\Home\Indexv2.cshtml" />
     <Content Include="Scripts\umd\popper.min.js.map" />
     <Content Include="Scripts\umd\popper.js.map" />
     <Content Include="Scripts\umd\popper-utils.min.js.map" />
     <Content Include="Scripts\umd\popper-utils.js.map" />
+    <Content Include="Scripts\README.md" />
     <Content Include="Scripts\popper.min.js.map" />
     <Content Include="Scripts\popper.js.map" />
     <Content Include="Scripts\popper-utils.min.js.map" />
@@ -543,6 +552,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201708121405350_OptimizedQuotes.resx">
       <DependentUpon>201708121405350_OptimizedQuotes.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201803252341535_AddedPlayList.resx">
+      <DependentUpon>201803252341535_AddedPlayList.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
