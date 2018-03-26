@@ -1,0 +1,2089 @@
+﻿@model YTBot.Models.ViewModels.DashboardViewModel
+
+
+<div class="dontshow">
+    <div class="row ">
+        <div class="col-md text-center channelBar dontshow">
+            <span class="channelNameHeader "></span>
+            <i class="fa onlineOfflineIcon"></i>
+            <span class="channelOnlineOfflineStatus text-center"></span>
+            <i class="fa fa-clock-o"></i>
+            <span class="channelUptimeTime text-center"></span>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md text-center">
+            <h4 class=""></h4>
+            <div class="btn-group menuButtons btn-block" role="group">
+                <button type="button" class="btn btn-primary-outline col-md" id="consoleToggleButton"><i class="fa fa-tv"></i> Console</button>
+                <button type="button" class="btn btn-primary-outline col-md" id="chatPrefsToggleButton"><i class="fa fa-cog"></i> Chat prefs</button>
+                <button type="button" class="btn btn-primary-outline col-md" id="loyaltyToggleButton"><i class="fa fa-money"></i> Loyalty points</button>
+                <button type="button" class="btn btn-primary-outline col-md" id="triggersToggleButton"><i class="fa fa-reorder"></i> Triggers</button>
+                <button type="button" class="btn btn-primary-outline col-md" id="timersToggleButton"><i class="fa fa-clock-o"></i> Timers</button>
+                <button type="button" class="btn btn-primary-outline col-md" id="pollsToggleButton"><i class="fa fa-bar-chart"></i> Polls</button>
+                <button type="button" class="btn btn-primary-outline col-md" id="bannedWordsToggleButton"><i class="fa fa-list "></i> Banned words</button>
+                <button type="button" class="btn btn-primary-outline col-md" id="streamToggleButton"><i class="fa fa-video-camera"></i> Stream</button>
+                <button type="button" class="btn btn-primary-outline col-md" id="usersToggleButton"><i class="fa fa-users"></i> Users</button>
+                <button type="button" class="btn btn-primary-outline col-md" id="chatCommandButton"><i class="fa fa-exclamation-circle "></i> Chat stats</button>
+                <button type="button" class="btn btn-primary-outline col-md" id="chatToggleButton"><i class="fa fa-commenting-o "></i> Chat</button>
+                <button type="button" class="btn btn-primary-outline col-md" id="videoToggleButton"><i class="fa fa-video-camera "></i> Songrequest</button>
+
+            </div>
+        </div>
+    </div>
+    <div class="row">
+
+        <div class="col-md-4 rowOne">
+            <div class="card botStatusCard">
+                <div class="card card-block">
+                    <h4 class="card-title"><i class="fa fa-play"></i> Bot controls<i class="fa fa-window-minimize float-right card-title-icon"></i></h4>
+                    <div class="btn-group botButtons ">
+                        <button id="botConnectButton" type="button" class="btn btn-success" data-username="@Model.BotUserSettings.BotUsername" data-password="@Model.BotUserSettings.BotPassword" data-channel="@Model.BotUserSettings.BotChannel"><i class="fa fa-plug"></i> Connect</button>
+                        <button id="botReconnectButton" type="button" class="btn btn-default" data-username="@Model.BotUserSettings.BotUsername" data-password="@Model.BotUserSettings.BotPassword" data-channel="@Model.BotUserSettings.BotChannel"><i class="fa fa-refresh"></i> Re-connect</button>
+                        <button id="botDisconnectButton" type="button" class="btn btn-danger"><i class="fa fa-window-close"></i> Disconnect</button>
+                    </div>
+                    <div class="">
+                        <div>
+                            <span id="botMsg" class="badge badge-default dontshow"></span>
+                        </div>
+                        <div>
+                            <span id="botWarningMsg" class="badge badge-warning dontshow"></span>
+                        </div>
+                        <div>
+                            <span id="botinfoMsg" class="badge badge-info dontshow"></span>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            <div class="card consoleStatusCard">
+                <div class="card card-block">
+                    <h4 class="card-title"><i class="fa fa-tv"></i> Console <i class="fa fa-window-minimize float-right"></i></h4>
+                    <div class="consoleLog pre-scrollable">
+
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="card loyaltyCard">
+                <div class="card card-block">
+                    <h4 class="card-title"><i class="fa fa-money"></i> Loyalty points <i class="fa fa-window-minimize float-right"></i></h4>
+                    <form id="loyaltyForm">
+                        <div class="card-text">
+                            <div class="form-check">
+                                <label class="form-check-label">
+                                    @{
+                                        var track = "";
+                                        if (Model.LoyaltySettings.Track != null)
+                                        {
+                                            if (Model.LoyaltySettings.Track == true)
+                                            {
+                                                track = "checked";
+                                            }
+                                        }
+                                    }
+                                    <input class="form-check-input" type="checkbox" id="track" name="track" @track value="1">
+                                    Track loyalty
+                                </label>
+                            </div>
+                            <div class="row">
+                                <div class="col-5">
+                                    <label for="loyaltyName">Loyaltyname</label>
+                                </div>
+                                <div class="col-4">
+                                    <input id="loyaltyName" name="loyaltyName" type="text" class="form-control" placeholder="" value="@Model.LoyaltySettings.LoyaltyName">
+                                </div>
+
+                            </div>
+                            <div class="row">
+                                <div class="col-5">
+                                    <label for="loyaltyValue">Give users</label>
+                                </div>
+                                <div class="col-2">
+                                    <input type="text" id="loyaltyValue" name="loyaltyValue" class="form-control" placeholder="" value="@Model.LoyaltySettings.LoyaltyValue">
+                                </div>
+                                <div class="col-2">
+                                    <p>units</p>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-5">
+                                    <label for="loyaltyValue">Every </label>
+                                </div>
+                                <div class="col-2">
+                                    <input type="text" id="loyaltyInterval" name="loyaltyInterval" class="form-control" placeholder="" value="@Model.LoyaltySettings.LoyaltyInterval">
+                                </div>
+                                <div class="col-2">
+                                    <p>minute</p>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md">
+                                    <button type="button" id="btnLoyaltySave" class="btn btn-secondary float-right"><i class="fa fa-save"></i></button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <div class="card chatPrefsCard">
+                <div class="card card-block">
+                    <h4 class="card-title"><i class="fa fa-cog"></i> Chat prefs <i class="fa fa-window-minimize float-right"></i></h4>
+                    <div class="card-text">
+                        <div class="inline">
+                            <div class="">
+                                <label class="form-check-label col-form-label mr-sm-5">
+                                    <input class="form-check-input viewerOnlyChat" type="checkbox" name="viewerOnlyChat" value="1" />
+                                    Viewers only chat (10 mins)
+                                </label>
+                                <label class="form-check-label col-form-label mr-sm-5">
+                                    <input class="form-check-input linksAllowedChat" type="checkbox" name="linksAllowedChat" value="1" />
+                                    Links allowed
+                                </label>
+
+                                <label class="form-check-label col-form-label mr-sm-5">
+                                    <input class="form-check-input slowModeChat" type="checkbox" name="slowModeChat" value="1" />
+                                    Slow mode
+                                </label>
+                                @*<label class="form-check-label col-form-label">
+                                        <input class="form-check-input mod" type="checkbox" name="mod" value="1" />
+                                        Viewers only chat?
+                                    </label>
+                                    <label class="form-check-label col-form-label">
+                                        <input class="form-check-input viewer" type="checkbox" name="viewer" value="1" />
+                                        Links allowed?
+                                    </label>*@
+                                <span class="float-right">
+                                    <button class="btn btn-secondary chatPrefButton" onclick="triggerSaveChatPref(this);" type="button"><i class="fa fa-save"></i></button>
+                                </span>
+                            </div>
+
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            <div class="card triggersCard">
+                <div class="card card-block">
+                    <h4 class="card-title"><i class="fa fa-reorder"></i> Triggers <i class="fa fa-window-minimize float-right"></i></h4>
+                    <div class="card-text">
+                        <div class="triggersContent">
+                            @{
+                                var triggerChecked = "";
+                                var modsChecked = "";
+                                var viwerChecked = "";
+                                foreach (var trigger in Model.Triggers)
+                                {
+                                    if (trigger.Active != null && trigger.Active.Value)
+                                    {
+                                        triggerChecked = "checked";
+                                    }
+                                    if (trigger.ModCanTrigger != null && trigger.ModCanTrigger.Value)
+                                    {
+                                        modsChecked = "checked";
+                                    }
+                                    if (trigger.ViewerCanTrigger != null && trigger.ViewerCanTrigger.Value)
+                                    {
+                                        viwerChecked = "checked";
+                                    }
+                                    <form class="triggerForm">
+                                        <div class="card card-block bg-faded">
+                                            <div class="form-inline">
+
+                                                <input type="text" class="triggerId dontshow" id="" name="triggerId" value="@trigger.Id">
+                                                <label for="timerName" class="col-form-label mr-1">Trigger</label>
+                                                <input type="text" class="form-control triggerName col-sm-auto mr-3" id="" name="triggerName" placeholder="" value="@trigger.TriggerName">
+
+                                                <label class="form-check-label col-form-label">
+                                                    <input class="form-check-input triggerActive" type="checkbox" name="triggerActive" value="1" @triggerChecked>
+                                                    Active?
+                                                </label>
+                                            </div>
+
+                                            <div class="form-group">
+                                                <div class="">
+                                                    <label for="triggerMessage" class="col-form-label">Message</label>
+                                                    <textarea type="text" name="triggerMessage" class="form-control triggerMessage" id="" placeholder="">@trigger.TriggerResponse</textarea>
+                                                </div>
+                                            </div>
+
+                                            <div class="inline">
+                                                <div class="">
+                                                    <label class="form-check-label col-form-label">
+                                                        <input class="form-check-input mod" type="checkbox" name="mod" value="1" @modsChecked>
+                                                        Mods can trigger
+                                                    </label>
+                                                    <label class="form-check-label col-form-label">
+                                                        <input class="form-check-input viewer" type="checkbox" name="viewer" value="1" @viwerChecked>
+                                                        Viewers can trigger
+                                                    </label>
+                                                    <span class="float-right">
+                                                        <button class="btn btn-secondary triggerSaveButton" onclick="triggerSaveButton(this);" type="button"><i class="fa fa-save"></i></button>
+                                                        <button class="btn btn-danger triggerDeleteButton " onclick="triggerDeleteButton(this);" type="button"><i class="fa fa-times"></i></button>
+                                                        <button class="btn btn-default triggerRemoveButton dontshow" onclick="triggerRemoveButton(this);" type="button"><i class="fa fa-times"></i></button>
+                                                    </span>
+                                                </div>
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                }
+                            }
+                        </div>
+                        <div class="triggersAdded"></div>
+                        <div>
+                            <div>
+                                <div class="float-right">
+                                    <button class="btn btn-secondary" id="addTriggerButton"><i class="fa fa-plus"></i> Add trigger</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            <div class="card timersCard ">
+                <div class="card card-block ">
+                    <h4 class="card-title"><i class="fa fa-clock-o"></i> Timers <i class="fa fa-window-minimize float-right"></i></h4>
+                    <div class="card-text ">
+                        <div class="timersContent">
+                            @{
+                                var timerChecked = "";
+                                foreach (var timer in Model.Timers)
+                                {
+                                    <form class="timerForm">
+
+                                        <div class="card card-block bg-faded">
+
+                                            <div class="form-inline">
+
+
+                                                <input type="text" class="timerId dontshow" id="" name="timerId" value="@timer.Id">
+                                                <label for="timerName" class="col-form-label mr-1">Name</label>
+                                                <input type="text" class="form-control timerName col-sm-auto mr-3" id="" name="timerName" placeholder="" value="@timer.TimerName">
+
+                                                <label for="timerInterval" class="col-form-label mr-1">Interval</label>
+                                                <div class=""><input type="text" class="form-control timerInterval mr-1 col-sm-3" name="timerInterval" placeholder="" value="@timer.TimerInterval">mins</div>
+
+                                            </div>
+
+                                            <div class="form-group">
+
+                                                <div class="">
+
+                                                    <label for="timerMessage" class="col-form-label">Message</label>
+                                                    <textarea type="text" name="timerMessage" class="form-control timerMessage" id="" placeholder="">@timer.TimerResponse</textarea>
+                                                </div>
+                                            </div>
+
+                                            <div class="inline">
+
+                                                <div class="">
+
+                                                    <label class="form-check-label col-form-label">
+                                                        @if (timer.Active != null && timer.Active.Value)
+                                                        {
+                                                            timerChecked = "checked";
+                                                        }
+                                                        <input class="form-check-input timerActive" type="checkbox" name="timerActive" @timerChecked value="1">
+                                                        Active?
+                                                    </label>
+                                                    <span class="float-right">
+
+                                                        <button class="btn btn-secondary timerSaveButton" onclick="timerSaveButton(this);" type="button"><i class="fa fa-save"></i></button>
+                                                        <button class="btn btn-danger timerDeleteButton" onclick="timerDeleteButton(this);" type="button"><i class="fa fa-times"></i></button>
+                                                    </span>
+                                                </div>
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                }
+                            }
+                        </div>
+                        <div class="timersAdded"></div>
+                        <div>
+                            <div>
+                                <div class=" addButton float-right">
+                                    <button class="btn btn-secondary" id="addTimerButton"><i class="fa fa-plus"></i> Add timer</button>
+                                </div>
+                            </div>
+                        </div>
+
+
+
+                    </div>
+                </div>
+                <div class="card pollsCard">
+                    <div class="card card-block">
+                        <h4 class="card-title"><i class="fa fa-bar-chart"></i> Polls <i class="fa fa-window-minimize float-right"></i></h4>
+                        <div class="card-text">
+                            <div class="addPollDiv" style="display: none;">
+                                <form class="pollForm">
+                                    <div class="card card-block bg-faded">
+                                        <div class="form-inline">
+
+                                            <label for="pollTitle" class="col-form-label mr-1">Title</label>
+                                            <input type="text" class="form-control pollTitle col-sm-auto mr-3" id="" name="pollTitle" placeholder="">
+                                            <label for="pollOptions" class="col-form-label mr-1">Options</label>
+                                            <input type="text" class="form-control pollOptions col-sm-auto mr-3" id="" name="pollTitle" placeholder="option1,option2,option3">
+
+                                            <div class="inline">
+                                                <div class="">
+                                                    <span class="float-right">
+                                                        <button class="btn btn-secondary pollSaveButton" type="button" id="pollSaveButton"><i class="fa fa-save"></i></button>
+                                                        <button class="btn btn-secondary pollRemoveButton" onclick="pollRemoveButton(this);" type="button"><i class="fa fa-times"></i></button>
+                                                    </span>
+                                                </div>
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                            <div class="pollResultsDiv" style="display: none; ">
+                                <div class="chart-title"></div>
+                                <div class="ct-chart" style="min-height: 300px !important;"></div>
+                            </div>
+                            <div class="addButton float-right">
+                                <button class="btn btn-secondary" id="addPollButton"><i class="fa fa-plus"></i> Add poll</button>
+                            </div>
+
+
+                        </div>
+
+
+
+                    </div>
+                </div>
+
+
+            </div>
+            <div class="card bannedWordCard">
+                <div class="card card-block">
+                    <h4 class="card-title"><i class="fa fa-list"></i> Banned Words <i class="fa fa-window-minimize float-right"></i></h4>
+                    <div class="card-text">
+
+                        <fieldset class="form-group">
+                            <label for="bannedWordsInput">Banned words:</label>
+                            <input class="form-control col-md-12" type="text" id="bannedWordsInput" name="bannedWordsInput" value="@Model.BannedWords" />
+                            <p>Banned words, seperate each word by comma.</p>
+                            <button class="btn btn-default" id="importBannedWordButton"><i class="fa fa-download"></i> Import default words</button>
+                            <button class="btn btn-default" id="saveBannedWordButton"><i class="fa fa-save"></i> Save list</button>
+                        </fieldset>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 rowTwo">
+            <div class="col-md streamCard" style="overflow: visible !important">
+                <div class="card streamCardDiv" style="overflow: visible !important">
+                    <div class="card card-block" style="overflow: visible !important">
+                        <h4 class="card-title"><i class="fa fa-video-camera"></i> Stream <i class="fa fa-window-minimize float-right"></i></h4>
+                        <div class="card-text">
+                            @*<form action="#" method="post">
+                                    <fieldset class="form-group">
+                                        <label for="streamTitle">Title</label>
+                                        <input type="text" class="form-control" id="streamTitle" name="streamTitle">
+                                        <label for="streamGame">Game</label>
+                                        <input type="text" class="form-control" id="streamGame" name="streamGame">
+                                    </fieldset>
+                                    <fieldset class="form-group">
+
+                                    </fieldset>
+                                    <button type="button" class="btn btn-info float-right">Save</button>
+                                </form>*@
+
+                            <form action="#" class="">
+                                <div class="form-group row">
+                                    <label class=" col-sm-1 col-form-label" for="streamTitle">Title</label>
+                                    <div class="col-sm">
+                                        <input type="text" class="form-control  col-sm" id="streamTitle" name="streamTitle">
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class=" col-sm-1 col-form-label" for="streamGame">Game</label>
+                                    <div class="col-sm">
+                                        <input type="text" class="form-control col-sm" id="streamGame" name="streamGame" style="z-index: 300000 !important;">
+                                    </div>
+                                    <label class=" col-sm-1 col-form-label" for="streamGame">Delay</label>
+                                    <div class="col-sm-3">
+                                        <input type="text" class="form-control col-sm" id="streamDelay" name="streamGame" style="z-index: 300000 !important;">
+                                    </div>
+
+                                </div>
+                                <div class="form-group row">
+                                    <label class="form-check-label ml-md-4 col-form-label" for="streamMatureCheckbox">
+
+                                        <input class="form-check-input streamMatureCheckbox" disabled readonly type="checkbox" name="streamMatureCheckbox" id="streamMatureCheckbox" value="1">
+                                        Mature?
+                                    </label>
+                                    <div class="col-sm">
+                                        <button id="streamInfoSaveButton" type="button" class="btn btn-secondary float-right"><i class="fa fa-save"></i></button>
+                                    </div>
+                                </div>
+                            </form>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md usersStatusCard">
+                <div class="card">
+                    <div class="card card-block">
+                        <h4 class="card-title"><i class="fa fa-users"></i> Users <i class="fa fa-window-minimize float-right"></i></h4>
+                        <div class="usersCard">
+                            <div class="usersCount">
+                                0
+                            </div>
+                            <div class="usersConnInfo pre-scrollable">
+
+                            </div>
+
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            <div class="col-md chattersCommandsCard">
+                <div class="card">
+                    <div class="card card-block">
+                        <h4 class="card-title"><i class="fa fa-exclamation-circle "></i> Chat stats <i class="fa fa-window-minimize float-right"></i></h4>
+                        <div class="eventCard">
+                            <div class="row">
+                                <div class="col-md-6 ">
+                                    <span class="h5" style="margin-left: 20px;">Top chatters</span>
+                                </div>
+                                <div class="col-md-6 ">
+                                    <span class="h5" style="margin-left: 20px;">Top commands</span>
+                                </div>
+
+                            </div>
+                            <div class="row">
+                                <div class="usersList  col-md-6 ">
+
+                                </div>
+                                <div class="commandsList col-md-6 ">
+
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            <div class="col-md chatCard">
+                <div class="card">
+                    <div class="card chatCardDiv">
+                        <div class="card card-block">
+                            <h4 class="card-title"><i class="fa fa-commenting-o "></i> Chat <i class="fa fa-window-minimize float-right"></i></h4>
+                            <div class="chatText pre-scrollable" style="display: none;">
+
+                            </div>
+                            @{
+                                var src = "http://www.twitch.tv/" + Model.BotUserSettings.BotChannel + "/chat";
+                            }
+                            <div class="embeddedChat">
+                                <iframe frameborder="0"
+                                        scrolling="yes"
+                                        id="@Model.BotUserSettings.BotChannel"
+                                        src="@src"
+                                        height="500"
+                                        width="100%"></iframe>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 rowTree">
+            <div class="card songRequestCard">
+                <div class="card card-block">
+                    <h4 class="card-title"><i class="fa fa-play"></i> Songrequests<i class="fa fa-window-minimize float-right card-title-icon"></i></h4>
+                    <div>
+                        <div class="inline">
+                            <div class="">
+                                <label class="form-check-label col-form-label">
+                                    <input id="modControlSong" class="form-check-input" type="checkbox" name="modControlSong" value="1">
+                                    Mods can control play function?
+                                </label>
+                            </div>
+
+                        </div>
+                        <div class="youtubePlayer">
+                            <div id="player"></div>
+                        </div>
+
+                        <div>
+
+                            <ul class="nav nav-pills nav-fill">
+                                <li class="nav-item">
+                                    <a id="playBtn" class="nav-link playControl" href="#"><i class="fa fa-play"></i></a>
+                                </li>
+                                <li class="nav-item">
+                                    <a id="stopBtn" class="nav-link playControl" href="#"><i class="fa fa-stop"></i></a>
+                                </li>
+                                <li class="nav-item ">
+                                    <a id="prevBtn" class="nav-link playControl" href="#"><i class="fa fa-step-backward"></i></a>
+                                </li>
+                                <li class="nav-item">
+                                    <a id="nextBtn" class="nav-link playControl" href="#"><i class="fa fa-step-forward"></i></a>
+                                </li>
+                            </ul>
+
+                            <div>
+                                <div class="inline">
+                                    <div class="float-right">
+                                        <span title="Autoplay next song">
+                                            <label class="form-check-label col-form-label rightMargin">
+                                                <input id="autoPlayNext" class="form-check-input" type="checkbox" name="autoPlayNext" data-set="true" value="1" checked="checked">
+                                                Autoplay next
+                                            </label>
+                                        </span>
+                                        <span title="Start over when ending">
+                                            <label class="form-check-label col-form-label rightMargin">
+                                                <input id="autoLoop" class="form-check-input" type="checkbox" name="autoLoop" data-set="true" value="1" checked="checked">
+                                                <i class="fa fa-refresh"></i>
+                                            </label>
+                                        </span>
+                                        <span title="Random play">
+                                            <label class="form-check-label col-form-label rightMargin">
+                                                <input id="randomPlay" class="form-check-input" type="checkbox" name="randomPlay" data-set="false" value="1">
+                                                <i class="fa fa-random"></i>
+                                            </label>
+                                        </span>
+                                    </div>
+
+                                </div>
+                            </div>
+
+                        </div>
+                        <div class="">
+                            <div class="playlistHeader">Playlist</div>
+                        </div>
+                        <div class="">
+                            <ul class="playlistContent"></ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+<script type="text/javascript">
+    var player;
+
+    var inverted = false;
+
+    $(document).ready(function () {
+
+
+        $("#autoLoop").change(function () {
+
+            var set = $(this).data("set");
+
+            if (set == true) {
+                set = false;
+            } else {
+                set = true;
+            }
+
+
+            $("#autoLoop").data("set", set);
+
+        });
+
+        $("#randomPlay").change(function () {
+
+            var set = $(this).data("set");
+
+            if (set == true) {
+                set = false;
+            } else {
+                set = true;
+            }
+
+            $("#randomPlay").data("set", set);
+
+        });
+
+        $("#autoPlayNext").change(function () {
+
+            var set = $(this).data("set");
+
+            if (set == true) {
+                set = false;
+            } else {
+                set = true;
+            }
+
+            $("#autoPlayNext").data("set", set);
+
+        });
+
+        $("#darkModeButton").click(function () {
+            //alert("darkMode");
+            $("body").toggleClass("inverted");
+            $(".card-title").toggleClass("invertedCardTitle");
+            $(".usersCount").toggleClass("invertedCardTitle");
+            $(".consoleLog").toggleClass("invertedCardTitle");
+            $(".youtubePlayer").toggleClass("youtubePlayerIgnore");
+            $(".chatMsg").toggleClass("invertedCardTitle");
+            if (inverted) {
+                inverted = false;
+            } else {
+                inverted = true;
+            }
+        });
+
+        $("#videoToggleButton").click(function () {
+            toggleButton(this);
+            $(".songRequestCard").toggle();
+            $(".rowOne").toggleClass("col-md-4");
+            $(".rowOne").toggleClass("col-md-6");
+            $(".rowTwo").toggleClass("col-md-4");
+            $(".rowTwo").toggleClass("col-md-6");
+        });
+
+        $("#chatToggleButton").click(function () {
+            toggleButton(this);
+            $(".chatCard").toggle();
+        });
+        $("#consoleToggleButton").click(function () {
+            toggleButton(this);
+            $(".consoleStatusCard").toggle();
+        });
+        $("#usersToggleButton").click(function () {
+            toggleButton(this);
+            $(".usersStatusCard").toggle();
+        });
+        $("#loyaltyToggleButton").click(function () {
+            toggleButton(this);
+            $(".loyaltyCard").toggle();
+        });
+        $("#chatPrefsToggleButton").click(function () {
+            toggleButton(this);
+            $(".chatPrefsCard").toggle();
+        });
+        $("#triggersToggleButton").click(function () {
+            toggleButton(this);
+            $(".triggersCard").toggle();
+        });
+        $("#timersToggleButton").click(function () {
+            toggleButton(this);
+            $(".timersCard").toggle();
+        });
+        $("#pollsToggleButton").click(function () {
+            toggleButton(this);
+            $(".pollsCard").toggle();
+        });
+
+        $("#streamToggleButton").click(function () {
+            toggleButton(this);
+            $(".streamCard").toggle();
+        });
+
+        $("#chatCommandButton").click(function () {
+            toggleButton(this);
+            $(".chattersCommandsCard").toggle();
+        });
+
+        $("#bannedWordsToggleButton").click(function() {
+            toggleButton(this);
+            $(".bannedWordCard").toggle();
+        });
+
+        $("#addPollButton").click(function() {
+            $(".addPollDiv").show();
+            $(".pollResultsDiv").hide();
+        });
+
+
+
+        // Make each header clickable so content is toggled
+        $(".card-title").click(function () {
+            $(this).next().toggle();
+            $(this).find("i").last().toggleClass("fa-window-minimize").toggleClass("fa-window-maximize");
+
+        });
+
+        $("#addTriggerButton").click(function() {
+            var triggerDiv = '\
+                <form class="triggerForm">\
+                <div class="card card-block bg-faded">\
+                <div class="form-inline">\
+                \
+                <input type="text" class="triggerId dontshow" id="" name="triggerId">\
+                <label for="timerName" class="col-form-label mr-1">Trigger</label>\
+                <input type="text" class="form-control triggerName col-sm-auto mr-3" id="" name="triggerName" placeholder="">\
+                \
+                <label class="form-check-label col-form-label" >\
+                <input class="form-check-input triggerActive" type="checkbox" name="triggerActive" value="1">\
+                Active?\
+                </label>\
+                </div>\
+                \
+                <div class="form-group">\
+                <div class="">\
+                <label for="triggerMessage" class="col-form-label">Message</label>\
+                <textarea type="text" name="triggerMessage" class="form-control triggerMessage" id="" placeholder=""></textarea>\
+                </div>\
+                </div>\
+                \
+                <div class="inline">\
+                <div class="">\
+                <label class="form-check-label col-form-label" >\
+                <input class="form-check-input mod" type="checkbox" name="mod" value="1">\
+                Mods can trigger\
+                </label>\
+                <label class="form-check-label col-form-label" >\
+                <input class="form-check-input viewer" type="checkbox" name="viewer" value="1">\
+                Viewers can trigger\
+                </label>\
+                <span class="float-right">\
+                <button class="btn btn-secondary triggerSaveButton" onclick="triggerSaveButton(this);" type="button"><i class="fa fa-save"></i></button>\
+                <button class="btn btn-danger triggerDeleteButton dontshow" onclick="triggerDeleteButton(this);" type="button"><i class="fa fa-times"></i></button>\
+                <button class="btn btn-secondary triggerRemoveButton" onclick="triggerRemoveButton(this);" type="button"><i class="fa fa-times"></i></button>\
+                </span>\
+                </div>\
+            \
+                </div>\
+                </div>\
+                </form>\
+                ';
+
+            $(".triggersAdded").append(triggerDiv);
+        });
+
+        $("#addTimerButton").click(function() {
+
+
+            var timerDiv = '\
+                <form class="timerForm">\
+                <div class="card card-block bg-faded">\
+                <div class="form-inline">\
+                \
+                <input type="text" class="timerId dontshow" id="" name="timerId">\
+                <label for="timerName" class="col-form-label mr-1">Name</label>\
+                <input type="text" class="form-control timerName col-sm-auto mr-3" id="" name="timerName" placeholder="">\
+                \
+                <label for="timerInterval" class="col-form-label mr-1">Interval</label>\
+                <div class=""><input type="text" class="form-control timerInterval mr-1 col-sm-3" name="timerInterval" placeholder="">mins</div>\
+                \
+                </div>\
+                \
+                <div class="form-group">\
+                <div class="">\
+                <label for="timerMessage" class="col-form-label">Message</label>\
+                <textarea type="text" name="timerMessage" class="form-control timerMessage" id="" placeholder=""></textarea>\
+                </div>\
+                </div>\
+                \
+                <div class="inline">\
+                <div class="">\
+                <label class="form-check-label col-form-label" >\
+                <input class="form-check-input timerActive" type="checkbox" name="timerActive" value="1">\
+                Active?\
+                </label>\
+                <span class="float-right">\
+                <button class="btn btn-secondary timerSaveButton" onclick="timerSaveButton(this);" type="button"><i class="fa fa-save"></i></button>\
+                <button class="btn btn-danger timerDeleteButton dontshow" onclick="timerDeleteButton(this);" type="button"><i class="fa fa-times"></i></button>\
+                <button class="btn btn-secondary timerRemoveButton" onclick="timerRemoveButton(this);" type="button"><i class="fa fa-times"></i></button>\
+                </span>\
+                </div>\
+            \
+                </div>\
+                </div>\
+                </form>\
+                ';
+
+            $(".timersAdded").append(timerDiv);
+        });
+
+
+
+
+        $("#btnLoyaltySave").click(function () {
+            console.log("Clicked btnLoyaltySave");
+            var loyaltyData = $("#loyaltyForm").serialize();
+
+            $(this).find("i").toggleClass("fa-spinner fa-spin");
+
+            $.ajax({
+                type: "POST",
+                url: "@Url.Action("LoyaltySave")",
+                data: loyaltyData,
+                dataType: "json",
+                success: function (response) {
+                    if (response.data == "1") {
+                        $.amaran({
+                            'theme': 'colorful',
+                            'content'   :{
+                                bgcolor:'#27ae60',
+                                color:'#fff',
+                                message: response.message,
+                            },
+                            'closeOnClick':false,
+                            'inEffect':'slideTop',
+                            'outEffect':'slideLeft'
+                        });
+
+                    } else {
+
+                        $.amaran({
+                            'theme': 'colorful',
+                            'content': {
+                                bgcolor: '##ff3300',
+                                color: '#fff',
+                                message: response.message,
+                            },
+                            'closeOnClick': false,
+                            'inEffect': 'slideTop',
+                            'outEffect': 'slideLeft'
+                        });
+                    }
+                }
+            });
+            $(this).find("i").toggleClass("fa-spinner fa-spin");
+        });
+
+        $("#streamGame").easyAutocomplete(
+            {
+                adjustWidth: false,
+                url: function(phrase) {
+                    return "@Url.Action("GetGames", "Home")";
+                },
+                getValue: "Name",
+
+                template: {
+                    type: "custom",
+                    method: function(value, item) {
+                        return "<img src='" + item.Box.Small + "' /> " + item.Name;
+                    }
+                },
+                ajaxSettings: {
+                    dataType: "json",
+                    method: "POST",
+                    data: {
+                        dataType: "json"
+                    }
+                },
+
+                preparePostData: function(data) {
+                    data.phrase = $("#streamGame").val();
+                    return data;
+                },
+                requestDelay: 400
+            }
+        );
+
+
+        //$("#pollsToggleButton").click();
+        $("#chatPrefsToggleButton").click();
+        //$("#chatCommandButton").click();
+    });
+
+
+
+    function timerSaveButton(elem) {
+        var data = $(elem).closest("form").serialize();
+
+        // save
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("TimerSave")',
+            data: data,
+            dataType: "json",
+            success: function (response) {
+                if (response.data == "1") {
+                    // show delete button
+                    $(elem).closest("form").find(".timerDeleteButton").removeClass("dontshow");
+                    // remove cancel button
+                    $(elem).closest("form").find(".timerRemoveButton").addClass("dontshow");
+                    // insert returned Id in timerId
+                    $(elem).closest("form").find(".timerId").val(response.timerId);
+
+                    $.amaran({
+                        'theme': 'colorful',
+                        'content'   :{
+                            bgcolor:'#27ae60',
+                            color:'#fff',
+                            message: response.message,
+                        },
+                        'closeOnClick':false,
+                        'inEffect':'slideTop',
+                        'outEffect':'slideLeft'
+                    });
+                } else {
+                    $.amaran({
+                        'theme': 'colorful',
+                        'content': {
+                            bgcolor: '##ff3300',
+                            color: '#fff',
+                            message: response.message,
+                        },
+                        'closeOnClick': false,
+                        'inEffect': 'slideTop',
+                        'outEffect': 'slideLeft'
+                    });
+                }
+            }
+        });
+
+        console.log("Timer form: " + data);
+    }
+
+    function timerDeleteButton(elem) {
+
+        var data = $(elem).closest("form").serialize();
+
+        console.log("Timer form deleted: " + data);
+
+        // save
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("TimerDelete")',
+            data: data,
+            dataType: "json",
+            success: function (response) {
+                if (response.data == "1") {
+                    $(elem).closest("form").remove();
+
+                    $.amaran({
+                        'theme': 'colorful',
+                        'content'   :{
+                            bgcolor:'#27ae60',
+                            color:'#fff',
+                            message: response.message,
+                        },
+                        'closeOnClick':false,
+                        'inEffect':'slideTop',
+                        'outEffect':'slideLeft'
+                    });
+                } else {
+                    $.amaran({
+                        'theme': 'colorful',
+                        'content': {
+                            bgcolor: '##ff3300',
+                            color: '#fff',
+                            message: response.message,
+                        },
+                        'closeOnClick': false,
+                        'inEffect': 'slideTop',
+                        'outEffect': 'slideLeft'
+                    });
+                }
+            }
+        });
+
+    }
+
+
+
+    function timerRemoveButton(elem) {
+        $(elem).closest("form").remove();
+    }
+
+    function pollRemoveButton(elem) {
+        $(".addPollDiv").hide();
+        $(".pollForm").find("input[type=text], textarea").val("");
+
+    }
+
+    function triggerSaveButton(elem) {
+        var data = $(elem).closest("form").serialize();
+
+        // save
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("TriggerSave")',
+            data: data,
+            dataType: "json",
+            success: function (response) {
+                if (response.data == "1") {
+                    // show delete button
+                    $(elem).closest("form").find(".triggerDeleteButton").removeClass("dontshow");
+                    // remove cancel button
+                    $(elem).closest("form").find(".triggerRemoveButton").addClass("dontshow");
+                    // insert returned Id in timerId
+                    $(elem).closest("form").find(".triggerId").val(response.triggerId);
+
+                    $.amaran({
+                        'theme': 'colorful',
+                        'content'   :{
+                            bgcolor:'#27ae60',
+                            color:'#fff',
+                            message: response.message,
+                        },
+                        'closeOnClick':false,
+                        'inEffect':'slideTop',
+                        'outEffect':'slideLeft'
+                    });
+                } else {
+                    $.amaran({
+                        'theme': 'colorful',
+                        'content': {
+                            bgcolor: '##ff3300',
+                            color: '#fff',
+                            message: response.message,
+                        },
+                        'closeOnClick': false,
+                        'inEffect': 'slideTop',
+                        'outEffect': 'slideLeft'
+                    });
+                }
+            }
+        });
+
+        console.log("Trigger form: " + data);
+    }
+
+    function triggerDeleteButton(elem) {
+
+        var data = $(elem).closest("form").serialize();
+
+        console.log("Trigger form deleted: " + data);
+
+        // save
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("TriggerDelete")',
+            data: data,
+            dataType: "json",
+            success: function (response) {
+                if (response.data == "1") {
+                    $(elem).closest("form").remove();
+
+                    $.amaran({
+                        'theme': 'colorful',
+                        'content'   :{
+                            bgcolor:'#27ae60',
+                            color:'#fff',
+                            message: response.message,
+                        },
+                        'closeOnClick':false,
+                        'inEffect':'slideTop',
+                        'outEffect':'slideLeft'
+                    });
+                } else {
+                    $.amaran({
+                        'theme': 'colorful',
+                        'content': {
+                            bgcolor: '##ff3300',
+                            color: '#fff',
+                            message: response.message,
+                        },
+                        'closeOnClick': false,
+                        'inEffect': 'slideTop',
+                        'outEffect': 'slideLeft'
+                    });
+                }
+            }
+        });
+
+    }
+
+    function triggerRemoveButton(elem) {
+        $(elem).closest("form").remove();
+    }
+
+    function toggleButton(elem) {
+        $(elem).toggleClass("btn-primary-outline").toggleClass("btn-secondary");
+    }
+
+    function clearUsers() {
+        $(".usersCount").text("0");
+
+        $(".usersConnInfo").html("");
+    }
+
+    function updateCommands(list) {
+        var html = "";
+        //console.log(list);
+        var i = 0;
+        var className = "";
+        $.each(list, function (index, value) {
+            html += "<div class='command'>";
+            $.each(value, function (index2, value2) {
+                if (i == 0) {
+                    className = "commandName";
+                }
+                else {
+                    className = "commandCount";
+                }
+
+                html += "<span class='" + className +"'>" + value2 + "</span>";
+                i++;
+            });
+            html += "</div>";
+            i = 0;
+            className = "";
+        });
+
+
+        html += "";
+        $(".commandsList").html(html);
+    }
+
+    function updateChatters(list) {
+        var html = "";
+        //console.log(list);
+        var i = 0;
+        var className = "";
+        $.each(list, function (index, value) {
+            html += "<div class='chatter'>";
+            $.each(value, function(index2, value2) {
+                if (i == 0) {
+                    className = "chatterName";
+                } else {
+                    className = "chatCount";
+                }
+                html += "<span class='" + className +"'>" + value2 + "</span>";
+                i++;
+            });
+            i = 0;
+            className = "";
+            html += "</div>";
+        });
+
+
+        html += "";
+        $(".usersList").html(html);
+    }
+
+    function removePlaylistItem(event) {
+
+        var button = event.target;
+
+        var $li = $(button).parent();
+
+        $li.show("slide", { direction: "right" }, 700);
+        $li.remove();
+
+        event.preventDefault();
+        event.stopPropagation();
+    }
+
+    function songRequestElemClick(elem){
+        var $video = $(elem);
+
+        //$("#player")[0].src = "//www.youtube.com/embed/" + $($video).data("videoid") + "?rel=0&autoplay=1";
+        player.loadVideoById($($video).data("videoid"));
+        resetAllPlaying();
+        $video.attr("data-playing", "true");
+        $video.attr("data-played", "true");
+        playingEvent($video, null, null);
+    };
+
+
+
+    function playingEvent(li, name, videoId) {
+        var liVideoId = $(li).data("videoid");
+        var nameOfSong = $(li).data("title");
+
+        if (liVideoId == undefined)
+            return;
+
+        var url = "https://www.youtube.com/watch?v=" + liVideoId;
+
+        var twitchHub = $.connection.twitchHub;
+
+        twitchHub.server.playingSong(nameOfSong, url);
+    }
+
+    function resetAllPlaying() {
+        $(".playlistContent").find("li").each(function() {
+            $(this).attr("data-playing", "false");
+        });
+    }
+
+
+    (function () {
+        // Defining a connection to the server hub.
+
+        var twitchHub = $.connection.twitchHub;
+        // Setting logging to true so that we can see whats happening in the browser console log. [OPTIONAL]
+
+        $.connection.hub.logging = true;
+        // Start the hub
+
+        $.connection.hub.start();
+
+
+        // This is the client method which is being called inside the MyHub constructor method every 3 seconds
+        twitchHub.client.SendServerTime = function (serverTime) {
+            // Set the received serverTime in the span to show in browser
+
+            //$(".chatText").append(serverTime + "<br>");
+        };
+
+
+        twitchHub.client.UpdateChannelBar = function (streamStatus) {
+            //console.log("UpdateChannelBar triggered");
+
+            if (!$("#streamTitle").is(":focus")) {
+                $("#streamTitle").val(streamStatus.Title);
+            }
+            if (!$("#streamGame").is(":focus")) {
+                $("#streamGame").val(streamStatus.Game);
+            }
+
+            $("#streamDelay").val(streamStatus.Delay);
+
+            if (streamStatus.Mature) {
+                $('.streamMatureCheckbox').attr('checked', true);
+            } else {
+                $('.streamMatureCheckbox').attr('checked', false);
+            }
+
+
+            $(".channelNameHeader").html(streamStatus.Channel);
+
+            if (streamStatus.Online) {
+                if ($(".channelOnlineOfflineStatus").html() != "LIVE") {
+                    $(".channelOnlineOfflineStatus").html("LIVE");
+                    $(".onlineOfflineIcon").addClass("fa-video-camera faa-flash animated");
+                    $(".onlineOfflineIcon").removeClass("fa-stop");
+                    $(".channelBar").removeClass("channelOffline");
+                    $(".channelBar").addClass("channelOnline");
+
+                }
+                if (streamStatus.Uptime != null) {
+                    var timeSpan = streamStatus.Uptime.split(".")[0];
+                    var timeSplit = timeSpan.split(":");
+                    var hour = timeSplit[0];
+                    var mins = timeSplit[1];
+                    var secs = timeSplit[2];
+                    $(".channelUptimeTime").html(hour+":"+mins+":"+secs);
+                }
+
+            } else {
+                if ($(".channelOnlineOfflineStatus").html() != "OFFLINE") {
+                    $(".channelOnlineOfflineStatus").html("OFFLINE");
+                    $(".onlineOfflineIcon").removeClass("fa-video-camera faa-flash animated");
+                    $(".onlineOfflineIcon").addClass("fa-stop");
+                    $(".channelBar").addClass("channelOffline");
+                    $(".channelBar").removeClass("channelOnline");
+                    $(".channelUptimeTime").html("--:--");
+                }
+
+
+            }
+
+        };
+
+        twitchHub.client.ChatShow = function (msg) {
+
+            //$(".chatText").append(msg);
+
+            //var objDiv = document.getElementsByClassName("chatText")[0];
+
+            //if (inverted) {
+            //    $(".chatText").find(".chatMsg").last().toggleClass("invertedCardTitle");
+            //}
+
+            //objDiv.scrollTop = objDiv.scrollHeight;
+        };
+
+        twitchHub.client.DonationShow = function (msg) {
+            //$(".chatText").append("<div class='donationMsg'>" + msg + "</span>");
+
+            //var objDiv = document.getElementsByClassName("chatText")[0];
+            //objDiv.scrollTop = objDiv.scrollHeight;
+        };
+
+        twitchHub.client.HostShow = function (msg) {
+            //$(".chatText").append("<div class='hostMsg'>" + msg + "</span>");
+
+            //var objDiv = document.getElementsByClassName("chatText")[0];
+            //objDiv.scrollTop = objDiv.scrollHeight;
+        };
+
+        twitchHub.client.ModsCanControlPlaylist = function (msg) {
+
+            var messageTrue = "Mods can control play functions";
+            var messageFalse = "Mods can not control play functions";
+
+
+            var log = msg ? messageTrue : messageFalse;
+            $.amaran({
+                'theme': 'colorful',
+                'content'   :{
+                    bgcolor:'#27ae60',
+                    color:'#fff',
+                    message: log,
+                },
+                'closeOnClick':false,
+                'inEffect':'slideTop',
+                'outEffect':'slideLeft'
+            });
+        };
+
+
+
+
+
+
+        twitchHub.client.ConsoleLog = function (log) {
+            $(".consoleLog").append(log + "<br>");
+            var objDiv = document.getElementsByClassName("consoleLog")[0];
+            objDiv.scrollTop = objDiv.scrollHeight;
+        };
+
+        twitchHub.client.ChattersAndCommands = function (obj) {
+            updateCommands(obj.topcommands);
+            updateChatters(obj.topchatters);
+        };
+
+
+
+        twitchHub.client.UsersConnLog = function (log) {
+            var value = 0;
+
+            if (log.indexOf("(connected)") != -1) {
+                value = parseInt($(".usersCount").text()) + 1;
+            }
+            else if (log.indexOf("(disconnected)") != -1) {
+                if (parseInt($(".usersCount").text()) > 0) {
+                    value = parseInt($(".usersCount").text()) - 1;
+                } else {
+                    value = 0;
+                }
+
+            }
+
+            console.log("Users: " + value.toString());
+
+            $(".usersCount").text(value.toString());
+
+            $(".usersConnInfo").append(log);
+            var objDiv = document.getElementsByClassName("usersConnInfo")[0];
+            objDiv.scrollTop = objDiv.scrollHeight;
+        };
+
+        twitchHub.client.BotStatus = function (connected) {
+            console.log("BotStatus: " + connected);
+            if (connected.message != "") {
+                $("#botMsg").removeClass("dontshow").text(connected.message);
+            }
+            if (connected.warning != "") {
+                $("#botWarningMsg").removeClass("dontshow").text(connected.warning);
+            }
+            if (connected.info != "") {
+                $("#botinfoMsg").removeClass("dontshow").text(connected.info);
+            }
+
+
+
+        };
+
+        twitchHub.client.UpdatePlayList = function (item) {
+            //console.log("Updated playlist added: " + item.url);
+            var dt = new Date();
+            var time = dt.getHours() + ":" + dt.getMinutes() + ":" + dt.getSeconds();
+
+            var playItem = "<li id='playlistItem_" + item.videoid + "' class='songRequest songRequestElem' data-videoid='" + item.videoid + "' data-title='" + item.title +"' data-played='false' data-playing='false' onclick='songRequestElemClick(this);'><b>"
+                + item.title + "</b><button class='btn btn-sm btn-danger removePlaylistItemRow pull-right' style='height:35px !important;width:35px !important;' onclick='removePlaylistItem(event);'><i class='fa fa-times'></i></button><br/>by " +
+                item.user + " (" + time + ")" +
+                "</li>";
+            //console.log(playItem);
+            $(".playlistContent").append(playItem);
+        };
+
+
+        twitchHub.client.Play = function (item) {
+            playYt();
+        };
+        twitchHub.client.Stop = function (item) {
+            stopYt();
+        };
+        twitchHub.client.NextSong = function (item) {
+            nextYt();
+        };
+        twitchHub.client.PrevSong = function (item) {
+            prevYt();
+        };
+
+
+
+
+        twitchHub.client.SavedBannedWords = function (retval) {
+
+            if (retval.data == "1") {
+                console.log("Banned words save: " + retval.message);
+                $.amaran({
+                    'theme': 'colorful',
+                    'content'   :{
+                        bgcolor:'#27ae60',
+                        color:'#fff',
+                        message: response.message,
+                    },
+                    'closeOnClick':false,
+                    'inEffect':'slideTop',
+                    'outEffect':'slideLeft'
+                });
+            } else {
+                console.log("Banned words save: " + retval.message);
+                $.amaran({
+                    'theme': 'colorful',
+                    'content': {
+                        bgcolor: '#ff3300',
+                        color: '#fff',
+                        message: response.message,
+                    },
+                    'closeOnClick': false,
+                    'inEffect': 'slideTop',
+                    'outEffect': 'slideLeft'
+                });
+            }
+
+
+
+
+        };
+
+        twitchHub.client.SetStreamInfo = function(streamStatus) {
+            console.log("Stream title: " + streamStatus.Title);
+            console.log("Streams game: " + streamStatus.Game);
+            console.log("Mature?: " + streamStatus.Mature);
+            console.log("Stream delay: " + streamStatus.Delay);
+
+
+            $("#streamTitle").val(streamStatus.Title);
+            $("#streamGame").val(streamStatus.Game);
+            $("#streamDelay").val(streamStatus.Delay);
+            if (streamStatus.Mature) {
+                $('.streamMatureCheckbox').attr('checked', true);
+            } else {
+                $('.streamMatureCheckbox').attr('checked', false);
+            }
+
+
+            $(".channelNameHeader").html(streamStatus.Channel);
+            if (streamStatus.Online) {
+                $(".channelOnlineOfflineStatus").html("LIVE");
+                $(".onlineOfflineIcon").addClass("fa-video-camera faa-flash animated");
+                $(".onlineOfflineIcon").removeClass("fa-stop");
+                $(".channelBar").removeClass("channelOffline");
+                $(".channelBar").addClass("channelOnline");
+            } else {
+                $(".channelOnlineOfflineStatus").html("OFFLINE");
+                $(".onlineOfflineIcon").removeClass("fa-video-camera faa-flash animated");
+                $(".onlineOfflineIcon").addClass("fa-stop");
+                $(".channelBar").addClass("channelOffline");
+                $(".channelBar").removeClass("channelOnline");
+            }
+            $(".channelBar").removeClass("dontshow");
+
+
+
+
+            if (streamStatus.Status != "" && streamStatus.Game != "") {
+                $.amaran({
+                    'theme': 'colorful',
+                    'content'   :{
+                        bgcolor:'#27ae60',
+                        color:'#fff',
+                        message: "Updated stream title and game",
+                    },
+                    'closeOnClick':false,
+                    'inEffect':'slideTop',
+                    'outEffect':'slideLeft'
+                });
+            }
+
+
+        }
+
+        twitchHub.client.StreamInfoSaveCallback = function(data, message) {
+            if (data == "1") {
+                $.amaran({
+                    'theme': 'colorful',
+                    'content'   :{
+                        bgcolor:'#27ae60',
+                        color:'#fff',
+                        message: message,
+                    },
+                    'closeOnClick':false,
+                    'inEffect':'slideTop',
+                    'outEffect':'slideLeft'
+                });
+
+            } else {
+
+                $.amaran({
+                    'theme': 'colorful',
+                    'content': {
+                        bgcolor: '##ff3300',
+                        color: '#fff',
+                        message: message,
+                    },
+                    'closeOnClick': false,
+                    'inEffect': 'slideTop',
+                    'outEffect': 'slideLeft'
+                });
+            }
+
+            $("#streamInfoSaveButton").find("i").toggleClass("fa-spinner fa-spin");
+        }
+
+        twitchHub.client.ImportBannedWords = function (bannedWords) {
+            //console.log(bannedWords);
+
+            var words = [];
+            $.each(bannedWords, function( index, value ) {
+                words.push(value.Word);
+            });
+
+            $("#bannedWordsInput").val(words.join());
+        };
+
+        twitchHub.client.CreatedPoll = function(title, id) {
+            console.log("Created poll " + title + " with id " + id);
+        }
+
+        twitchHub.client.UpdatePoll = function(title, labels, series) {
+
+            var data = {
+                labels: labels,
+                series: series
+            };
+
+            var options = {
+                labelInterpolationFnc: function (value) {
+                    return value;
+                },
+                height: '270px'
+            };
+
+            var responsiveOptions = [
+
+                ['screen and (min-width:1024px)', {
+                    labelOffset: 0,
+                    chartPadding: 30
+                }]
+            ];
+
+            new Chartist.Pie('.ct-chart', data, options, responsiveOptions);
+            //$(".addPollDiv").hide();
+            $(".pollResultsDiv").show();
+            $(".chart-title").html(title);
+        }
+
+        twitchHub.client.CreatePoll = function(title, choices, series) {
+
+            $(".chart-title").html(title);
+
+            //var seriesFromChoices = Array.from({ length: choices.length }, () => (100 / choices.length));
+            var seriesFromChoices = Array.from({ length: choices.length });
+
+            var data = {
+                labels: choices,
+                //series: seriesFromChoices
+            };
+
+            var options = {
+                labelInterpolationFnc: function(value) {
+                    return value;
+                },
+                height: '270px'
+            };
+
+            var responsiveOptions = [
+
+                ['screen and (min-width:1024px)', {
+                    labelOffset: 0,
+                    chartPadding: 30
+                }]
+            ];
+
+            new Chartist.Pie('.ct-chart', data, options, responsiveOptions);
+            $(".addPollDiv").hide();
+            $(".pollResultsDiv").show();
+
+        }
+
+        //Button click jquery handler
+        $("#botConnectButton").click(function () {
+            // Call SignalR hub method
+
+            var username = $(this).data("username");
+            var password = $(this).data("password");
+            var channel = $(this).data("channel");
+            twitchHub.server.connectBot(username, password, channel);
+        });
+
+        $("#botReconnectButton").click(function () {
+            var username = $(this).data("username");
+            var password = $(this).data("password");
+            var channel = $(this).data("channel");
+
+            twitchHub.server.reconnect(username, password, channel);
+        });
+
+        $("#botDisconnectButton").click(function () {
+            clearUsers();
+            twitchHub.server.disconnectBot();
+            $(".channelBar").toggleClass("dontshow");
+        });
+
+        $("#pollSaveButton").click(function() {
+            var title = $(".pollTitle").val();
+            var options = $(".pollOptions").val();
+            // create poll
+            twitchHub.server.createStrawPoll(title, options);
+            $(".addPollDiv").hide();
+            $(".pollResultsDiv").show();
+        });
+
+
+        $("#streamInfoSaveButton").click(function() {
+            console.log("Clicked streamInfoSaveButton");
+
+            var title = $("#streamTitle").val();
+            var game = $("#streamGame").val();
+            var mature = $(".streamMatureCheckbox").attr('checked');
+            var matureInt;
+            if (mature) {
+                matureInt = 1;
+            } else {
+                matureInt = 0;
+            }
+            var channel = $("#botConnectButton").data("channel");
+            twitchHub.server.saveStreamInfo(title, game, channel, matureInt);
+
+            $(this).find("i").toggleClass("fa-spinner fa-spin");
+
+        });
+
+        $("#saveBannedWordButton").click(function () {
+            // Call SignalR hub method
+            var words = $("#bannedWordsInput").val();
+            var channel = $(this).data("channel");
+
+            twitchHub.server.saveBannedWords(words, channel);
+        });
+        $("#importBannedWordButton").click(function () {
+
+            twitchHub.server.importDefaultBannedWords();
+        });
+
+        $("#modControlSong").click(function() {
+            // get value of checkbox
+            var checked = $("#modControlSong").prop('checked');
+
+            twitchHub.server.updateModsCanControlPlaylist(checked);
+        });
+
+        function getFirstUnplayedVideo() {
+            console.log("getFirstUnplayedVideo()");
+            return $(".playlistContent").find('[data-played="false"]').first();
+        }
+
+        function getFirstVideo() {
+            console.log("getFirstVideo()");
+            return $('.songRequestElem').first();
+        }
+
+        function getNextVideo() {
+            console.log("getNextVideo()");
+            var next = $(".playlistContent").find('[data-playing="true"]').next();
+
+            return next;
+        }
+
+        function getPrevPlayedVideo() {
+            console.log("getPrevPlayedVideo()");
+            return $(".playlistContent").find('[data-playing="true"]').prev();
+        }
+
+        function getLastPlayedVideo() {
+            console.log("getLastPlayedVideo()");
+            return $(".playlistContent").find('[data-playing="true"]').first();
+        }
+
+        function getRandomVideo() {
+            var list = $('.songRequestElem');
+            var num = Math.floor(Math.random() * list.length);
+
+            if (list.length > 1) {
+                var elem = list.get(num);
+
+                while ($(elem).data("playing") == "true") {
+                    num = Math.floor(Math.random() * list.length);
+                    elem = list.get(num);
+                }
+
+            }
+
+            console.log("Selected index: " + num);
+            var randomElem = list.get(num);
+
+            return $(randomElem);
+
+        }
+
+
+        $("#playBtn").click(function() {
+
+            var $video = getLastPlayedVideo();
+            if ($video.length == 0) {
+                $video = getFirstUnplayedVideo();
+            }
+            console.log("Playing: " + "//www.youtube.com/embed/" + $($video).data("videoid") + "?rel=0&autoplay=1");
+            //$("#player")[0].src = "//www.youtube.com/embed/" + $($video).data("videoid") + "?rel=0&autoplay=1";
+            player.loadVideoById($($video).data("videoid"));
+            resetAllPlaying();
+            $video.attr("data-playing", "true");
+            $video.attr("data-played", "true");
+            playingEvent($video, null, null);
+        });
+
+        $("#stopBtn").click(function() {
+            //var video = $("#player").attr("src").replace("&autoplay=1", "&autoplay=0");
+            player.stopVideo();
+            //$("#player").attr("src", "");
+            //$("#player").attr("src", video);
+        });
+
+        $("#nextBtn").click(function() {
+            var $video = getNextVideo();
+            if (ifRandom()) {
+                console.log(" random");
+                $video = getRandomVideo();
+            }
+            else {
+                console.log(" not random");
+                $video = getNextVideo();
+            }
+            if ($video.length == 0) {
+                if (ifAutoloop()) {
+                    $video = getFirstVideo();
+                } else {
+                    return null;
+                }
+
+            }
+
+
+            console.log("Playing: " + "//www.youtube.com/embed/" + $($video).data("videoid") + "?rel=0&autoplay=1");
+            //$("#player")[0].src = "//www.youtube.com/embed/" + $($video).data("videoid") + "?rel=0&autoplay=1";
+            player.loadVideoById($($video).data("videoid"));
+            resetAllPlaying();
+            $video.attr("data-playing", "true");
+            $video.attr("data-played", "true");
+            playingEvent($video, null, null);
+        });
+
+        $("#prevBtn").click(function() {
+            var $video = getPrevPlayedVideo();
+
+            if ($video.length == 0) {
+                return;
+            }
+
+            console.log("Playing: " + "//www.youtube.com/embed/" + $($video).data("videoid") + "?rel=0&autoplay=1");
+            //$("#player")[0].src = "//www.youtube.com/embed/" + $($video).data("videoid") + "?rel=0&autoplay=1";
+            player.loadVideoById($($video).data("videoid"));
+            resetAllPlaying();
+            $video.attr("data-playing", "true");
+            $video.attr("data-played", "true");
+            playingEvent($video, null, null);
+        });
+
+        function playingEvent(li, name, videoId) {
+            var liVideoId = $(li).data("videoid");
+            var nameOfSong = $(li).data("title");
+
+            if (liVideoId == undefined)
+                return;
+
+            var url = "https://www.youtube.com/watch?v=" + liVideoId;
+
+            var twitchHub = $.connection.twitchHub;
+
+            twitchHub.server.playingSong(nameOfSong, url);
+        }
+
+        function resetAllPlaying() {
+            $(".playlistContent").find("li").each(function() {
+                $(this).attr("data-playing", "false");
+            });
+        }
+
+
+    })()
+</script>
+<script src="http://www.youtube.com/iframe_api"></script>
+<script>
+
+
+
+
+    function onYouTubeIframeAPIReady() {
+        player = new YT.Player('player', {
+            height: '300',
+            width: '100%',
+            events: {
+                'onReady': onReady,
+                'onStateChange': onPlayerStateChange
+            }
+        });
+    }
+
+    function onReady() {
+        //console.log('onReady()');
+        //alert("onReady");
+
+    }
+
+    function ifRandom() {
+
+        if ($("#randomPlay").data("set") == true) {
+            return true;
+        } else {
+            return false;
+        }
+
+    }
+
+    function ifAutoplay() {
+
+        if ($("#autoPlayNext").data("set") == true) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    function ifAutoloop() {
+
+        if ($("#autoLoop").data("set") == true) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    function onPlayerStateChange(event) {
+        //alert("onPlayerStateChange");
+        console.log("onPlayerStateChange()");
+        console.log('State is:', event.data);
+
+        var playerStatus = event.data;
+
+        console.log("playerStatus = " + playerStatus);
+        if (playerStatus == -1) {
+            // unstarted = gray
+            console.log("YTstatus: unstarted");
+        } else if (playerStatus == 0) {
+            console.log("HERE");
+            // ended = yellow
+            console.log("YTstatus: ended");
+            if (ifAutoplay()) {
+                // bottom reached, play first video
+                nextYt();
+
+
+            }
+        } else if (playerStatus == 1) {
+            // playing
+            console.log("YTstatus: playing");
+        } else if (playerStatus == 2) {
+            // paused = red
+            console.log("YTstatus: paused");
+        } else if (playerStatus == 3) {
+            // buffering = purple
+            console.log("YTstatus: buffering");
+        } else if (playerStatus == 5) {
+            // video cued = orange
+            console.log("YTstatus: cued");
+        }
+    }
+
+
+
+    function getFirstUnplayedVideo() {
+        console.log("getFirstUnplayedVideo()");
+        return $(".playlistContent").find('[data-played="false"]').first();
+    }
+
+    function getFirstVideo() {
+        console.log("getFirstVideo()");
+        return $('.songRequestElem').first();
+    }
+
+    function getNextVideo() {
+        console.log("getNextVideo()");
+        var next = $(".playlistContent").find('[data-playing="true"]').next();
+
+        return next;
+    }
+
+    function getPrevPlayedVideo() {
+        console.log("getPrevPlayedVideo()");
+        return $(".playlistContent").find('[data-playing="true"]').prev();
+    }
+
+    function getLastPlayedVideo() {
+        console.log("getLastPlayedVideo()");
+        return $(".playlistContent").find('[data-playing="true"]').first();
+    }
+
+    function getRandomVideo() {
+        var list = $('.songRequestElem');
+        var num = Math.floor(Math.random() * list.length);
+
+        if (list.length > 1) {
+            var elem = list.get(num);
+
+            while ($(elem).data("playing") == "true") {
+                num = Math.floor(Math.random() * list.length);
+                elem = list.get(num);
+            }
+
+        }
+
+
+        console.log("Selected index: " + num);
+        var randomElem = list.get(num);
+
+
+
+
+        return $(randomElem);
+
+    }
+
+    function playRandomVideo() {
+        var $video = getRandomVideo();
+        console.log("Playing: " + "//www.youtube.com/embed/" + $($video).data("videoid") + "?rel=0&autoplay=1");
+        //$("#player")[0].src = "//www.youtube.com/embed/" + $($video).data("videoid") + "?rel=0&autoplay=1";
+        player.loadVideoById($($video).data("videoid"));
+        resetAllPlaying();
+        $video.attr("data-playing", "true");
+        $video.attr("data-played", "true");
+        playingEvent($video, null, null);
+    }
+
+    function playYtFirstVideo() {
+
+        var $video = getFirstVideo();
+        if ($video.length == 0) {
+            $video = getFirstUnplayedVideo();
+        }
+        console.log("Playing: " + "//www.youtube.com/embed/" + $($video).data("videoid") + "?rel=0&autoplay=1");
+        //$("#player")[0].src = "//www.youtube.com/embed/" + $($video).data("videoid") + "?rel=0&autoplay=1";
+        player.loadVideoById($($video).data("videoid"));
+        resetAllPlaying();
+        $video.attr("data-playing", "true");
+        $video.attr("data-played", "true");
+        playingEvent($video, null, null);
+    };
+
+    function playYt() {
+        console.log("playYt()");
+        var $video = null;
+        if (ifRandom()) {
+            $video = getRandomVideo();
+        }
+        else {
+            $video = getNextVideo();
+            if ($video.length == 0) {
+                $video = getFirstUnplayedVideo();
+            }
+        }
+
+        console.log("Playing: " + "//www.youtube.com/embed/" + $($video).data("videoid") + "?rel=0&autoplay=1");
+        //$("#player")[0].src = "//www.youtube.com/embed/" + $($video).data("videoid") + "?rel=0&autoplay=1";
+        player.loadVideoById($($video).data("videoid"));
+        resetAllPlaying();
+        $video.attr("data-playing", "true");
+        $video.attr("data-played", "true");
+        playingEvent($video, null, null);
+    };
+
+    function stopYt() {
+        console.log("stopYt()");
+        //player.stopVideo();
+        //$("#player").attr("src", "");
+        //$("#player").attr("src", video);
+        player.stopVideo();
+    };
+
+    function nextYt() {
+        console.log("nextYt()");
+        var $video = getNextVideo();
+        if (ifRandom()) {
+            console.log(" random");
+            $video = getRandomVideo();
+        }
+        else {
+            console.log(" not random");
+            $video = getNextVideo();
+        }
+        if ($video.length == 0) {
+            if (ifAutoloop()) {
+                $video = getFirstVideo();
+            } else {
+                return null;
+            }
+
+        }
+        console.log("Playing: " + "//www.youtube.com/embed/" + $($video).data("videoid") + "?rel=0&autoplay=1");
+        //$("#player")[0].src = "//www.youtube.com/embed/" + $($video).data("videoid") + "?rel=0&autoplay=1";
+        player.loadVideoById($($video).data("videoid"));
+        resetAllPlaying();
+        $video.attr("data-playing", "true");
+        $video.attr("data-played", "true");
+        playingEvent($video, null, null);
+    };
+
+    function prevYt() {
+        console.log("prevYt()");
+        var $video = getPrevPlayedVideo();
+
+        if ($video.length == 0) {
+            return null;
+        }
+
+        console.log("Playing: " + "//www.youtube.com/embed/" + $($video).data("videoid") + "?rel=0&autoplay=1");
+        //$("#player")[0].src = "//www.youtube.com/embed/" + $($video).data("videoid") + "?rel=0&autoplay=1";
+        player.loadVideoById($($video).data("videoid"));
+        resetAllPlaying();
+        $video.attr("data-playing", "true");
+        $video.attr("data-played", "true");
+        playingEvent($video, null, null);
+    };
+
+    function playingEvent(li, name, videoId) {
+        var liVideoId = $(li).data("videoid");
+        var nameOfSong = $(li).data("title");
+
+        if (liVideoId == undefined)
+            return null;
+
+        var url = "https://www.youtube.com/watch?v=" + liVideoId;
+
+        var twitchHub = $.connection.twitchHub;
+
+        twitchHub.server.playingSong(nameOfSong, url);
+    }
+
+    function resetAllPlaying() {
+        $(".playlistContent").find("li").each(function () {
+            $(this).attr("data-playing", "false");
+        });
+    }
+
+</script>
