@@ -11,3 +11,5 @@
 /BlackJack/bin/Debug
 Release
 Debug
+packages
+.vs
