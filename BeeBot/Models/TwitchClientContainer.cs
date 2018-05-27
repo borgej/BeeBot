@@ -7,6 +7,8 @@ using System.Threading.Tasks;
 using System.Web;
 using BeeBot.Models;
 using TwitchLib;
+using TwitchLib.Client;
+using TwitchLib.PubSub;
 using YTBot.Services;
 
 namespace YTBot.Models
@@ -31,6 +33,7 @@ namespace YTBot.Models
 
         public RussianRoulette RRulette { get; set; }
         public DateTime LastRussian { get; set; }
+        public List<PlayListItem> SongRequests { get; set; }
 
         public TwitchClientContainer()
         {
@@ -43,6 +46,7 @@ namespace YTBot.Models
             RRulette = null;
             // initialize last russian run
             LastRussian = DateTime.Now.AddMinutes(-10);
+            SongRequests = new List<PlayListItem>();
         }
 
 

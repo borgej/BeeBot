@@ -1,7 +1,4 @@
 ﻿
-
-
-
 /* Card css */
 html {
     font-family: Lato, 'Helvetica Neue', Arial, Helvetica, sans-serif;
@@ -15,77 +12,6 @@ h5 {
     margin: 0;
 }
 
-.card {
-    font-size: 1em;
-    overflow: hidden;
-    padding: 0;
-    border: none;
-    border-radius: .28571429rem;
-    box-shadow: 0 1px 3px 0 #d4d4d5, 0 0 0 1px #d4d4d5;
-    
-}
-
-.card-block {
-    font-size: 1em;
-    position: relative;
-    margin: 0;
-    padding: 1em;
-    border: none;
-    border-top: 1px solid rgba(34, 36, 38, .1);
-    box-shadow: none;
-    
-}
-
-.card-img-top {
-    display: block;
-    width: 100%;
-    height: auto;
-}
-
-.card-title {
-    font-size: 1.28571429em;
-    font-weight: 700;
-    line-height: 1.2857em;
-    background-color: #a9a9a9;
-    cursor: pointer;
-    padding: 5px 5px 5px 10px;
-    border-radius: 3px;
-}
-
-.card-title i {
-    padding: 5px;
-}
-
-.card-title :hover {
-    /*border: 1px solid #4d4c4c;*/
-    background-color: #d3d3d3;
-}
-
-
-.card-text {
-    clear: both;
-    margin-top: .5em;
-    color: rgba(0, 0, 0, .68);
-}
-
-.card-footer {
-    font-size: 1em;
-    position: static;
-    top: 0;
-    left: 0;
-    max-width: 100%;
-    padding: .75em 1em;
-    color: rgba(0, 0, 0, .4);
-    border-top: 1px solid rgba(0, 0, 0, .05) !important;
-    background: #fff;
-}
-
-.consoleStatusCard .usersStatusCard {
-    max-height: 200px;
-}
-.card-inverse .btn {
-    border: 1px solid rgba(0, 0, 0, .05);
-}
 
 .profile {
     position: absolute;
@@ -161,11 +87,11 @@ body {
 }
 
 /* Set width on the form input elements since they're 100% wide by default */
-input,
+/*input,
 select,
 textarea {
     max-width: 280px;
-}
+}*/
 
 .login input, select, textarea {
     max-width: 100% !important;
@@ -179,67 +105,27 @@ textarea {
 .login-input {
     margin-top: 5px;
 }
-.menuCard {
-    min-width: 120px !important;
-}
 
-.menuButtons {
-    margin-bottom: 20px;
-}
 
-.menuBittons :hover{
-    cursor: pointer !important;
-}
 
 .btn {
     cursor: pointer;
 }
-.consoleLog {
-    min-height: 50px;
-    max-height: 100px;
-    margin-bottom: 10px;
-}
-
-.chatText {
-    min-height: 580px;
-    margin-bottom: 10px;
-}
-
-.chatCard {
-    
-    margin-bottom: 30px;
-}
-
-.chatCardDiv {
-    min-height: 650px;
-}
-
-.chatCardDiv > .card{
-    min-height: 650px;
-}
-
-.chatMsg {
-    width: auto;
-    padding-left: 4px;
-    padding-right: 4px;
-    /*border-top: 1px darkgray solid;*/
-    border-top: 1px darkgray solid;
-}
-
-.chatMsgToBroadcaster {
-    background-color: #ffc0cb;
-}
-
-.chatDonationMsg {
-    background-color: lawngreen;
-}
-
-.chatHostMsg {
-    background-color: dodgerblue;
-}
 
 .dontshow {
     display: none;
+}
+
+.green {
+    color: green;
+}
+
+.red {
+    color: red;
+}
+
+.yellow {
+    color: yellow;
 }
 
 .userConnected {
@@ -270,63 +156,143 @@ textarea {
     background-color: deeppink;
 }
 
-.usersCard {
-    width: 100%;
-    display: table;
+.fullbutton {
+    width: 98% !important;
 }
 
-.usersConnInfo .usersCount {
-    
-    display: table-cell;
+.smallinput {
+    max-width: 50px !important;
 }
 
-.usersConnInfo {
-    
-    height: 130px;
-    width: 70%;
+.wide {
+    min-width: 200px !important;
 }
 
-
-
-.eventConsole {
-    height: 130px;
-    width: 98%;
-}
-
-.folSubCount {
-    float: left !important;
-    margin-left: 30%;
-    font-size: 50px;
-    text-align: center;
-    height: 100%;
-    vertical-align: center;
-}
-
-.donCount {
-    float: right !important;
-    margin-right: 30%;
-    font-size: 50px;
-    text-align: center;
-    height: 100%;
-    vertical-align: center;
-}
-
-.usersCount {
-    width: 30%;
-    float: left;
-    font-size: 60px;
-    text-align: center;
-    height: 100%;
-}
-
-/* Fill card witdh with buttons */
-.botButtons > .btn{
+.halfwidth {
     width: 50% !important;
+}
+
+.quarterwidth {
+    width: 25% !important;
+}
+
+.fullwidth {
+    width: 100% !important;
 }
 
 .divCenter {
     margin-left: 50%;
     margin-right: 50%;
+}
+
+.console {
+    width: 100%;
+    min-height: 300px;
+    max-height: 300px;
+    overflow: scroll;
+    overflow-x: hidden;
+    background: #d4d4d5;
+    border: 1px solid black;
+}
+
+songrequests {
+    width: 100%;
+    min-height: 300px;
+    background: #d4d4d5;
+    border: 1px solid black;
+}
+
+.chatstats {
+
+    min-height: 300px;
+    background: #d4d4d5;
+    border: 1px solid black;
+}
+
+.chatter {
+
+}
+
+.chattervalue {
+
+    float: right !important;
+}
+
+.command {
+    
+}
+
+.commandvalue {
+
+    float: right;
+}
+
+.thumb {
+    max-width: 85px !important;
+}
+
+.playlistitem {
+    margin-left: 4px;
+    padding: 2px 2px 2px 2px;
+}
+
+.playlistitem:hover {
+    padding: 2px 2px 2px 2px;
+    background-color: #cdcdcd;
+    /*border: 1px solid #a9a9a9;*/
+    cursor: pointer;
+}
+
+.playing {
+    background-color: thistle;
+}
+
+.commandsstats {
+    min-height: 300px;
+    background: lightcyan;
+    border: 1px solid black;
+}
+
+.videoname {
+    font-weight: bold;
+}
+
+.oneLine {
+    display: block;
+}
+
+.footer {
+    position: absolute;
+    bottom: 0;
+    height: 20px;
+    color: #f0f0f0;
+    width: 100%;
+}
+
+.channelMenuHeader  {
+    color: #afeeee !important;
+    font-size: 21px;
+    font-weight: 900 !important;
+    font-style: normal !important;
+}
+.channelMenuHeader:hover {
+    color: #afeeee !important;
+    font-size: 21px;
+    font-weight: 900 !important;
+    font-style: normal !important;
+
+}
+
+.channelMenuHeader:visited {
+    color: #afeeee !important;
+    font-size: 21px;
+    font-weight: 900 !important;
+    font-style: normal !important;
+}
+
+.botconnectionstatus {
+    /*font-weight: 700;*/
+    font-size: 1.4em;
 }
 /*
     Note: It is best to use a less version of this file ( see http://css2less.cc
@@ -404,17 +370,6 @@ textarea {
     z-index: 30000 !important;
 }
 
-.timerForm {
-    margin-bottom: 10px;   
-}
-
-.triggerForm {
-    margin-bottom: 10px;
-}
-
-.clearCardHeight {
-    display: table;
-}
 
 .inverted {
     background-color: #4D4C4C !important;
@@ -423,12 +378,7 @@ textarea {
     -webkit-filter: invert(100%); /* Safari */
 }
 
-.invertedCardTitle {
 
-    color: #ffffff !important;
-    filter: invert(100%);
-    -webkit-filter: invert(100%); /* Safari */
-}
 
 .youtubePlayerIgnore {
     filter: invert(0%) !important;
@@ -439,18 +389,7 @@ textarea {
     color: #ffffff;
 }
 
-.menuButtons {
-    width: 100%;
-}
 
-.channelNameHeader {
-    font-size: 20px !important;
-    font-weight: bold;
-}
-
-.channelOnlineOfflineStatus {
-    font-size: 15px;
-}
 
 .channelOnline {
     background-color: red;
@@ -460,59 +399,6 @@ textarea {
     background-color: #a9a9a9;
 }
 
-.commandsList {
-    height: 100px !important;
-    padding-bottom: 5px !important;
-}
-
-.commandsList span {
-        margin-left: 20px;
-        margin-right: 20px;
-    }
-
-.usersList {
-    height: 100px !important;
-    padding-bottom: 5px !important;
-}
-
-.usersList span {
-    margin-left: 20px;
-    margin-right: 20px;
-}
-
-.commandName {
-    display: inline-block;
-    min-width: 200px !important;
-    background-color: #EFF0F1;
-    padding-left: 7px;
-    margin-right: 0px !important;
-}
-
-.chatterName {
-    display: inline-block;
-    min-width: 200px !important;
-    background-color: #EFF0F1;
-    padding-left: 7px;
-    margin-right: 0px !important;
-}
-
-.chatCount {
-    margin-left: 0px !important;
-    display: inline-block;
-    text-align: right;
-    min-width: 50px;
-    background-color: #EFF0F1;
-    padding-right: 10px;
-}
-
-.commandCount {
-    margin-left: 0px !important;
-    display: inline-block;
-    text-align: right;
-    min-width: 50px;
-    background-color: #EFF0F1;
-    padding-right: 10px;
-}
 
 .playlistHeader {
     font-size: 1.4em;

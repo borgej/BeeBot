@@ -1,0 +1,120 @@
+﻿@model BeeBot.Models.BotUserSettings
+
+<h2>Bot controls</h2>
+    <hr/>
+    <div class="row">
+        <div class="col-md-12">
+            <button id="botConnectButton" type="button" class="btn btn-success wide" data-username="@Model.BotUsername" data-password="@Model.BotPassword" data-channel="@Model.BotChannel"><i class="fa fa-play"></i> Connect</button>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <button id="botDisconnectButton" type="button" class="btn btn-danger wide"><i class="fa fa-stop"></i> Disconnect</button>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <button id="botReconnectButton" type="button " class="btn btn-dark wide" data-username="@Model.BotUsername" data-password="@Model.BotPassword" data-channel="@Model.BotChannel"><i class="fa fa-refresh"></i> Re-connect</button>
+        </div>
+    </div>
+
+
+<br/>
+<div class="row mb-4">
+    <div class="col-md-12 ">
+        <div class="botstatus">
+            <p style="display: inline !important;">Bot is: <i class="fa fa-spinner fa-spin statusloader dontshow"></i> <span class="botconnectionstatus badge badge-info"></span></p>
+        </div>
+    </div>
+</div>
+
+<h2>Console</h2>
+<div class="row">
+    <div class="col-md-12">
+        <div class="console">
+
+        </div>
+    </div>
+</div>
+
+
+
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+        // Check if bot is connected, if not connect
+
+        $(".statusloader").toggleClass("dontshow");
+
+        // TODO: GET connection status
+        // Update status text
+    });
+
+    var twitchHub = $.connection.twitchHub;
+
+    (function () {
+        // Defining a connection to the server hub.
+        
+        // Setting logging to true so that we can see whats happening in the browser console log. [OPTIONAL]
+
+        $.connection.hub.logging = true;
+
+        twitchHub.client.ConsoleLog = function (log) {
+            console.log(log);
+            $(".console").append(log + "<br>");
+            var objDiv = document.getElementsByClassName("console")[0];
+            objDiv.scrollTop = objDiv.scrollHeight;
+        };
+
+        twitchHub.client.BotStatus = function (connected) {
+
+            console.log("BotStatus: " + connected.info);
+            $(".botconnectionstatus").text(connected.info);
+
+        };
+
+        // Start the hub
+        $.connection.hub.start().done(function() {
+            twitchHub.server.botStatus("@Model.BotUsername", "@Model.BotPassword", "@Model.BotChannel");
+            $(".statusloader").toggleClass("dontshow");
+
+            setInterval(function() {
+                    twitchHub.server.botStatus("@Model.BotUsername", "@Model.BotPassword", "@Model.BotChannel");
+                },
+                5000);
+        });
+
+
+        twitchHub.client.onconnected  = function () {
+            console.log("connected...");
+            $(".console").append("Connected...<br>");
+        };
+
+        //Button click jquery handler
+        $("#botConnectButton").click(function () {
+            // Call SignalR hub method
+
+            var username = $(this).data("username");
+            var password = $(this).data("password");
+            var channel = $(this).data("channel");
+            
+            twitchHub.server.connectBot(username, password, channel);
+            
+        });
+
+        $("#botReconnectButton").click(function () {
+            var username = $(this).data("username");
+            var password = $(this).data("password");
+            var channel = $(this).data("channel");
+
+            twitchHub.server.reconnect(username, password, channel);
+            
+        });
+
+        $("#botDisconnectButton").click(function () {
+            twitchHub.server.disconnectBot();
+            
+        });
+    })()
+</script>

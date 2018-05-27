@@ -1,1 +1,6 @@
-{"name":"myproject"}
+{
+  "name": "myproject",
+  "dependencies": {
+    "gasparesganga-jquery-loading-overlay": "v2.0.2"
+  }
+}

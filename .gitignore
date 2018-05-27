@@ -13,3 +13,5 @@ Release
 Debug
 packages
 .vs
+/BBot.sln.DotSettings.user
+/BeeBot/BeeBot.csproj.user

@@ -685,7 +685,7 @@ namespace YTBot.Services
                 dbTrigger.ModCanTrigger = trigger.ModCanTrigger;
                 dbTrigger.ViewerCanTrigger = trigger.ViewerCanTrigger;
                 dbTrigger.StreamerCanTrigger = trigger.StreamerCanTrigger;
-                dbTrigger.SubCanTrigger = trigger.ViewerCanTrigger;
+                dbTrigger.SubCanTrigger = trigger.SubCanTrigger;
                 dbTrigger.TriggerType = trigger.TriggerType;
             }
 

@@ -1,0 +1,126 @@
+﻿@model YTBot.Models.Loyalty
+
+@{
+    var enableLoyalty = Convert.ToBoolean(Model.Track);
+    var checkedTxt = "";
+    if (enableLoyalty)
+    {
+        checkedTxt = "checked";
+    }
+}
+
+<h2>Loyalty</h2>
+<hr/>
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="col-md-4 mt-2 mb-3">
+            <div class="form-check">
+                <input class="form-check-input loyaltyenabled" type="checkbox" value="" id="loyalty" name="loyalty" @checkedTxt>
+                <label class="form-check-label" for="loyalty">
+                    Enable loyalty?
+                </label>
+            </div>
+        </div>
+    </div>
+    
+    
+</div>
+<div class="loyaltyInput">
+    <div class="row">
+        <div class="col-md-2">
+            Name
+        </div>
+        <div class="col-md-4">
+            <input type="text" class="form-control loyaltyname" value="@Model.LoyaltyName" />
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-2">
+            Amount
+        </div>
+        <div class="col-md-4">
+            <input type="text" class="form-control smallinput loyaltyvalue" value="@Model.LoyaltyValue" />
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-2">
+            Interval 
+        </div>
+        <div class="col-md-4">
+            <input type="text" class="form-control smallinput loyaltyinterval" value="@Model.LoyaltyInterval" />
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col-md-12 mt-3">
+            <button type="button" class="btn btn-secondary mt-1 loyaltysavebtn"><i class="fa fa-save"></i> Save</button>
+        </div>
+    </div>
+
+
+</div>
+
+<script type="text/javascript">
+    $(document).ready(function() {
+
+    });
+    var twitchHub = $.connection.twitchHub;
+
+    (function () {
+        // Setting logging to true so that we can see whats happening in the browser console log. [OPTIONAL]
+        $.connection.hub.logging = true;
+
+        twitchHub.client.SaveCallback = function(ret) {
+            console.log(ret);
+
+            if (ret.data == "1") {
+                console.log(ret.message);
+                $.amaran({
+                    'theme': 'colorful',
+                    'content'   :{
+                        bgcolor:'#27ae60',
+                        color:'#fff',
+                        message: ret.message,
+                    },
+                    'closeOnClick':false,
+                    'inEffect':'slideTop',
+                    'outEffect':'slideLeft'
+                });
+            } else {
+                console.log(ret.message);
+                $.amaran({
+                    'theme': 'colorful',
+                    'content': {
+                        bgcolor: '#ff3300',
+                        color: '#fff',
+                        message: ret.message,
+                    },
+                    'closeOnClick': false,
+                    'inEffect': 'slideTop',
+                    'outEffect': 'slideLeft'
+                });
+            }
+        }
+
+        // Start the hub
+        $.connection.hub.start();
+
+        $(".loyaltysavebtn").click(function() {
+            twitchHub.server.saveLoyalty($(".loyaltyenabled").is(":checked"),
+                $(".loyaltyname").val(),
+                $(".loyaltyvalue").val(),
+                $(".loyaltyinterval").val());
+        });
+
+        twitchHub.client.onconnected = function () {
+            console.log("connected...");
+            $(".console").append("Connected...<br>");
+        };
+
+
+    })()
+
+</script>

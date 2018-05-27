@@ -9,7 +9,9 @@ using System.Web.Mvc;
 using BeeBot.Models;
 using BeeBot.Signalr;
 using Newtonsoft.Json;
-using TwitchLib.Models.API.v5.Games;
+using TwitchLib.Api;
+using TwitchLib.Api.Models.v5.Games;
+using TwitchLib.Client;
 using YTBot.Migrations;
 using YTBot.Models;
 using YTBot.Models.ViewModels;
@@ -23,41 +25,20 @@ namespace BeeBot.Controllers
         private ContextService ContextService { get; set; }
         private UserService UserService { get; set; }
 
+        public TwitchClient Client { get; set; }
 
         public HomeController()
         {
             ContextService = new ContextService();
             UserService = new UserService();
+
         }
 
         public ActionResult Index()
         {
+
             // get users bot settings
             var userBotSettings = ContextService.GetBotUserSettingsForUser(ContextService.GetUser(User.Identity.Name));
-            var userLoyalty = ContextService.GetBotChannelSettings(ContextService.GetUser(User.Identity.Name)).Loyalty;
-            var timers = ContextService.GetTimers(ContextService.GetUser(User.Identity.Name));
-            var triggers = ContextService.GetTriggers(ContextService.GetUser(User.Identity.Name));
-            var bannedWords = ContextService.GetBotChannelSettings(ContextService.GetUser(User.Identity.Name))
-                .BannedWords;
-            if (bannedWords == null)
-            {
-                bannedWords = new List<BannedWord>();
-            }
-            var stringBannedWords = new List<string>();
-            foreach (var bannedWord in bannedWords)
-            {
-                stringBannedWords.Add(bannedWord.Word);
-            }
-
-            var loyalty = userLoyalty ?? new Loyalty();
-            var dashboardViewModel = new DashboardViewModel()
-            {
-                BotUserSettings = userBotSettings,
-                LoyaltySettings = loyalty,
-                Timers = timers,
-                Triggers = triggers, 
-                BannedWords = string.Join(",", stringBannedWords)
-            };
 
             // send user to bot preferences page if not set
             if (string.IsNullOrWhiteSpace(userBotSettings.BotChannel) || string.IsNullOrWhiteSpace(userBotSettings.BotUsername) ||
@@ -66,136 +47,22 @@ namespace BeeBot.Controllers
                 RedirectToAction("Preferences", new {message = "Please set your bot account and channel information"});
             }
 
+            ViewBag.Channel = userBotSettings.BotChannel;
+
             // assert that
-            return View("Indexv2",dashboardViewModel);
+            return View("Control", userBotSettings);
         }
 
-        public ActionResult About()
+        public ActionResult LoyaltyHtml()
         {
-            ViewBag.Message = "Your application description page.";
+            var userLoyalty = ContextService.GetBotChannelSettings(ContextService.GetUser(User.Identity.Name)).Loyalty;
 
-            return View();
+            return View(userLoyalty);
         }
 
-        public ActionResult Contact()
-        {
-            ViewBag.Message = "Your contact page.";
 
-            return View();
-        }
 
-        public ActionResult Loyalty()
-        {
-            var botChannelSettings = ContextService.GetBotChannelSettings(ContextService.GetUser(User.Identity.Name));
 
-            if (botChannelSettings.Loyalty != null)
-            {
-                return Json(JsonConvert.SerializeObject(botChannelSettings.Loyalty));
-            }
-            else
-            {
-                var loyalty = new Loyalty();
-                return Json(JsonConvert.SerializeObject(loyalty));
-            }
-        }
-
-        public ActionResult StreamInfoSave(string title, string game)
-        {
-            try
-            {
-                return Json(new { data = "1", message = "Stream title and game updated!" }, JsonRequestBehavior.AllowGet);
-            }
-            catch (Exception exception)
-            {
-                return Json(new { data = "-1", message = "Error on update: " + exception.Message }, JsonRequestBehavior.AllowGet);
-            }
-        }
-
-        [HttpPost]
-        public ActionResult TimerSave(string timerId, string timerName, string timerMessage, string timerInterval, string timerActive)
-        {
-            int idInt = 0;
-
-            if (!string.IsNullOrWhiteSpace(timerId))
-            {
-                idInt = Convert.ToInt32(timerId);
-            }
-            
-            try
-            {
-                bool activeTimerBool = !string.IsNullOrEmpty(timerActive) && timerActive.Equals("1");
-                var timer = new YTBot.Models.Timer()
-                {
-                    Id = idInt,
-                    Active = activeTimerBool,
-                    TimerInterval = Convert.ToInt32(timerInterval),
-                    TimerName = timerName,
-                    TimerResponse = timerMessage
-                };
-
-                var savedTimer = ContextService.SaveTimer(timer, User.Identity.Name);
-                return Json(new { data = "1", message = "Saved timer", timerId = savedTimer.Id }, JsonRequestBehavior.AllowGet);
-            }
-            catch (Exception e)
-            {
-                return Json(new { data = "-1", message = e.Message }, JsonRequestBehavior.AllowGet);
-            }
-            
-        }
-
-        [HttpPost]
-        public ActionResult TimerDelete(string timerId)
-        {
-            try
-            {
-                var idInt = Convert.ToInt32(timerId);
-
-                ContextService.DeleteTimer(idInt, User.Identity.Name);
-
-                return Json(new { data = "1", message = "Deleted timer" }, JsonRequestBehavior.AllowGet);
-            }
-            catch (Exception e)
-            {
-                return Json(new { data = "-1", message = e.Message }, JsonRequestBehavior.AllowGet);
-            }
-        }
-
-        public ActionResult LoyaltySave(string loyaltyName, string loyaltyValue, string loyaltyInterval, string track)
-        {
-            try
-            {
-                var userName = User.Identity.Name;
-                var user = ContextService.GetUser(userName);
-
-                var loyalty = new Loyalty();
-                if (track == null)
-                {
-                    loyalty.Track = false;
-                }
-                else
-                {
-                    if (Convert.ToInt32(track) == 1)
-                    {
-                        loyalty.Track = true;
-                    }
-                    else
-                    {
-                        loyalty.Track = false;
-                    }
-                }
-                loyalty.LoyaltyName = loyaltyName;
-                loyalty.LoyaltyInterval = Convert.ToInt32(loyaltyInterval);
-                loyalty.LoyaltyValue = Convert.ToInt32(loyaltyValue);
-
-                ContextService.SetLoyalty(user, loyalty);
-
-                return Json(new { data = "1", message = "Saved loyalty" }, JsonRequestBehavior.AllowGet);
-            }
-            catch (Exception exception)
-            {
-                return Json(new { data = "-1", message = "Error on save: " + exception.Message }, JsonRequestBehavior.AllowGet);
-            }
-        }
 
         public ActionResult Preferences(string message = null)
         {
@@ -203,7 +70,7 @@ namespace BeeBot.Controllers
             var user = ContextService.GetUser(userName);
 
             var userBotSettings = ContextService.GetBotUserSettingsForUser(user);
-
+            ViewBag.Channel = userBotSettings.BotChannel;
 
             var model = new PrefViewModel()
             {
@@ -246,7 +113,9 @@ namespace BeeBot.Controllers
 
         public ActionResult Triggers()
         {
-            return View();
+            var triggers = ContextService.GetTriggers(ContextService.GetUser(User.Identity.Name)).OrderBy(m => m.TriggerName);
+
+            return View(triggers);
         }
 
 
@@ -257,9 +126,12 @@ namespace BeeBot.Controllers
             {
                 return Json(games);
             }
+            var user = ContextService.GetUser(HttpContext.User.Identity.Name);
+            var bs = ContextService.GetBotUserSettingsForUser(user);
 
-            TwitchLib.TwitchAPI.Settings.ClientId = ConfigurationManager.AppSettings["clientId"];
-            var gamesResult = await TwitchLib.TwitchAPI.Search.v5.SearchGames(phrase, null);
+            var twitchApi = new TwitchAPI();
+            twitchApi.InitializeAsync(ConfigurationManager.AppSettings["clientId"], bs.ChannelToken).RunSynchronously();
+            var gamesResult = await twitchApi.Search.v5.SearchGamesAsync(phrase, null);
 
             var output = new List<object>();
 
@@ -269,58 +141,78 @@ namespace BeeBot.Controllers
             return Json(gamesResult.Games);
         }
 
-        public ActionResult TriggerDelete(string triggerId)
+        #region Refacrored
+
+        public ActionResult Control()
         {
-            try
-            {
-                var idInt = Convert.ToInt32(triggerId);
+            var userBotSettings = ContextService.GetBotUserSettingsForUser(ContextService.GetUser(User.Identity.Name));
 
-                ContextService.DeleteTrigger(idInt, User.Identity.Name);
-
-                return Json(new { data = "1", message = "Deleted trigger" }, JsonRequestBehavior.AllowGet);
-            }
-            catch (Exception e)
-            {
-                return Json(new { data = "-1", message = e.Message }, JsonRequestBehavior.AllowGet);
-            }
+            return View(userBotSettings);
         }
 
-        public ActionResult TriggerSave(string triggerId, string triggername, string triggerMessage, string mod, string viewer, string triggerActive)
+        public ActionResult Stream()
         {
-            int idInt = 0;
+            var userBotSettings = ContextService.GetBotUserSettingsForUser(ContextService.GetUser(User.Identity.Name));
 
-            if (!string.IsNullOrWhiteSpace(triggerId))
-            {
-                idInt = Convert.ToInt32(triggerId);
-            }
-
-            try
-            {
-                bool activeTriggerBool = !string.IsNullOrEmpty(triggerActive) && triggerActive.Equals("1");
-                bool modsTriggerBool = !string.IsNullOrEmpty(mod) && mod.Equals("1");
-                bool viewerTriggerBool = !string.IsNullOrEmpty(viewer) && viewer.Equals("1");
-                var trigger = new YTBot.Models.Trigger()
-                {
-                    Id = idInt,
-                    Active = activeTriggerBool,
-                    ModCanTrigger = modsTriggerBool,
-                    ViewerCanTrigger = viewerTriggerBool,
-                    StreamerCanTrigger = true,
-                    SubCanTrigger = viewerTriggerBool,
-                    TriggerName = triggername,
-                    TriggerType = TriggerType.Message,
-                    TriggerResponse = triggerMessage
-                };
-
-                var savedTrigger = ContextService.SaveTrigger(trigger, User.Identity.Name);
-                return Json(new { data = "1", message = "Saved trigger", triggerId = savedTrigger.Id }, JsonRequestBehavior.AllowGet);
-            }
-            catch (Exception e)
-            {
-                return Json(new { data = "-1", message = e.Message }, JsonRequestBehavior.AllowGet);
-            }
+            ViewBag.Channel = userBotSettings.BotChannel;
+            return View();
         }
 
+        #endregion
 
+        public ActionResult ChatOptions()
+        {
+            var bannedWords = ContextService.GetBotChannelSettings(ContextService.GetUser(User.Identity.Name)).BannedWords;
+            var userBotSettings = ContextService.GetBotUserSettingsForUser(ContextService.GetUser(User.Identity.Name));
+
+            if(bannedWords == null)
+                bannedWords = new List<BannedWord>();
+            var bannedWordsString = new List<string>();
+
+            foreach (var bannedWord in bannedWords)
+            {
+                bannedWordsString.Add(bannedWord.Word);
+            }
+
+            ViewBag.BannedWords = bannedWordsString;
+
+            return View(userBotSettings);
+        }
+
+        public ActionResult ChatNStats()
+        {
+            var userBotSettings = ContextService.GetBotUserSettingsForUser(ContextService.GetUser(User.Identity.Name));
+
+            ViewBag.Channel = userBotSettings.BotChannel;
+            
+            return View(userBotSettings);
+        }
+
+        public ActionResult Timers()
+        {
+            var timers = ContextService.GetTimers(ContextService.GetUser(User.Identity.Name)).OrderBy(m => m.TimerName);
+
+            return View(timers);
+        }
+
+        public ActionResult Polls()
+        {
+            return View();
+        }
+
+        public ActionResult SongRequests()
+        {
+            var userBotSettings = ContextService.GetBotUserSettingsForUser(ContextService.GetUser(User.Identity.Name));
+
+            ViewBag.Channel = userBotSettings.BotChannel;
+            return View();
+        }
+
+        public ActionResult ChannelName()
+        {
+            var userBotSettings = ContextService.GetBotUserSettingsForUser(ContextService.GetUser(User.Identity.Name));
+
+            return Content(userBotSettings.BotChannel);
+        }
     }
 }

@@ -1,0 +1,119 @@
+﻿@model dynamic
+
+@{
+
+}
+
+<h2>Chat and stats</h2>
+<hr/>
+<div class="row">
+    <div class="col-md-6">
+        <iframe frameborder="0"
+                scrolling="no"
+                id="chat_embed"
+                src="http://www.twitch.tv/embed/@ViewBag.Channel/chat"
+                height="750px"
+                width="100%"></iframe>
+    </div>
+    <div class="col-md-6">
+        <div>
+            <h3><i class="fa indicator"></i><span class="alert-info viewercount pl-3 pr-3"> [ONE MILLION TRILLION] </span> viewers</h3>
+        </div>
+        <div class="row">
+
+            <div class="chatstats col-md mr-5">
+                <h4>Top chatters</h4>
+                <div class="chatdata"></div>
+            </div>
+            <div class="commandsstats col-md mr-5">
+                <h4>Top commands</h4>
+                <div class="commandsdata"></div>
+            </div>
+        </div>
+    </div>
+    
+</div>
+
+
+<script type="text/javascript">
+    $(document).ready(function() {
+
+    });
+    var twitchHub = $.connection.twitchHub;
+
+    (function () {
+        // Setting logging to true so that we can see whats happening in the browser console log. [OPTIONAL]
+        $.connection.hub.logging = true;
+
+        twitchHub.client.ChattersAndCommands = function (retval) {
+            $(".chatdata").html("");
+            $.each(retval.topchatters, function (key, value) {
+                $(".chatdata").append("<span class='oneLine'><span class='chatter'>" + value.Key + "</span><span class='chattervalue'>" + value.Value + "</span></span>");
+            });
+            $(".commandsdata").html("");
+            $.each(retval.topcommands, function (key, value) {
+                $(".commandsdata").append("<span class='oneLine'><span class='command'>" + value.Key + "</span><span class='commandvalue'>" + value.Value + "</span></span>");
+            });
+        }
+
+        twitchHub.client.UpdateViewers = function (retval) {
+
+            
+            var oldValue = $(".viewercount").html();
+            var newValue = retval;
+
+            // indicator
+            if (oldValue === parseInt(oldValue, 10) && newValue === parseInt(newValue, 10)) {
+                if (oldValue < newValue) {
+                    $(".indicator").removeClass("fa-arrow-down");
+                    $(".indicator").removeClass("fa-arrow-right");
+                    $(".indicator").toggleClass("fa-arrow-up");
+                    $(".indicator").toggleClass("green");
+                    $(".indicator").removeClass("yellow");
+                    $(".indicator").removeClass("red");
+                }
+                else if (oldValue > newValue) {
+                    $(".indicator").toggleClass("fa-arrow-down");
+                    $(".indicator").removeClass("fa-arrow-right");
+                    $(".indicator").removeClass("fa-arrow-up");
+                    $(".indicator").toggleClass("red");
+                    $(".indicator").removeClass("yellow");
+                    $(".indicator").removeClass("green");
+                } else {
+
+                    $(".indicator").removeClass("fa-arrow-down");
+                    $(".indicator").toggleClass("fa-arrow-right");
+                    $(".indicator").removeClass("fa-arrow-up");
+                    $(".indicator").removeClass("red");
+                    $(".indicator").removeClass("yellow");
+                    $(".indicator").removeClass("green");
+                }
+            }
+
+            $(".viewercount").html(retval);
+        }
+
+        // Start the hub
+        $.connection.hub.start().done(function() {
+            setInterval(function() {
+                twitchHub.server.updateChattersAndCommands();
+                },
+                5000);
+
+            setInterval(function() {
+                    twitchHub.server.updateViewerCount();
+                },
+                30000);
+        });
+
+
+
+        twitchHub.client.onconnected = function () {
+            console.log("connected...");
+            $(".console").append("Connected...<br>");
+        };
+
+
+    })()
+
+</script>

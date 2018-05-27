@@ -1,0 +1,184 @@
+﻿
+<h2>Stream game and title</h2>
+<hr/>
+
+<div class="row">
+    <div class="col-md-12">
+        Stream title:
+    </div>
+    <div class="col-md-12">
+        <input class="form-control halfwidth" type="text" name="streamtitle" id="streamtitle"/>
+    </div>
+    <div class="col-md-12">
+        Game:
+    </div>
+    <div class="col-md-12">
+        <input class="form-control quarterwidth" type="text" id="streamgame" name="streamgame" style="z-index: 300000 !important;"/>
+    </div>
+    <div class="col-md-12 mt-2 mb-3">
+        <div class="form-check">
+            <input class="form-check-input streamMatureCheckbox" type="checkbox" value="" id="mature" name="mature">
+            <label class="form-check-label" for="mature">
+                Mature stream?
+            </label>
+        </div>
+    </div>
+    <div class="col-md-12">
+        Delay(in seconds):
+    </div>
+    <div class="col-md-12">
+        <div class="" style="display: inline">
+            <input class="form-control smallinput" id="streamdelay"  name="streamdelay"/>
+        </div>
+    </div>
+    
+    @*<div class="col-md-12 mt-2 mb-1">
+        <div class="form-check">
+            <input class="form-check-input" type="checkbox" value="" id="followeronly" name="followeronly">
+            <label class="form-check-label" for="followeronly">
+                Follower only?
+            </label>
+        </div>
+    </div>
+    
+    <div class="col-md-12 mt-2 mb-1">
+        <div class="form-check">
+            <input class="form-check-input" type="checkbox" value="" id="slowchat" name="slowchat">
+            <label class="form-check-label" for="slowchat">
+                Slow chat?
+            </label>
+        </div>
+    </div>*@
+    
+    <div class="col-md-12 mt-3">
+        <button type="button" class="btn btn-secondary mt-1 savestreaminfobtn"><i class="fa fa-save"></i> Save stream info</button>
+    </div>
+</div>
+
+
+
+<script type="text/javascript">
+    $(document).ready(function() {
+        $("#streamgame").easyAutocomplete(
+            {
+                adjustWidth: false,
+                url: function(phrase) {
+                    return "@Url.Action("GetGames", "Home")";
+                },
+                getValue: "Name",
+
+                template: {
+                    type: "custom",
+                    method: function(value, item) {
+                        return "<img src='" + item.Box.Small + "' /> " + item.Name;
+                    }
+                },
+                ajaxSettings: {
+                    dataType: "json",
+                    method: "POST",
+                    data: {
+                        dataType: "json"
+                    }
+                },
+
+                preparePostData: function(data) {
+                    data.phrase = $("#streamgame").val();
+                    return data;
+                },
+                requestDelay: 400
+            }
+        );
+    });
+    var twitchHub = $.connection.twitchHub;
+
+    (function () {
+        // Setting logging to true so that we can see whats happening in the browser console log. [OPTIONAL]
+        $.connection.hub.logging = true;
+
+        // Onload spinner
+        $(".maincontent").LoadingOverlay("show", {
+            background: "rgba(0, 0, 0, 0.0)"
+        });
+
+        
+
+        twitchHub.client.SaveCallback = function(ret) {
+            console.log(ret);
+
+            if (ret.data == "1") {
+                console.log(ret.message);
+                $.amaran({
+                    'theme': 'colorful',
+                    'content'   :{
+                        bgcolor:'#27ae60',
+                        color:'#fff',
+                        message: ret.message,
+                    },
+                    'closeOnClick':false,
+                    'inEffect':'slideTop',
+                    'outEffect':'slideLeft'
+                });
+            } else {
+                console.log(ret.message);
+                $.amaran({
+                    'theme': 'colorful',
+                    'content': {
+                        bgcolor: '#ff3300',
+                        color: '#fff',
+                        message: ret.message,
+                    },
+                    'closeOnClick': false,
+                    'inEffect': 'slideTop',
+                    'outEffect': 'slideLeft'
+                });
+            }
+        }
+
+        twitchHub.client.SetStreamInfo = function (streamStatus) {
+            console.log("Stream title: " + streamStatus.Title);
+            console.log("Streams game: " + streamStatus.Game);
+            console.log("Mature?: " + streamStatus.Mature);
+            console.log("Stream delay: " + streamStatus.Delay);
+
+
+            $("#streamtitle").val(streamStatus.Title);
+            $("#streamgame").val(streamStatus.Game);
+            $("#streamdelay").val(streamStatus.Delay);
+            if (streamStatus.Mature) {
+                $('.streamMatureCheckbox').attr('checked', true);
+            } else {
+                $('.streamMatureCheckbox').attr('checked', false);
+            }
+
+            // hide loader overlay
+            $(".maincontent").LoadingOverlay("hide");
+        }
+
+        $(".savestreaminfobtn").click(function() {
+            // get information
+            twitchHub.server.saveStreamInfo($("#streamtitle").val(),
+                $("#streamgame").val(),
+                "@ViewBag.Channel",
+                $('.streamMatureCheckbox').is(":checked"),
+                $("#streamdelay").val());
+
+        });
+        // Start the hub
+        $.connection.hub.start().done(function() {
+                setTimeout(function () {
+                    twitchHub.server.getStreamInfo();
+                }, 3000);
+            }
+        );
+
+        
+
+        twitchHub.client.onconnected = function () {
+            console.log("connected...");
+            $(".console").append("Connected...<br>");
+        };
+
+        
+    })()
+   
+</script>

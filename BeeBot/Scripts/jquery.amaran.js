@@ -6,7 +6,7 @@
       defaults = {
         position: "bottom right",
         content: " ",
-        delay: 3000,
+        delay: 6000,
         sticky: false,
         inEffect: "fadeIn",
         outEffect: "fadeOut",

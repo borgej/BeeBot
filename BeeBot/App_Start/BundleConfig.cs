@@ -22,6 +22,7 @@ namespace BeeBot
             bundles.Add(new ScriptBundle("~/bundles/bootstrap").Include(
                 "~/Scripts/tether/tether.js",
                 "~/Scripts/bootstrap.js",
+                "~/Scripts/bootstrap-toggle.js",
                 "~/Scripts/respond.js",
                 "~/Scripts/chartist.js",
                 "~/Scripts/jquery.easy-autocomplete.js",
@@ -32,6 +33,7 @@ namespace BeeBot
 
             bundles.Add(new StyleBundle("~/Content/css").Include(
                 "~/Content/bootstrap.css",
+                "~/Content/bootstrap-toggle.less",
                 "~/Content/tether/tether.css",
                 "~/Content/chartist.css",
                 "~/Content/font-awesome.css",

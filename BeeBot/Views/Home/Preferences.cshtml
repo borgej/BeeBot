@@ -54,7 +54,7 @@
             <div class="form-group">
                 <label class="col-md-4 control-label" for="channel">Channel token</label>
                 <div class="col-md-8">
-                    <input id="channelToken" name="ChannelToken" type="text" placeholder="token" class="form-control input-md" required="required" value="@Model.channelToken">
+                    <input id="channelToken" name="ChannelToken" type="password" placeholder="token" class="form-control input-md" required="required" value="@Model.channelToken">
                     <span class="help-block">Token from channel owner. </span>
                     <span class="help-block">Log in to twitch with your <b>Twitch user</b> (channel owner) and click <a href="https://twitchtokengenerator.com/" target="_blank">here</a> to generate an oauth token. </span>
                     <span class="help-block">You need the <b>user_read</b> and <b>channel_editor</b> to be able to change stream title, game and delay.</span>
@@ -65,7 +65,7 @@
             <!-- Button -->
             <div class="form-group">
                 <div class="col-md-4">
-                    <button id="savebutton" name="savebutton" class="btn" type="button"><i class="fa fa-floppy-o"></i> Save</button>
+                    <button id="savebutton" name="savebutton" class="btn btn-secondary" type="button"><i class="fa fa-floppy-o"></i> Save</button>
                 </div>
             </div>
 
