@@ -28,7 +28,7 @@ namespace BeeBot
                 "~/Scripts/jquery.amaran.min.js"));
 
             bundles.Add(new ScriptBundle("~/bundles/signalr").Include(
-                "~/Scripts/jquery.signalR-2.2.2.*"));
+                "~/Scripts/jquery.signalR-2.2.3.*"));
 
             bundles.Add(new StyleBundle("~/Content/css").Include(
                 "~/Content/bootstrap.css",

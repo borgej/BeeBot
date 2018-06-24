@@ -483,7 +483,7 @@
 
                         </div>
                         @{
-                            var src = "http://www.twitch.tv/" + Model.BotUserSettings.BotChannel + "/chat";
+                            var src = "http://www.twitch.tv/embed/" + Model.BotUserSettings.BotChannel + "/chat";
                         }
                         <div class="embeddedChat">
                             <iframe frameborder="0"
@@ -1224,6 +1224,11 @@
             //$(".chatText").append(serverTime + "<br>");
         };
 
+        setTimeout(ping, 60000);
+
+        function ping() {
+            twitchHub.server.ping();
+        }
 
         twitchHub.client.UpdateChannelBar = function (streamStatus) {
             //console.log("UpdateChannelBar triggered");
@@ -1340,6 +1345,10 @@
         twitchHub.client.ChattersAndCommands = function (obj) {
             updateCommands(obj.topcommands);
             updateChatters(obj.topchatters);
+        };
+
+        twitchHub.client.Pong = function (obj) {
+            console.log(obj.message);
         };
 
 

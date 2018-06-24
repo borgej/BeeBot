@@ -540,6 +540,11 @@ namespace BeeBot.Signalr
             Clients.Caller.UsersConnLog(msg);
         }
 
+        public void Ping()
+        {
+            Clients.Caller.Pong(new {message = "pong"});
+        }
+
         /// <summary>
         /// Disconnect bot from channel
         /// </summary>
@@ -1358,6 +1363,10 @@ namespace BeeBot.Signalr
                         {
                             title = GetVideoTitleByHttp(url, videoId);
                         }
+                        if (title == "N/A")
+                        {
+                            title = GetVideoTitleByHttp(url, videoId);
+                        }
 
                         UpdatePlaylistFromCommand(url, title, userName, videoId);
                     }
@@ -1823,6 +1832,7 @@ namespace BeeBot.Signalr
         /// <param name="arg"></param>
         public void TrackLoyaltyAndTimers(object arg)
         {
+            var THREADSLEEPSECONDS = 15;
             ContextService = new ContextService();
 
             var wtarg = (WorkerThreadArg)arg;
@@ -1845,12 +1855,12 @@ namespace BeeBot.Signalr
                     while (wtarg.Client == null)
                     {
                         UpdateChannelBar();
-                        Wait(5);
+                        Wait(THREADSLEEPSECONDS);
                     }
                     while (wtarg.Client != null && wtarg.Client.IsConnected == false)
                     {
                         UpdateChannelBar();
-                        Wait(5);
+                        Wait(THREADSLEEPSECONDS);
                     }
 
                     // Thread variables
@@ -1952,7 +1962,7 @@ namespace BeeBot.Signalr
 
                     // chill for a second
                     //Thread.Sleep(Sleepseconds);
-                    Wait(5);
+                    Wait(THREADSLEEPSECONDS);
                 }
             }
         }
@@ -2176,36 +2186,44 @@ namespace BeeBot.Signalr
 
         public void UpdateChannelBar()
         {
-            var uname = ContextService.GetUser(Context.User.Identity.Name);
-            var bs = ContextService.GetBotUserSettingsForUser(uname);
-            var token = bs.ChannelToken;
-            TwitchLib.TwitchAPI.Settings.AccessToken = token;
-
-            var channel = TwitchAPI.Channels.v3.GetChannel(token).Result;
-            var uptime = TwitchAPI.Streams.v5.GetUptime(channel.Id);
-
-            var status = new StreamStatusVM();
-            if (uptime.Result == null)
+            try
             {
-                // channel OFFLINE
-                status.Channel = channel.DisplayName;
-                status.Online = false;
-                status.Uptime = null;
-                status.Game = channel.Game;
-                status.Title = channel.Status;
-            }
-            else
-            {
-                // LIVE
-                status.Channel = channel.DisplayName;
-                status.Online = true;
-                status.Uptime = uptime.Result;
-                status.Game = channel.Game;
-                status.Title = channel.Status;
-            }
+                var uname = ContextService.GetUser(Context.User.Identity.Name);
+                var bs = ContextService.GetBotUserSettingsForUser(uname);
+                var token = bs.ChannelToken;
+                TwitchLib.TwitchAPI.Settings.AccessToken = token;
 
-            // Send update to client
-            Clients.Caller.UpdateChannelBar(status);
+                var channel = TwitchAPI.Channels.v3.GetChannel(token).Result;
+                var uptime = TwitchAPI.Streams.v5.GetUptime(channel.Id);
+
+                var status = new StreamStatusVM();
+                if (uptime.Result == null)
+                {
+                    // channel OFFLINE
+                    status.Channel = channel.DisplayName;
+                    status.Online = false;
+                    status.Uptime = null;
+                    status.Game = channel.Game;
+                    status.Title = channel.Status;
+                }
+                else
+                {
+                    // LIVE
+                    status.Channel = channel.DisplayName;
+                    status.Online = true;
+                    status.Uptime = uptime.Result;
+                    status.Game = channel.Game;
+                    status.Title = channel.Status;
+                }
+
+                // Send update to client
+                Clients.Caller.UpdateChannelBar(status);
+            }
+            catch (Exception e)
+            {
+                Clients.Caller.ConsoleLog("Error on updating channelbar: " + e.Message);
+            }
+            
         }
 
         /// <summary>
@@ -2215,27 +2233,35 @@ namespace BeeBot.Signalr
         /// <returns>list of StreamView</returns>
         public List<StreamViewer> GetUsersInChannel(string channel)
         {
-            var users = new List<StreamViewer>();
-
-            var test = TwitchLib.TwitchAPI.Settings.ClientId = ConfigurationManager.AppSettings["clientId"];
-            var streamUsers = TwitchAPI.Undocumented.GetChatters(channel).Result;
-
-            foreach (var user in streamUsers)
+            try
             {
-                var tmpUser = TwitchAPI.Users.v3.GetUserFromUsername(user.Username);
 
-                var t = new StreamViewer();
+                var users = new List<StreamViewer>();
 
-                t.TwitchUsername = user.Username;
-                t.TwitchUserId = tmpUser.Result.Id;
+                var test = TwitchLib.TwitchAPI.Settings.ClientId = ConfigurationManager.AppSettings["clientId"];
+                var streamUsers = TwitchAPI.Undocumented.GetChatters(channel).Result;
 
-                if (!users.Any(u => u.TwitchUserId == t.TwitchUserId))
+                foreach (var user in streamUsers)
                 {
-                    users.Add(t);
-                }
-            }
+                    var tmpUser = TwitchAPI.Users.v3.GetUserFromUsername(user.Username);
 
-            return users;
+                    var t = new StreamViewer();
+
+                    t.TwitchUsername = user.Username;
+                    t.TwitchUserId = tmpUser.Result.Id;
+
+                    if (!users.Any(u => u.TwitchUserId == t.TwitchUserId))
+                    {
+                        users.Add(t);
+                    }
+                }
+
+                return users;
+            }
+            catch (Exception e)
+            {
+                return new List<StreamViewer>();
+            }
         }
 
         /// <summary>
