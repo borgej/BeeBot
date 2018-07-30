@@ -68,14 +68,18 @@ body {
     background-color: #f2f2f2;
 }
 
+.poll {
+    padding-bottom: 20px;
+}
+
+.pollTitle {
+    font-size: 18px !important;
+}
 
 #sidebar {
     max-width: 250px !important;
 }
-.maincontent {
-    /*padding-left: 28px !important;*/
-    /*padding-right: 20px !important;*/
-}
+
 
 /* Set padding to keep content from hitting the edges */
 .body-content {
@@ -214,18 +218,13 @@ songrequests {
     border: 1px solid #a9a9a9
 }
 
-.chatter {
 
-}
 
 .chattervalue {
 
     float: right !important;
 }
 
-.command {
-    
-}
 
 .commandvalue {
 
@@ -444,12 +443,13 @@ songrequests {
     margin-right: 5px;
 }
 
+
 #sidebar {
     overflow: hidden;
     z-index: 3;
 }
 #sidebar .list-group {
-    min-width: 200px;
+    max-width: 200px;
     background-color: #333;
     min-height: 100vh;
 }
@@ -467,6 +467,9 @@ songrequests {
     white-space: nowrap;
 }
 
+    #sidebar .list-group-item:hover {
+        background-color: rgba(255, 255, 255, 0.1) !important;
+    }
 /* highlight active menu */
 #sidebar .list-group-item:not(.collapsed) {
     background-color: #222;
@@ -513,6 +516,16 @@ songrequests {
 @media (max-width:768px) {
 
     .channelMenuHeader {
+        display: none !important;
+    }
+
+    .ytbotLogo, .ytbotCopyright {
+        display: none !important;
+    }
+
+
+
+    .botstatus {
         display: none !important;
     }
 

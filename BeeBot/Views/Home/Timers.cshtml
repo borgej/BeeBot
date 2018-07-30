@@ -2,96 +2,102 @@
 
 <h2>Timers</h2>
 <hr />
-@{
-    if (Model.Any())
-    {
-<div class="row">
-    <div class="col-md-2">
-        <p>Timer name</p>
-    </div>
-    <div class="col-md-4">
-        <p>Response</p>
-    </div>
-    <div class="col-md-2">
-        <p>Interval in minutes</p>
-    </div>
-    <div class="col-md-1 ">
-        <p>Active?</p>
-    </div>
+<div class="card card-body bg-light">
+    @{
+        if (Model.Any())
+        {
+            <div class="row">
+                <div class="col-md-3">
+                    <p>Timer name</p>
+                </div>
+                <div class="col-md-5">
+                    <p>Response</p>
+                </div>
+                <div class="col-md-1">
+                    <p>Minutes</p>
+                </div>
+                <div class="col-md-1 ">
+                </div>
 
-    <div class="col-md-2">
-        
-    </div>
-</div>
-    }
-}
-@foreach (var timer in Model)
-{
-    <div class="row mb-1 timer">
-        <form class="col-md-12 row timer_@timer.Id">
-        <div class="col-md-2">
-            <input name="timerid" class="form-control timerid dontshow" value="@timer.Id"/>
-            <input name="timername" class="form-control timername" value="@timer.TimerName"/>
+                <div class="col-md-2">
 
-        </div>
-        <div class="col-md-4">
-            <textarea class="form-control timertext">@timer.TimerResponse</textarea>
-        </div>
-        <div class="col-md-2">
-            <input name="timerinterval" class="form-control smallinput timerinterval" value="@timer.TimerInterval"/>
-
-        </div>
-        <div class="col-md-1 mt-2 mb-3">
-            <div class="form-check">
-                <input class="form-check-input timeractive" type="checkbox" value="" id="active_@timer.Id" name="active" @(Convert.ToBoolean(timer.Active) == true ?   "checked='checked'" : string.Empty)>
-                <label class="form-check-label" for="active_@timer.Id">
-                    Active?
-                </label>
+                </div>
             </div>
+        }
+    }
+    @foreach (var timer in Model)
+    {
+        <div class="row mb-1 timer">
+            <form class="col-md-12 row timer_@timer.Id">
+                <div class="col-md-3">
+                    <input name="timerid" class="form-control timerid dontshow" value="@timer.Id" />
+                    <input name="timername" class="form-control timername" value="@timer.TimerName" />
+
+                </div>
+                <div class="col-md-5">
+                    <textarea class="form-control timertext">@timer.TimerResponse</textarea>
+                </div>
+                <div class="col-md-1">
+                    <input name="timerinterval" class="form-control smallinput timerinterval" value="@timer.TimerInterval" />
+
+                </div>
+                <div class="col-md-1 mt-2 mb-3">
+                    <div class="pretty p-switch">
+                        <input class=" timeractive" type="checkbox" value="" id="active_@timer.Id" name="active" @(Convert.ToBoolean(timer.Active) == true ? "checked='checked'" : string.Empty)>
+                        <div class="state">
+                            <label class="" for="active_@timer.Id">
+                                Active
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-2">
+                    <button type="button" class="btn btn-sm btn-light savetimerbtn" onclick="saveTimer(this);"><i class="fa fa-save"></i> Save</button>
+                    <button type="button" class="btn btn-sm btn-warning removetimerbtn" onclick="deleteTimer(this);"><i class="fa fa-times"></i> Delete</button>
+                </div>
+
+            </form>
         </div>
+    }
 
-        <div class="col-md-2">
-            <button type="button" class="btn btn-sm btn-success savetimerbtn" onclick="saveTimer(this);"><i class="fa fa-save"></i> Save</button>
-            <button type="button" class="btn btn-sm btn-warning removetimerbtn" onclick="deleteTimer(this);"><i class="fa fa-times"></i> Delete</button>
+    <div class="rowplaceholder"></div>
+
+    <div class="row">
+        <div class="col-md-12 mt-3">
+            <button type="button" class="btn btn-secondary newtimerbtn"><i class="fa fa-plus"></i> Create timer</button>
         </div>
-
-        </form>
     </div>
-}
 
-<div class="rowplaceholder"></div>
-
-<div class="row">
-    <div class="col-md-12 mt-3">
-        <button type="button" class="btn btn-secondary newtimerbtn"><i class="fa fa-plus"></i> Add new timer</button>
-    </div>
 </div>
 
 <div class="row mb-1 timertemplate dontshow timer">
 <form class="col-md-12 row timer_0">
-    <div class="col-md-2">
+    <div class="col-md-3">
         <input name="timerid" class="form-control timerid dontshow" value="0" />
         <input name="triggername" class="form-control timername" value="" />
 
     </div>
-    <div class="col-md-4">
+    <div class="col-md-5">
         <textarea class="form-control timertext"></textarea>
     </div>
-    <div class="col-md-2">
+    <div class="col-md-1">
         <input name="timerinterval" class="form-control smallinput timerinterval" value=""/>
 
     </div>
     <div class="col-md-1 mt-2 mb-3">
-        <div class="form-check">
-            <input class="form-check-input timeractive" type="checkbox" value="" id="timer_new[]" name="active">
-            <label class="form-check-label" for="timer_new[]">
-                Active?
-            </label>
+        <div class="pretty p-switch">
+            <input class=" timeractive" type="checkbox" value="" id="timer_new[]" name="active">
+            <div class="state">
+                <label class="" for="timer_new[]">
+                    Active
+                </label>
+            </div>
         </div>
     </div>
 
     <div class="col-md-2">
-        <button type="button" class="btn btn-sm btn-success savetimerbtn" onclick="saveTimer(this);"><i class="fa fa-save"></i> Save</button>
+        <button type="button" class="btn btn-sm btn-light savetimerbtn" onclick="saveTimer(this);"><i class="fa fa-save"></i> Save</button>
         <button type="button" class="btn btn-sm btn-warning removetimerbtn" onclick="deleteTimer(this);")><i class="fa fa-times"></i> Delete</button>
     </div>
 

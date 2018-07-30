@@ -42,6 +42,7 @@ namespace BeeBot
                 "~/Content/amaran.min.css",
                 "~/Content/animate.min.css",
                 "~/Content/easy-autocomplete.css",
+                "~/Content/pretty-checkbox.min.css",
                 "~/Content/easy-autocomplete.themes.css"));
 
             System.Web.Optimization.BundleTable.EnableOptimizations = false;

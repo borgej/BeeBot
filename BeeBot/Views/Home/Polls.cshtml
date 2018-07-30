@@ -1,5 +1,44 @@
 ﻿@model dynamic
 
-<h2>Polls</h2>
+<h2 class="mb-4">Polls</h2>
 
 <hr/>
+<div class="polls card card-body bg-light">
+
+
+<div class="pollTemplate dontshow poll">
+    <a class="badge badge-info pollTitle" data-url="" data-id="" onclick="loadPollData(this)"></a>
+    <div class="pollData"></div>
+</div>
+</div>
+<script type="text/javascript">
+    var twitchHub = $.connection.twitchHub;
+
+    (function () {
+        $.connection.hub.logging = true;
+
+        // Start the hub
+        $.connection.hub.start().done(function () {
+            twitchHub.server.loadPolls();
+        });
+
+        twitchHub.client.LoadPoll = function (ret) {
+            
+            var newPoll = $(".pollTemplate").clone();
+            newPoll.find(".pollTitle").html(ret.Title);
+            newPoll.find(".pollTitle").data("url", ret.PollUrl).attr("href", ret.PollUrl +"/r");
+            newPoll.find(".pollTitle").attr("target", "_blank");
+            newPoll.find(".pollTitle").data("id", ret.Id);
+            newPoll.removeClass("dontshow").removeClass("pollTemplate");
+            newPoll.find(".pollData").addClass("pollData_" + ret.Id);
+            newPoll.appendTo(".polls");
+        }
+        
+    })()
+
+    function loadPollData(elem) {
+        var url = $(elem).data("url");
+        var id = $(elem).data("id");
+        $(".pollData_" + id).load(url + "/r");
+    }
+</script>

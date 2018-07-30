@@ -198,14 +198,7 @@ namespace BeeBot.Controllers
             return View(userBotSettings);
         }
 
-        public ActionResult ChatNStats()
-        {
-            var userBotSettings = ContextService.GetBotUserSettingsForUser(ContextService.GetUser(User.Identity.Name));
 
-            ViewBag.Channel = userBotSettings.BotChannel;
-            
-            return View(userBotSettings);
-        }
 
         public ActionResult Timers()
         {
@@ -232,6 +225,24 @@ namespace BeeBot.Controllers
             var userBotSettings = ContextService.GetBotUserSettingsForUser(ContextService.GetUser(User.Identity.Name));
 
             return Content(userBotSettings.BotChannel);
+        }
+
+        public ActionResult ChatLog()
+        {
+            var userBotSettings = ContextService.GetBotUserSettingsForUser(ContextService.GetUser(User.Identity.Name));
+
+            ViewBag.Channel = userBotSettings.BotChannel;
+
+            return View(userBotSettings);
+        }
+
+        public ActionResult ChatStats()
+        {
+            var userBotSettings = ContextService.GetBotUserSettingsForUser(ContextService.GetUser(User.Identity.Name));
+
+            ViewBag.Channel = userBotSettings.BotChannel;
+
+            return View(userBotSettings);
         }
     }
 }

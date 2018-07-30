@@ -4,9 +4,10 @@
     
 }
 
-<h2>Bot and channel preferences</h2>
+<h2>Bot setup</h2>
 
-<div class="col-md">
+<div class="">
+<div class="col-md card card-body bg-light">
     <form id="prefForm" class="form-horizontal">
         <fieldset>
 
@@ -32,7 +33,7 @@
             <div class="form-group">
                 <label class="col-md-4 control-label" for="passwordinput">Bot Oauth code</label>
                 <div class="col-md-8">
-                    <input id="passwordinput" name="passwordinput" type="password" placeholder="password" class="form-control input-md" required="required" value="@Model.password">
+                    <input id="passwordinput" name="passwordinput" type="text" placeholder="password" class="form-control input-md" required="required" value="@Model.password">
                     <span class="help-block">oauth:password. </span>
                     <span class="help-block">Log in to twitch with your <b>bot</b> and click <a href="https://twitchapps.com/tmi/" target="_blank">here</a> to generate an oauth token.</span>
                 </div>
@@ -54,7 +55,7 @@
             <div class="form-group">
                 <label class="col-md-4 control-label" for="channel">Channel token</label>
                 <div class="col-md-8">
-                    <input id="channelToken" name="ChannelToken" type="password" placeholder="token" class="form-control input-md" required="required" value="@Model.channelToken">
+                    <input id="channelToken" name="ChannelToken" type="text" placeholder="token" class="form-control input-md" required="required" value="@Model.channelToken">
                     <span class="help-block">Token from channel owner. </span>
                     <span class="help-block">Log in to twitch with your <b>Twitch user</b> (channel owner) and click <a href="https://twitchtokengenerator.com/" target="_blank">here</a> to generate an oauth token. </span>
                     <span class="help-block">You need the <b>user_read</b> and <b>channel_editor</b> to be able to change stream title, game and delay.</span>
@@ -73,7 +74,7 @@
     </form>
 
 </div>
-
+</div>
 <script type="text/javascript">
     $(document).ready(function () {
 

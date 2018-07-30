@@ -15,21 +15,23 @@
 <div class="row">
     <div class="col-md-12">
         <div class="col-md-4 mt-2 mb-3">
-            <div class="form-check">
-                <input class="form-check-input loyaltyenabled" type="checkbox" value="" id="loyalty" name="loyalty" @checkedTxt>
-                <label class="form-check-label" for="loyalty">
-                    Enable loyalty?
-                </label>
+            <div class="pretty p-switch">
+                <input class="loyaltyenabled" type="checkbox" value="" id="loyalty" name="loyalty" @checkedTxt>
+                <div class="state">
+                    <label class="" for="loyalty">
+                        Enable loyalty
+                    </label>
+                </div>
             </div>
         </div>
     </div>
     
     
 </div>
-<div class="loyaltyInput">
+<div class="loyaltyInput card card-body bg-light ">
     <div class="row">
         <div class="col-md-2">
-            Name
+            Name of loyalty
         </div>
         <div class="col-md-4">
             <input type="text" class="form-control loyaltyname" value="@Model.LoyaltyName" />
@@ -47,7 +49,7 @@
 
     <div class="row">
         <div class="col-md-2">
-            Interval 
+            Interval (each minute)
         </div>
         <div class="col-md-4">
             <input type="text" class="form-control smallinput loyaltyinterval" value="@Model.LoyaltyInterval" />

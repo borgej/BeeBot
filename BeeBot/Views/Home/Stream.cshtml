@@ -1,7 +1,7 @@
 ﻿
-<h2>Stream game and title</h2>
+<h2>Stream info</h2>
 <hr/>
-
+<div class="card card-body bg-light">
 <div class="row">
     <div class="col-md-12">
         Stream title:
@@ -16,11 +16,13 @@
         <input class="form-control quarterwidth" type="text" id="streamgame" name="streamgame" style="z-index: 300000 !important;"/>
     </div>
     <div class="col-md-12 mt-2 mb-3">
-        <div class="form-check">
-            <input class="form-check-input streamMatureCheckbox" type="checkbox" value="" id="mature" name="mature">
-            <label class="form-check-label" for="mature">
-                Mature stream?
-            </label>
+        <div class="pretty p-switch">
+            <input class=" streamMatureCheckbox" type="checkbox" value="" id="mature" name="mature">
+            <div class="state">
+                <label class="form-check-label" for="mature">
+                    Mature stream
+                </label>
+            </div>
         </div>
     </div>
     <div class="col-md-12">
@@ -51,10 +53,10 @@
     </div>*@
     
     <div class="col-md-12 mt-3">
-        <button type="button" class="btn btn-secondary mt-1 savestreaminfobtn"><i class="fa fa-save"></i> Save stream info</button>
+        <button type="button" class="btn btn-secondary mt-1 savestreaminfobtn"><i class="fa fa-save"></i> Save</button>
     </div>
 </div>
-
+</div>
 
 
 <script type="text/javascript">

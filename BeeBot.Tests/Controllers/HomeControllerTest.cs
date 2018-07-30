@@ -5,7 +5,6 @@ using System.Text;
 using System.Web.Mvc;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using BeeBot;
-using BeeBot.Controllers;
 using Newtonsoft.Json.Bson;
 using NUnit.Framework;
 using Random.Org;
@@ -17,18 +16,8 @@ namespace BeeBot.Tests.Controllers
     [TestClass]
     public class HomeControllerTest
     {
-        [TestMethod]
-        public void Index()
-        {
-            // Arrange
-            HomeController controller = new HomeController();
 
-            // Act
-            ViewResult result = controller.Index() as ViewResult;
-
-            // Assert
-            Assert.IsNotNull(result);
-        }
+        
 
         [Test]
         public void TestRandom()

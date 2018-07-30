@@ -2,102 +2,111 @@
 
 <h2>Triggers</h2>
 <hr />
-
+<div class="card card-body bg-light">
 <div class="triggers">
-@if (Model.Any())
-{
-    <div class="row mb-1 ">
-        <div class="col-md-1">
-            <p>Trigger name</p>
-        </div>
-        <div class="col-md-4">
-            <p>Response</p>
-        </div>
-
-        <div class="col-md-1 mt-2 mb-3">
-
-        </div>
-        <div class="col-md-1 mt-2 mb-3">
-
-        </div>
-        <div class="col-md-1 mt-2 mb-3">
-
-        </div>
-        <div class="col-md-1 mt-2 mb-3">
-
-        </div>
-
-
-    </div>
-}
-
-@foreach (var trigger in Model)
-{
-    <div class="row mb-1 trigger">
-        <form class="col-md-12 row trigger_@trigger.Id">
-            <div class="col-md-1">
-                <input name="triggerid" class="form-control dontshow triggerid" value="@trigger.Id" />
-                <input name="triggername" class="form-control triggername" value="@trigger.TriggerName" />
-
+    @if (Model.Any())
+    {
+        <div class="row mb-1 ">
+            <div class="col-md-2">
+                <p>Trigger name</p>
             </div>
             <div class="col-md-4">
-                <textarea class="form-control triggerresponse" name="triggerresponse">@trigger.TriggerResponse</textarea>
+                <p>Response</p>
             </div>
-            <div class="col-md-1 mt-2 mb-3">
-                <div class="form-check">
-                    <input class="form-check-input modscantrigger" type="checkbox" value="" id="modscantrigger_@trigger.Id" name="modscantrigger" @(Convert.ToBoolean(trigger.ModCanTrigger) == true ?   "checked='checked'" : string.Empty)>
-                    <label class="form-check-label" for="modscantrigger_@trigger.Id">
-                        Mods?
-                    </label>
-                </div>
-            </div>
-            <div class="col-md-1 mt-2 mb-3">
-                <div class="form-check">
-                    <input class="form-check-input subcantrigger" type="checkbox" value="" id="subcantrigger_@trigger.Id" name="subcantrigger" @(Convert.ToBoolean(trigger.SubCanTrigger) == true ?   "checked='checked'" : string.Empty)>
-                    <label class="form-check-label" for="subcantrigger_@trigger.Id">
-                        Subscriber?
-                    </label>
-                </div>
-            </div>
-            <div class="col-md-1 mt-2 mb-3">
-                <div class="form-check">
-                    <input class="form-check-input viewercantrigger" type="checkbox" value="" id="viewercantrigger_@trigger.Id" name="viewercantrigger" @(Convert.ToBoolean(trigger.ViewerCanTrigger) == true ?   "checked='checked'" : string.Empty)>
-                    <label class="form-check-label" for="viewercantrigger_@trigger.Id">
-                        Viewer?
-                    </label>
-                </div>
-            </div>
-            <div class="col-md-1 mt-2 mb-3">
-                <div class="form-check">
-                    
-                <input class="form-check-input triggeractive" type="checkbox" value="" id="triggeractive_@trigger.Id" name="triggeractive" @(Convert.ToBoolean(trigger.Active) == true ?   "checked='checked'" : string.Empty)>
-                <label class="form-check-label" for="triggeractive_@trigger.Id">
-                    Active?
-                </label>
-                </div>
-            </div>
-            <div class="col-md-2">
-                <button type="button" class="btn btn-sm btn-success savetriggerbtn" onclick="saveTrigger(this)"><i class="fa fa-save"></i> Save</button>
-                <button type="button" class="btn btn-sm btn-warning removetriggerbtn" onclick="deleteTrigger(this)"><i class="fa fa-times"></i> Delete</button>
-            </div>
-        </form>
 
-    </div>
-}
+            <div class="col-md-1 mt-2 mb-3">
+
+            </div>
+            <div class="col-md-1 mt-2 mb-3">
+
+            </div>
+            <div class="col-md-1 mt-2 mb-3">
+
+            </div>
+            <div class="col-md-1 mt-2 mb-3">
+
+            </div>
+
+
+        </div>
+    }
+
+    @foreach (var trigger in Model)
+    {
+        <div class="row mb-1 trigger">
+            <form class="col-md-12 row trigger_@trigger.Id">
+                <div class="col-md-2">
+                    <input name="triggerid" class="form-control dontshow triggerid" value="@trigger.Id" />
+                    <input name="triggername" class="form-control triggername" value="@trigger.TriggerName" />
+
+                </div>
+                <div class="col-md-4">
+                    <textarea class="form-control triggerresponse" name="triggerresponse">@trigger.TriggerResponse</textarea>
+                </div>
+                <div class="col-md-1 mt-2 mb-3">
+                    <div class="pretty p-switch">
+                        <input class=" modscantrigger" type="checkbox" value="" id="modscantrigger_@trigger.Id" name="modscantrigger" @(Convert.ToBoolean(trigger.ModCanTrigger) == true ? "checked='checked'" : string.Empty)>
+                        <div class="state">
+                            <label class="" for="modscantrigger_@trigger.Id">
+                                Mod
+                            </label>
+                        </div>
+
+                    </div>
+                </div>
+                <div class="col-md-1 mt-2 mb-3">
+                    <div class="pretty p-switch">
+                        <input class=" subcantrigger" type="checkbox" value="" id="subcantrigger_@trigger.Id" name="subcantrigger" @(Convert.ToBoolean(trigger.SubCanTrigger) == true ? "checked='checked'" : string.Empty)>
+                        <div class="state">
+                            <label class="" for="subcantrigger_@trigger.Id">
+                                Sub
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-1 mt-2 mb-3">
+                    <div class="pretty p-switch">
+                        <input class=" viewercantrigger" type="checkbox" value="" id="viewercantrigger_@trigger.Id" name="viewercantrigger" @(Convert.ToBoolean(trigger.ViewerCanTrigger) == true ? "checked='checked'" : string.Empty)>
+                        <div class="state">
+                            <label class="" for="viewercantrigger_@trigger.Id">
+                                Viewer
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-1 mt-2 mb-3">
+                    <div class="pretty p-switch">
+
+                        <input class=" triggeractive" type="checkbox" value="" id="triggeractive_@trigger.Id" name="triggeractive" @(Convert.ToBoolean(trigger.Active) == true ? "checked='checked'" : string.Empty)>
+                        <div class="state">
+                            <label class="" for="triggeractive_@trigger.Id">
+                                Active
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <button type="button" class="btn btn-sm btn-light savetriggerbtn" onclick="saveTrigger(this)"><i class="fa fa-save"></i> Save</button>
+                    <button type="button" class="btn btn-sm btn-warning removetriggerbtn" onclick="deleteTrigger(this)"><i class="fa fa-times"></i> Delete</button>
+                </div>
+            </form>
+
+        </div>
+    }
 </div>
 <div class="rowplaceholder"></div>
 
 <div class="row">
     <div class="col-md-12 mt-3">
-        <button type="button" class="btn btn-secondary newtriggerbtn"><i class="fa fa-plus"></i> Add new trigger</button>
+        <button type="button" class="btn btn-secondary newtriggerbtn"><i class="fa fa-plus"></i> Create trigger</button>
     </div>
 </div>
-
+</div>
 
 
 <div class="row mb-1 triggertemplate dontshow">
     <form class="col-md-12 row trigger_0">
-        <div class="col-md-1">
+        <div class="col-md-2">
             <input name="triggerid" class="form-control dontshow triggerid" value="0" />
             <input name="triggername" class="form-control triggername" value="" />
         </div>
@@ -105,43 +114,51 @@
             <textarea class="form-control triggerresponse" name="triggerresponse"></textarea>
         </div>
         <div class="col-md-1 mt-2 mb-3">
-            <div class="form-check">
-                <input class="form-check-input modscantrigger" type="checkbox" value="" id="modscantrigger[]" name="modscantrigger">
-                <label class="form-check-label" for="modscantrigger[]">
-                    Mods?
-                </label>
+            <div class="pretty p-switch">
+                <input class=" modscantrigger" type="checkbox" value="" id="modscantrigger[]" name="modscantrigger">
+                <div class="state">
+                    <label class="" for="modscantrigger[]">
+                        Mod
+                    </label>
+                </div>
             </div>
         </div>
         <div class="col-md-1 mt-2 mb-3">
-            <div class="form-check">
-                <input class="form-check-input subcantrigger" type="checkbox" value="" id="subcantrigger[]" name="subcantrigger">
-                <label class="form-check-label" for="subcantrigger[]">
-                    Subscriber?
-                </label>
+            <div class="pretty p-switch">
+                <input class=" subcantrigger" type="checkbox" value="" id="subcantrigger[]" name="subcantrigger">
+                <div class="state">
+                    <label class="" for="subcantrigger[]">
+                        Sub
+                    </label>
+                </div>
             </div>
         </div>
         <div class="col-md-1 mt-2 mb-3">
-            <div class="form-check">
-                <input class="form-check-input" type="checkbox" value="" id="viewercantrigger[]" name="viewercantrigger">
-                <label class="form-check-label" for="viewercantrigger[]">
-                    Viewer?
-                </label>
+            <div class="pretty p-switch">
+                <input class="" type="checkbox" value="" id="viewercantrigger[]" name="viewercantrigger">
+                <div class="state">
+                    <label class="" for="viewercantrigger[]">
+                        Viewer
+                    </label>
+                </div>
             </div>
         </div>
         <div class="col-md-1 mt-2 mb-3">
-            <div class="form-check">
-                <input class="form-check-input triggeractive" type="checkbox" value="" id="active[]" name="triggeractive">
-                <label class="form-check-label" for="active[]">
-                    Active?
-                </label>
+            <div class="pretty p-switch">
+                <input class=" triggeractive" type="checkbox" value="" id="active[]" name="triggeractive">
+                <div class="state">
+                    <label class="" for="active[]">
+                        Active
+                    </label>
+                </div>
             </div>
         </div>
         <div class="col-md-2">
-            <button type="button" class="btn btn-sm btn-success savetriggerbtn" onclick="saveTrigger(this)"><i class="fa fa-save"></i> Save</button>
+            <button type="button" class="btn btn-sm btn-light savetriggerbtn" onclick="saveTrigger(this)"><i class="fa fa-save"></i> Save</button>
             <button type="button" class="btn btn-sm btn-warning removetriggerbtn" onclick="deleteTrigger(this)"><i class="fa fa-times"></i> Delete</button>
         </div>
     </form>
-    
+
 
 
 </div>
@@ -161,7 +178,7 @@
 
 
     $(document).ready(function () {
-        
+
     });
 
     function saveTrigger(elem) {
@@ -175,25 +192,31 @@
         var active = $(elem).parent().parent().find(".triggeractive").prop('checked');
 
         twitchHub.server.saveTrigger(id, name, response, mods, sub, viewer, active);
-        
+
     }
 
     function deleteTrigger(elem) {
         var id = $(elem).parent().parent().find(".triggerid").val();
+
+        if (id == "0") {
+            $(elem).closest(".trigger").remove();
+            return;
+        }
+            
 
         twitchHub.server.deleteTrigger(id);
     }
 
 
     $(".newtriggerbtn").click(function (e) {
-        $(".triggertemplate").clone().removeClass("triggertemplate").removeClass("dontshow").insertAfter(".rowplaceholder");
+        $(".triggertemplate").clone().removeClass("triggertemplate").removeClass("dontshow").addClass("trigger").insertAfter(".rowplaceholder");
     });
 
     $(".removetriggerbtn").click(function (e) {
         $(this).closest(".trigger").remove();
     });
 
-    
+
 
     (function () {
         // Setting logging to true so that we can see whats happening in the browser console log. [OPTIONAL]
@@ -210,7 +233,7 @@
                     $('.triggers').find("input[value='" + ret.container.TriggerName + "']").closest(".triggerid")
                         .val(ret.container.Id);
                 }
-                
+
 
                 console.log(ret.message);
                 $.amaran({

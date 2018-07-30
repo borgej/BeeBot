@@ -8,6 +8,7 @@ using System.Web;
 using BeeBot.Models;
 using TwitchLib;
 using TwitchLib.Client;
+using TwitchLib.Client.Models;
 using TwitchLib.PubSub;
 using YTBot.Services;
 
@@ -25,7 +26,8 @@ namespace YTBot.Models
         public ContextService ContextService { get; set; }
 
         public List<string> ConsoleLog { get; set; }
-        public List<string> ChatLog { get; set; }
+        public List<ChatMessage> ChatLog { get; set; }
+        public List<ChatMessage> ChatMsgLog { get; set; }
         public List<string> Channelmods { get; set; }
         public Dictionary<string, int> CommandsUsed { get; set; }
         public Dictionary<string, int> ChattersCount { get; set; }
@@ -38,7 +40,7 @@ namespace YTBot.Models
 
         public TwitchClientContainer()
         {
-            ChatLog = new List<string>();
+            ChatLog = new List<ChatMessage>();
             ConsoleLog = new List<string>();
             CommandsUsed = new Dictionary<string, int>();
             ChattersCount = new Dictionary<string, int>();

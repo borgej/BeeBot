@@ -22,6 +22,7 @@ using TwitchLib.Client;
 using TwitchLib.Client.Events;
 using TwitchLib.Client.Extensions;
 using TwitchLib.Client.Models;
+using TwitchLib.PubSub;
 using YoutubeSearch;
 using YTBot.Models.ViewModels;
 using Timer = YTBot.Models.Timer;
@@ -64,6 +65,10 @@ namespace BeeBot.Signalr
 
         }
 
+        /// <summary>
+        /// OnConnected event, initializes TwitchApi
+        /// </summary>
+        /// <returns></returns>
         public override Task OnConnected()
         {
             InitializeAPI();
@@ -91,6 +96,10 @@ namespace BeeBot.Signalr
             return base.OnConnected();
         }
 
+        /// <summary>
+        /// Initialize TwitchAPI with clientId and clientSecret
+        /// </summary>
+        /// <returns></returns>
         private async Task InitializeAPI()
         {
             var user = ContextService.GetUser(GetUsername());
@@ -129,6 +138,16 @@ namespace BeeBot.Signalr
             }
         }
 
+        /// <summary>
+        /// Saves a new trigger
+        /// </summary>
+        /// <param name="triggerid"></param>
+        /// <param name="triggername"></param>
+        /// <param name="triggerresponse"></param>
+        /// <param name="modscantrigger"></param>
+        /// <param name="subscantrigger"></param>
+        /// <param name="viewercantrigger"></param>
+        /// <param name="triggeractive"></param>
         public void SaveTrigger(string triggerid, string triggername, string triggerresponse, string modscantrigger,
             string subscantrigger, string viewercantrigger, string triggeractive)
         {
@@ -157,6 +176,10 @@ namespace BeeBot.Signalr
             }
         }
 
+        /// <summary>
+        /// Deletes a trigger from database
+        /// </summary>
+        /// <param name="triggerid"></param>
         public void DeleteTrigger(string triggerid)
         {
             try
@@ -172,6 +195,14 @@ namespace BeeBot.Signalr
             }
         }
 
+        /// <summary>
+        /// Saves a timer to database
+        /// </summary>
+        /// <param name="timerid"></param>
+        /// <param name="timername"></param>
+        /// <param name="timertext"></param>
+        /// <param name="timerinterval"></param>
+        /// <param name="triggeractive"></param>
         public void SaveTimer(string timerid, string timername, string timertext, string timerinterval,
             string triggeractive)
         {
@@ -195,6 +226,10 @@ namespace BeeBot.Signalr
             }
         }
 
+        /// <summary>
+        /// Deletes a timer from database
+        /// </summary>
+        /// <param name="timerid"></param>
         public void DeleteTimer(string timerid)
         {
             try
@@ -210,6 +245,13 @@ namespace BeeBot.Signalr
             }
         }
 
+        /// <summary>
+        /// Save loyalty currency for bot
+        /// </summary>
+        /// <param name="enabled"></param>
+        /// <param name="name"></param>
+        /// <param name="value"></param>
+        /// <param name="interval"></param>
         public void SaveLoyalty(bool enabled, string name, string value, string interval)
         {
             try
@@ -295,6 +337,7 @@ namespace BeeBot.Signalr
             }
         }
 
+        // Sets the flag modsCanControlPlaylist in the client.
         public void UpdateModsCanControlPlaylist(bool modsCanControlPlaylist)
         {
             try
@@ -309,6 +352,9 @@ namespace BeeBot.Signalr
             }
         }
 
+        /// <summary>
+        /// Gets the default banned words list and calls the client with the list
+        /// </summary>
         public void ImportDefaultBannedWords()
         {
             var bannedWords = ConfigurationManager.AppSettings["bannedWords"];
@@ -327,6 +373,12 @@ namespace BeeBot.Signalr
             Clients.Caller.ImportBannedWords(bannedWordsNew);
         }
 
+        /// <summary>
+        /// Gets the bot connection status to channel and maintains the workerthread livability
+        /// </summary>
+        /// <param name="username"></param>
+        /// <param name="password"></param>
+        /// <param name="channel"></param>
         public void BotStatus(string username, string password, string channel)
         {
             try
@@ -360,6 +412,36 @@ namespace BeeBot.Signalr
                     };
                     //ConsoleLog("Bot is " + bs.info);
                     Clients.Caller.BotStatus(bs);
+                }
+
+                if (cc.WorkerThread != null && cc.WorkerThread.IsAlive == false)
+                {
+                    cc.WorkerThread.Abort();
+                    cc.WorkerThread = null;
+
+                    var arg = new WorkerThreadArg()
+                    {
+                        Channel = channel,
+                        Username = GetUsername(),
+                        Client = cc.Client
+                    };
+                    var parameterizedThreadStart = new ParameterizedThreadStart(TrackLoyaltyAndTimers);
+
+                    cc.WorkerThread = new Thread(parameterizedThreadStart);
+                    cc.WorkerThread.Start(arg);
+                }
+                else if (cc.WorkerThread == null)
+                {
+                    var arg = new WorkerThreadArg()
+                    {
+                        Channel = channel,
+                        Username = HttpContext.Current.User.Identity.Name,
+                        Client = cc.Client
+                    };
+
+                    var parameterizedThreadStart = new ParameterizedThreadStart(TrackLoyaltyAndTimers);
+                    cc.WorkerThread = new Thread(parameterizedThreadStart);
+                    cc.WorkerThread.Start(arg);
                 }
             }
             catch (Exception e)
@@ -545,6 +627,11 @@ namespace BeeBot.Signalr
             //await ConnectBot("test", "test", "test");
         }
 
+        /// <summary>
+        /// OnBeeingRaided event
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void OnBeeingRaided(object sender, OnRaidNotificationArgs e)
         {
             var ccontainer = GetClientContainer();
@@ -554,6 +641,11 @@ namespace BeeBot.Signalr
             ccontainer.Client.SendMessage(Channel, "/me @" + hoster + " is raiding!");
         }
 
+        /// <summary>
+        /// OnConnectToChannel event
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void OnConnectToChannel(object sender, OnConnectedArgs e)
         {
             var ccontainer = GetClientContainer();
@@ -561,6 +653,11 @@ namespace BeeBot.Signalr
             ccontainer.Client.SendMessage(Channel, "/me is connected! YTBot 2018 by @Borge_Jakobsen ");
         }
 
+        /// <summary>
+        /// OnJoinedChannel event
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void OnJoinedChannel(object sender, OnJoinedChannelArgs e)
         {
             var ccontainer = GetClientContainer();
@@ -645,7 +742,10 @@ namespace BeeBot.Signalr
             }
         }
 
-
+        /// <summary>
+        /// Gets current stream meta information. Uptime, title, game, delay, mature and online status.
+        /// </summary>
+        /// <returns>Call to Caller.SetStreamInfo</returns>
         public async Task GetStreamInfo()
         {
             try
@@ -741,6 +841,10 @@ namespace BeeBot.Signalr
             }
         }
 
+        /// <summary>
+        /// Sends the default banned words list to client
+        /// </summary>
+        /// <returns></returns>
         public async Task GetDefaultBannedWords()
         {
 
@@ -758,7 +862,12 @@ namespace BeeBot.Signalr
             }
         }
 
-
+        /// <summary>
+        /// Reconnect bot to channel, 
+        /// </summary>
+        /// <param name="username">Username</param>
+        /// <param name="password">OAuth</param>
+        /// <param name="channel">Channelname</param>
         public void Reconnect(string username, string password, string channel)
         {
             try
@@ -796,6 +905,11 @@ namespace BeeBot.Signalr
             }
         }
 
+        /// <summary>
+        /// OnChannelModeratorsReceived event, get all mods in channel.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         public void ChannelModerators(object sender, OnModeratorsReceivedArgs e)
         {
             var mods = new List<string>();
@@ -906,6 +1020,9 @@ namespace BeeBot.Signalr
             Clients.Caller.ConsoleLog(DateTime.Now.ToString("HH:mm:ss").ToString() + " - " + e.Error.Message);
         }
 
+        /// <summary>
+        /// Call this to update top commands and top chatters
+        /// </summary>
         public void UpdateChattersAndCommands()
         {
             try
@@ -926,6 +1043,9 @@ namespace BeeBot.Signalr
 
         }
 
+        /// <summary>
+        /// Call this to update client
+        /// </summary>
         public void UpdateViewerCount()
         {
             try
@@ -941,6 +1061,10 @@ namespace BeeBot.Signalr
             }
         }
 
+        /// <summary>
+        /// Returns number of viewers in stream
+        /// </summary>
+        /// <returns></returns>
         private string GetNumViewers()
         {
             try
@@ -959,7 +1083,9 @@ namespace BeeBot.Signalr
             }
         }
 
-
+        /// <summary>
+        /// Poll this to send songrequests to client
+        /// </summary>
         public void PollPlaylist()
         {
             try
@@ -979,6 +1105,10 @@ namespace BeeBot.Signalr
             }
         }
 
+        /// <summary>
+        ///  Deletes song from database of users songrequest
+        /// </summary>
+        /// <param name="id"></param>
         public void DeleteSong(string id)
         {
             try
@@ -1007,6 +1137,14 @@ namespace BeeBot.Signalr
             }
         }
 
+        /// <summary>
+        /// Adds song to users list, poll this list to get added songs
+        /// </summary>
+        /// <param name="url"></param>
+        /// <param name="title"></param>
+        /// <param name="user"></param>
+        /// <param name="videoId"></param>
+        /// <returns>PlayListItem</returns>
         public PlayListItem UpdatePlaylistFromCommand(string url, string title, string user, string videoId)
         {
             try
@@ -1038,6 +1176,10 @@ namespace BeeBot.Signalr
             return null;
         }
 
+        /// <summary>
+        /// Removes video from songrequests queue by youtube id
+        /// </summary>
+        /// <param name="id"></param>
         public void DeletePlaylistItem(string id)
         {
 
@@ -1085,7 +1227,7 @@ namespace BeeBot.Signalr
 
 
             // Add to chat log
-            AddToChatLog(e.ChatMessage.DisplayName, e.ChatMessage.Message);
+            AddToChatLog(e.ChatMessage);
         }
 
 
@@ -1119,14 +1261,14 @@ namespace BeeBot.Signalr
 
         private void ChatMessageTriggerCheck(object sender, OnChatCommandReceivedArgs e)
         {
-            ChatMessageTriggerCheck(e.Command.ChatMessage, e);
+            ChatCommandTriggerCheck(e.Command.ChatMessage, e);
         }
 
         /// <summary>
         /// Check for chat triggers
         /// </summary>
         /// <param name="chatmessage"></param>
-        public async Task ChatMessageTriggerCheck(ChatMessage chatmessage, OnChatCommandReceivedArgs arg)
+        public async Task ChatCommandTriggerCheck(ChatMessage chatmessage, OnChatCommandReceivedArgs arg)
         {
             try
             {
@@ -2014,6 +2156,7 @@ namespace BeeBot.Signalr
                         Stop();
                     }
                 }
+                // !volume
                 else if (arg.Command.CommandText.ToLower().Equals("volume"))
                 {
 
@@ -2325,10 +2468,12 @@ namespace BeeBot.Signalr
                                     Convert.ToDateTime(timer.TimerLastRun.Value.AddMinutes((timer.TimerInterval))) <=
                                     DateTime.Now)
                                 {
-                                    // show message in chat
-                                    wtarg.Client.SendMessage(Channel, "/me " + timer.TimerResponse);
                                     // update timer
                                     ContextService.TimerStampLastRun(timer.Id, User.UserName);
+                                    // show message in chat
+                                    wtarg.Client.SendMessage(Channel, "/me " + timer.TimerResponse);
+                                    
+                                    Wait(1);
                                 }
                             }
                         }
@@ -2452,6 +2597,54 @@ namespace BeeBot.Signalr
             return;
         }
 
+        public void LoadChatLog()
+        {
+            try
+            {
+                var tcc = GetClientContainer();
+                foreach (var chatMessage in tcc.ChatLog)
+                {
+                    Clients.Caller.updateChatLog(chatMessage);
+                }
+                Clients.Caller.toggleTableSorter();
+            }
+            catch (Exception e)
+            {
+                ConsoleLog("Error on LoacChatLog(): " + e.Message );
+            }
+        }
+
+        /// <summary>
+        /// Get poll data from Strawpoll and call client with each poll
+        /// </summary>
+        public async Task LoadPolls()
+        {
+            try
+            {
+                var polls = GetClientContainer().Polls;
+
+                foreach (var poll in polls)
+                {
+                    var getPoll = new StrawPoll();
+                    var pollResult = await getPoll.GetPollAsync(poll);
+                    Clients.Caller.LoadPoll(pollResult);
+                }
+
+                
+            }
+            catch (Exception e)
+            {
+                ConsoleLog("Error on LoadPolls(): " + e.Message);
+            }
+             
+        }
+
+        /// <summary>
+        /// Randomizes a list
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="list"></param>
+        /// <returns></returns>
         public static List<T> Randomize<T>(List<T> list)
         {
             List<T> randomizedList = new List<T>();
@@ -2475,22 +2668,6 @@ namespace BeeBot.Signalr
             }
 
             return randomizedList;
-        }
-
-        private void UpdateLatestPoll()
-        {
-            try
-            {
-                var ccontainer = GetClientContainer();
-                if (ccontainer.Polls.Count > 0)
-                {
-
-                }
-            }
-            catch (Exception e)
-            {
-                ConsoleLog("Error on UpdateLatestPoll(): " + e.Message);
-            }
         }
 
         /// <summary>
@@ -2528,13 +2705,14 @@ namespace BeeBot.Signalr
         /// <param name="username">string</param>
         /// <param name="msg">string</param>
         /// <returns>Chatlog as List of strings this session chat messages</returns>
-        private List<string> AddToChatLog(string username, string msg)
+        private List<ChatMessage> AddToChatLog(ChatMessage chatmessage)
         {
 
             var ccontainer = GetClientContainer();
 
             // +1 #topChatters
-            AddToChatters(username, ccontainer);
+            AddToChatStat(chatmessage.Username, ccontainer);
+            AddToChatLog(chatmessage, ccontainer);
 
             return ccontainer.ChatLog;
         }
@@ -2545,7 +2723,7 @@ namespace BeeBot.Signalr
         /// </summary>
         /// <param name="username"></param>
         /// <returns>ChatterCount dictionary</returns>
-        private Dictionary<string, int> AddToChatters(string username, TwitchClientContainer tcc)
+        private void AddToChatStat(string username, TwitchClientContainer tcc)
         {
             if (tcc.ChattersCount.ContainsKey(username))
             {
@@ -2555,8 +2733,14 @@ namespace BeeBot.Signalr
             {
                 tcc.ChattersCount[username] = 1;
             }
+        }
 
-            return tcc.ChattersCount;
+        private void AddToChatLog(ChatMessage msg, TwitchClientContainer tcc)
+        {
+            if (tcc.ChatLog != null)
+            {
+                tcc.ChatLog.Add(msg);
+            }
         }
 
         private Dictionary<string, int> AddToCommands(string command)
