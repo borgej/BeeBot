@@ -115,8 +115,7 @@
                         message: ret.message,
                     },
                     'closeOnClick':false,
-                    'inEffect':'slideTop',
-                    'outEffect':'slideLeft'
+                    'inEffect':'slideTop'
                 });
             } else {
                 console.log(ret.message);
@@ -128,8 +127,7 @@
                         message: ret.message,
                     },
                     'closeOnClick': false,
-                    'inEffect': 'slideTop',
-                    'outEffect': 'slideLeft'
+                    'inEffect': 'slideTop'
                 });
             }
         }
@@ -164,21 +162,10 @@
 
         });
         // Start the hub
-        $.connection.hub.start().done(function() {
-                setTimeout(function () {
-                    twitchHub.server.getStreamInfo();
-                }, 3000);
+        $.connection.hub.start().done(function () {
+            twitchHub.server.getStreamInfo();
             }
         );
-
-        
-
-        twitchHub.client.onconnected = function () {
-            console.log("connected...");
-            $(".console").append("Connected...<br>");
-        };
-
-        
     })()
    
 </script>

@@ -25,6 +25,7 @@ namespace YTBot.Models
         public virtual List<Timer> Timers { get; set; }
         public virtual List<BannedWord> BannedWords { get; set; }
         public virtual List<Quote> Quotes {get; set; }
+        public virtual List<PlayListItem> SongRequests { get; set; }
         public bool? QuotesActive {get;set;}
         public virtual ApplicationUser User { get; set; }
     }

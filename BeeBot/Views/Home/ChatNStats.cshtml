@@ -17,15 +17,18 @@
     </div>
     <div class="col-md-6">
         <div>
-            <h3><i class="fa indicator"></i><span class="alert-info viewercount pl-3 pr-3"> [ONE MILLION TRILLION] </span> viewers</h3>
+            <h3><i class="fa indicator text-center"></i><span class="alert-info viewercount pl-3 pr-3"> X </span> viewers</h3>
         </div>
         <div class="row">
 
-            <div class="chatstats col-md mr-5">
+            <div class="chatstats col-md-4 mr-5">
                 <h4>Top chatters</h4>
                 <div class="chatdata"></div>
             </div>
-            <div class="commandsstats col-md mr-5">
+            
+        </div>
+        <div class="row">
+            <div class="commandsstats col-md-4 mr-5">
                 <h4>Top commands</h4>
                 <div class="commandsdata"></div>
             </div>
@@ -36,29 +39,41 @@
 
 
 <script type="text/javascript">
+    var UPDATEVIEWERCOUNTINSEC = 10;
+    var UPDATECHATTERSINSEC = 10;
     $(document).ready(function() {
 
     });
     var twitchHub = $.connection.twitchHub;
 
-    (function () {
+    (function() {
         // Setting logging to true so that we can see whats happening in the browser console log. [OPTIONAL]
         $.connection.hub.logging = true;
 
-        twitchHub.client.ChattersAndCommands = function (retval) {
+        twitchHub.client.ChattersAndCommands = function(retval) {
             $(".chatdata").html("");
-            $.each(retval.topchatters, function (key, value) {
-                $(".chatdata").append("<span class='oneLine'><span class='chatter'>" + value.Key + "</span><span class='chattervalue'>" + value.Value + "</span></span>");
-            });
+            $.each(retval.topchatters,
+                function(key, value) {
+                    $(".chatdata").append("<span class='oneLine'><span class='chatter'>" +
+                        value.Key +
+                        "</span><span class='chattervalue'>" +
+                        value.Value +
+                        "</span></span>");
+                });
             $(".commandsdata").html("");
-            $.each(retval.topcommands, function (key, value) {
-                $(".commandsdata").append("<span class='oneLine'><span class='command'>" + value.Key + "</span><span class='commandvalue'>" + value.Value + "</span></span>");
-            });
+            $.each(retval.topcommands,
+                function(key, value) {
+                    $(".commandsdata").append("<span class='oneLine'><span class='command'>" +
+                        value.Key +
+                        "</span><span class='commandvalue'>" +
+                        value.Value +
+                        "</span></span>");
+                });
         }
 
-        twitchHub.client.UpdateViewers = function (retval) {
+        twitchHub.client.UpdateViewers = function(retval) {
 
-            
+
             var oldValue = $(".viewercount").html();
             var newValue = retval;
 
@@ -71,8 +86,7 @@
                     $(".indicator").toggleClass("green");
                     $(".indicator").removeClass("yellow");
                     $(".indicator").removeClass("red");
-                }
-                else if (oldValue > newValue) {
+                } else if (oldValue > newValue) {
                     $(".indicator").toggleClass("fa-arrow-down");
                     $(".indicator").removeClass("fa-arrow-right");
                     $(".indicator").removeClass("fa-arrow-up");
@@ -98,22 +112,16 @@
             setInterval(function() {
                 twitchHub.server.updateChattersAndCommands();
                 },
-                5000);
+                UPDATECHATTERSINSEC * 1000);
 
             setInterval(function() {
                     twitchHub.server.updateViewerCount();
                 },
-                30000);
+                UPDATEVIEWERCOUNTINSEC * 1000);
         });
 
 
 
-        twitchHub.client.onconnected = function () {
-            console.log("connected...");
-            $(".console").append("Connected...<br>");
-        };
-
-
-    })()
+    })();
 
 </script>

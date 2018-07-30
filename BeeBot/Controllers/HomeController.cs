@@ -53,6 +53,24 @@ namespace BeeBot.Controllers
             return View("Control", userBotSettings);
         }
 
+        public ActionResult GetUsername()
+        {
+            var userBotSettings = ContextService.GetBotUserSettingsForUser(ContextService.GetUser(User.Identity.Name));
+            return Content(userBotSettings.BotUsername);
+        }
+
+        public ActionResult GetPassword()
+        {
+            var userBotSettings = ContextService.GetBotUserSettingsForUser(ContextService.GetUser(User.Identity.Name));
+            return Content(userBotSettings.BotPassword);
+        }
+
+        public ActionResult GetChannel()
+        {
+            var userBotSettings = ContextService.GetBotUserSettingsForUser(ContextService.GetUser(User.Identity.Name));
+            return Content(userBotSettings.BotChannel);
+        }
+
         public ActionResult LoyaltyHtml()
         {
             var userLoyalty = ContextService.GetBotChannelSettings(ContextService.GetUser(User.Identity.Name)).Loyalty;
@@ -130,7 +148,8 @@ namespace BeeBot.Controllers
             var bs = ContextService.GetBotUserSettingsForUser(user);
 
             var twitchApi = new TwitchAPI();
-            twitchApi.InitializeAsync(ConfigurationManager.AppSettings["clientId"], bs.ChannelToken).RunSynchronously();
+            twitchApi.Settings.ClientId = ConfigurationManager.AppSettings["clientId"];
+            twitchApi.Settings.AccessToken = bs.ChannelToken;
             var gamesResult = await twitchApi.Search.v5.SearchGamesAsync(phrase, null);
 
             var output = new List<object>();

@@ -198,18 +198,10 @@
     (function () {
         // Setting logging to true so that we can see whats happening in the browser console log. [OPTIONAL]
         $.connection.hub.logging = true;
-
-        twitchHub.client.SaveCallback = function (retval) {
-            
-        }
-
         // Start the hub
         $.connection.hub.start().done(function () {
 
         });
-
-
-
         twitchHub.client.SaveTrigger = function (ret) {
             if (ret.data == "1") {
 
@@ -229,8 +221,7 @@
                         message: ret.message,
                     },
                     'closeOnClick': false,
-                    'inEffect': 'slideTop',
-                    'outEffect': 'slideLeft'
+                    'inEffect': 'slideTop'
                 });
                 //});
             } else {
@@ -243,19 +234,10 @@
                         message: ret.message,
                     },
                     'closeOnClick': false,
-                    'inEffect': 'slideTop',
-                    'outEffect': 'slideLeft'
+                    'inEffect': 'slideTop'
                 });
             }
         }
-        
-
-
-        twitchHub.client.onconnected = function () {
-            console.log("connected...");
-            $(".console").append("Connected...<br>");
-        };
-
 
     })()
 

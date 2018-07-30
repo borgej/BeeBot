@@ -57,6 +57,7 @@ namespace BeeBot
                 ClientSecret = ConfigurationManager.AppSettings["clientSecret"],
                 Provider = new TwitchAuthenticationProvider()
             });
+            var hubConfiguration = new HubConfiguration {EnableDetailedErrors = true};
 
             app.MapSignalR();
 

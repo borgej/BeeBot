@@ -86,8 +86,7 @@
                         message: ret.message,
                     },
                     'closeOnClick':false,
-                    'inEffect':'slideTop',
-                    'outEffect':'slideLeft'
+                    'inEffect':'slideTop'
                 });
             } else {
                 console.log(ret.message);
@@ -99,8 +98,7 @@
                         message: ret.message,
                     },
                     'closeOnClick': false,
-                    'inEffect': 'slideTop',
-                    'outEffect': 'slideLeft'
+                    'inEffect': 'slideTop'
                 });
             }
         }
@@ -114,12 +112,6 @@
                 $(".loyaltyvalue").val(),
                 $(".loyaltyinterval").val());
         });
-
-        twitchHub.client.onconnected = function () {
-            console.log("connected...");
-            $(".console").append("Connected...<br>");
-        };
-
 
     })()
 

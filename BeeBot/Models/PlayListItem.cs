@@ -18,7 +18,7 @@ namespace YTBot.Models
         public DateTime RequestDate { get; set; }
         public bool? Deleted { get; set; }
 
-        public BotChannelSettings Channel { get; set; }
+        
 
     }
 }

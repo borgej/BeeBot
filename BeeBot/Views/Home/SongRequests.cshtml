@@ -7,25 +7,20 @@
         <label class="form-check-label col-form-label">
             <input id="modControlSong" class="form-check-input" type="checkbox" name="modControlSong" value="1">
             Mods can control play function?
-
         </label>
     </div>
 </div>
 
 <div class="row">
     <div class="col-md-6">
-
         <div id="ytplayer"></div>
         <div class="row">
             <div class="playcontrols col text-center">
                 <div class="btn-group text-center">
                     <button class="btn btn-lg btn-outline-secondary" onclick="stopYt();"><i class="fa fa-stop"></i></button>
                     <button class="btn btn-lg btn-outline-secondary" onclick="playYt();"><i class="fa fa-play"></i></button>
-                    <button class="btn btn-lg btn-outline-secondary" onclick="pauseYt();"><i class="fa fa-pause"></i></button>
-
                     <button class="btn btn-lg btn-outline-secondary" onclick="prevYt();"><i class="fa fa-backward"></i></button>
                     <button class="btn btn-lg btn-outline-secondary" onclick="nextYt();"><i class="fa fa-forward"></i></button>
-
                 </div>
                 <input id="repeat" type="checkbox" checked data-toggle="toggle" data-size="normal" data-width="140" data-height="32" data-on="<i class='fa fa-refresh'></i> Repeat" data-off="<i class='fa fa-refresh'></i> No repeat">
             </div>
@@ -43,17 +38,13 @@
                 src="http://www.twitch.tv/embed/@ViewBag.Channel/chat"
                 height="750px"
                 width="100%">
-
         </iframe>
-
     </div>
-
-
 </div>
 
 <div class="dontshow ">
     <div class="playlistitem row playlisttemplate" onclick="onPlaylystItemClick(this);">
-        <div class="thumb col">
+        <div class="thumb col" >
             <img src=""/>
         </div>
         <div class="col pull-left">
@@ -62,12 +53,14 @@
             <div class="requester"></div>
         </div>
         <div class="col-1 ">
-            <button class="btn btn-sm btn-danger" onclick="DeleteVideo(this)"><i class="fa fa-times"></i> </button>
+            <button class="btn btn-sm btn-danger" onclick="deleteVideo(this); event.stopPropagation();"><i class="fa fa-times"></i> </button>
         </div>
     </div>
+    
 </div>
 
-<script>
+<script type="text/javascript">
+    var ytplayer;
     var twitchHub = $.connection.twitchHub;
 
     function VideoAlreadyInList(vid) {
@@ -91,11 +84,14 @@
         $(elem).attr("data-played", "true");
         $(elem).attr("data-playing", "true");
         $(elem).attr("data-last", "true");
-        
+        var id = $(elem).attr("id");
+        var twitchHub = $.connection.twitchHub;
+        ytplayer.loadVideoById(id);
+        twitchHub.server.playingSong(id);
     }
 
     function playVideoId(id) {
-        $("#ytplayer")[0].src = "//www.youtube.com/embed/" + id + "?rel=0&autoplay=1";
+        ytplayer.loadVideoById(id);
     }
 
     function onPlaylystItemClick(elem) {
@@ -103,31 +99,30 @@
         setThisAsPlaying(elem);
 
         var id = $(elem).attr("id");
-        
+        ytplayer.playVideo();
         console.log("Playing: " + "//www.youtube.com/embed/" + id + "?rel=0&autoplay=1");
         playVideoId(id);
     }
 
-    function DeleteVideo(elem) {
-        $(this).preventDefault();
+    function deleteVideo(elem) {
         var id = $(elem).parent().parent().attr("id");
-        alert(id);
+        console.log("Deleting: " + "//www.youtube.com/embed/" + id + "?rel=0&autoplay=1");
+        twitchHub.server.deleteSong(id);
 
-        
     }
-    
-    (function () {
+
+    (function() {
         $.connection.hub.logging = true;
         // Start the hub
-        $.connection.hub.start().done(function () {
-            $('#modControlSong').change(function () {
+        $.connection.hub.start().done(function() {
+            $('#modControlSong').change(function() {
                 if (this.checked) {
                     twitchHub.server.updateModsCanControlPlaylist(this.checked);
                 } else {
                     twitchHub.server.updateModsCanControlPlaylist(this.checked);
                 }
-        
             });
+            twitchHub.server.pollPlaylist();
 
             setInterval(function() {
                     twitchHub.server.pollPlaylist();
@@ -135,13 +130,57 @@
                 3000);
         });
 
-        twitchHub.client.UpdatePlaylist = function (ret) {
+        // Youtube player functions
+        twitchHub.client.playSong = function (ret) {
+            playYt();
+        }
+        twitchHub.client.stopSong = function (ret) {
+            stopYt();
+        }
+        twitchHub.client.nextSong = function (ret) {
+            nextYt();
+        }
+        twitchHub.client.prevSong = function (ret) {
+            prevYt();
+        }
 
+        twitchHub.client.deleteSongAck = function(response) {
+            if (response.data > 0) {
+                $("#" + response.obj.id).remove();
+
+                console.log(response.message);
+                $.amaran({
+                    'theme': 'colorful',
+                    'content': {
+                        bgcolor: '#27ae60',
+                        color: '#fff',
+                        message: response.message,
+                    },
+                    'closeOnClick': false,
+                    'inEffect': 'slideTop'
+                });
+
+            } else {
+                console.log(response.message);
+                $.amaran({
+                    'theme': 'colorful',
+                    'content': {
+                        bgcolor: '#ff3300',
+                        color: '#fff',
+                        message: response.message,
+                    },
+                    'closeOnClick': false,
+                    'inEffect': 'slideTop'
+                });
+            }
+        }
+
+        twitchHub.client.UpdatePlaylist = function(ret) {
             if (VideoAlreadyInList(ret))
                 return;
-
             var newItem = $(".playlisttemplate").clone();
-            newItem.find("img").attr("src", "https://img.youtube.com/vi/" + ret.VideoId + "/0.jpg").attr("width", 80).attr("height", 60);
+            newItem.find("img").attr("src", "https://img.youtube.com/vi/" + ret.VideoId + "/0.jpg").attr("width", 80)
+                .attr("height", 60);
             newItem.find(".id").addClass("dontshow").addClass("id_" + ret.VideoId).html(ret.VideoId);
             newItem.attr("id", ret.VideoId);
 
@@ -155,14 +194,8 @@
 
         }
 
-        twitchHub.client.Test = function (ret) {
-            alert("Test");
-        }
-
-        twitchHub.client.AddedPlaylist = function (ret) {
+        twitchHub.client.AddedPlaylist = function(ret) {
             if (ret.data == "1") {
-
-
                 console.log(ret.message);
                 $.amaran({
                     'theme': 'colorful',
@@ -172,10 +205,8 @@
                         message: ret.message,
                     },
                     'closeOnClick': false,
-                    'inEffect': 'slideTop',
-                    'outEffect': 'slideLeft'
+                    'inEffect': 'slideTop'
                 });
-                //});
             } else {
                 console.log(ret.message);
                 $.amaran({
@@ -186,16 +217,13 @@
                         message: ret.message,
                     },
                     'closeOnClick': false,
-                    'inEffect': 'slideTop',
-                    'outEffect': 'slideLeft'
+                    'inEffect': 'slideTop'
                 });
             }
         }
 
-        twitchHub.client.Notify = function (ret) {
+        twitchHub.client.Notify = function(ret) {
             if (ret.data == "1") {
-
-
                 console.log(ret.message);
                 $.amaran({
                     'theme': 'colorful',
@@ -205,10 +233,8 @@
                         message: ret.message,
                     },
                     'closeOnClick': false,
-                    'inEffect': 'slideTop',
-                    'outEffect': 'slideLeft'
+                    'inEffect': 'slideTop'
                 });
-                //});
             } else {
                 console.log(ret.message);
                 $.amaran({
@@ -219,47 +245,43 @@
                         message: ret.message,
                     },
                     'closeOnClick': false,
-                    'inEffect': 'slideTop',
-                    'outEffect': 'slideLeft'
+                    'inEffect': 'slideTop'
                 });
             }
         }
-
-        twitchHub.client.onconnected = function () {
+        twitchHub.client.onconnected = function() {
             console.log("connected...");
             $(".console").append("Connected...<br>");
         };
-
-
-    })()
+    })();
 
     // Load the IFrame Player API code asynchronously.
     var tag = document.createElement('script');
-    tag.src = "https://www.youtube.com/player_api";
+    tag.src = "https://www.youtube.com/iframe_api";
     var firstScriptTag = document.getElementsByTagName('script')[0];
     firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
 
     // Replace the 'ytplayer' element with an <iframe> and
     // YouTube player after the API code downloads.
-    var player;
     function onYouTubePlayerAPIReady() {
-        player = new YT.Player('ytplayer', {
+        ytplayer = new YT.Player('ytplayer', {
             height: '375',
             width: '100%',
-            videoId: 'M7lc1UVf-VE',
+            videoId: 'C0DPdy98e4c',
             events: {
-                'onStateChange': onPlayerStateChange
+                'onReady': onPlayerReady,
+                'onStateChange': onPlayerStateChange,
+                'onPlaybackQualityChange': onPlayerPlaybackQualityChange,
+                'onPlaybackRateChange': onPlayerPlaybackRateChange,
+                'onError': onPlayerError,
+                'onApiChange': onPlayerApiChange
             }
-        });
-    }
+        });}
 
     function onPlayerStateChange(event) {
-        //alert("onPlayerStateChange");
         console.log("onPlayerStateChange()");
         console.log('State is:', event.data);
-
         var playerStatus = event.data;
-
         console.log("playerStatus = " + playerStatus);
         if (playerStatus == -1) {
             // unstarted = gray
@@ -283,30 +305,35 @@
         }
     }
 
+    function onPlayerReady() {
+        console.log('Video is ready to play');
+    }
+
+    function onPlayerPlaybackQualityChange(playbackQuality) {
+        console.log('playback quality changed to ' + playbackQuality.data);
+    }
+
+    function onPlayerPlaybackRateChange(playbackRate) {
+        console.log('playback rate changed to ' + playbackRate.data);
+    }
+
+    function onPlayerError(e) {
+        console.log('An error occurred: ' + e.data);
+    }
+
+    function onPlayerApiChange() {
+        console.log('The player API changed');
+    }
+
     function ifRepeat() {
         return $("#repeat").is(':checked');
     }
 
-    // Youtube player functions
-
-    twitchHub.client.Play = function (item) {
-        playYt();
-    };
-    twitchHub.client.Stop = function (item) {
-        stopYt();
-    };
-    twitchHub.client.NextSong = function (item) {
-        nextYt();
-    };
-    twitchHub.client.PrevSong = function (item) {
-        prevYt();
-    };
+    
 
     function getFirstUnplayedVideo() {
         var video = $('[data-played="false"]');
-
         // TODO: check next sibligns for unplayed
-
         return video.first();
     }
 
@@ -317,13 +344,11 @@
 
     function getNextVideo() {
         var last = $('[data-last="true"]');
-
         return last.next();
     }
 
     function getNextUnplayedVideo() {
         var video = $('[data-played="false"]');
-        
         return video.first();
     }
 
@@ -336,8 +361,6 @@
                 return true;
             }
         });
-        //var prev = $('[data-playing="true"]');
-
         return prevVideo;
     }
 
@@ -352,16 +375,14 @@
             $video = getFirstUnplayedVideo();
         }
         console.log("Playing: " + "//www.youtube.com/embed/" + $video.attr("id") + "?rel=0&autoplay=1");
-        $("#ytplayer")[0].src = "//www.youtube.com/embed/" + $video.attr("id") + "?rel=0&autoplay=1";
+        ytplayer.loadVideoById($video.attr("id"));
         resetAllPlaying();
         setThisAsPlaying($video);
     }
 
     function stopYt() {
-        var video = $("#ytplayer").attr("src").replace("&autoplay=1", "&autoplay=0");
-        $("#ytplayer").attr("src", "");
-        $("#ytplayer").attr("src", video);
-        //player.stopVideo();
+
+        ytplayer.stopVideo();
     }
 
     function nextYt() {
@@ -372,34 +393,24 @@
                 $video = getFirstVideo();
             }
         }
-
-
-        console.log("Playing: " + "//www.youtube.com/embed/" + $video.attr("id") + "?rel=0&autoplay=1");
-        $("#ytplayer")[0].src = "//www.youtube.com/embed/" + $video.attr("id") + "?rel=0&autoplay=1";
-        resetAllPlaying();
-        setThisAsPlaying($video);
-        //playingEvent($video, null, null);
+        if ($video.length != 0) {
+            console.log("Playing: " + "//www.youtube.com/embed/" + $video.attr("id") + "?rel=0&autoplay=1");
+            ytplayer.loadVideoById($video.attr("id"));
+            resetAllPlaying();
+            setThisAsPlaying($video);
+        }
     }
 
     function prevYt() {
         var $video = getPrevVideo();
 
-        if ($video.length == 0) {
+        if ($video.length === 0) {
             return;
         }
-
         console.log("Playing: " + "//www.youtube.com/embed/" + $video.attr("id") + "?rel=0&autoplay=1");
-        $("#ytplayer")[0].src = "//www.youtube.com/embed/" + $video.attr("id") + "?rel=0&autoplay=1";
+        ytplayer.loadVideoById($video.attr("id"));
         resetAllPlaying();
         setThisAsPlaying($video);
-        //playingEvent($video, null, null);
     }
-
-    function pauseYt() {
-        player.pauseVideo();
-    }
-
-
-
 
 </script>

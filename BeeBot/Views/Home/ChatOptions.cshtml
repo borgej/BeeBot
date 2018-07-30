@@ -87,10 +87,6 @@
             twitchHub.server.saveBannedWords($(".bannedwords").val());
         });
 
-        twitchHub.client.onconnected  = function () {
-            console.log("connected...");
-            $(".console").append("Connected...<br>");
-        };
 
         // Onload spinner
         $(".maincontent").LoadingOverlay("show", {
@@ -110,8 +106,7 @@
                     message: ret.message,
                 },
                 'closeOnClick': false,
-                'inEffect': 'slideTop',
-                'outEffect': 'slideLeft'
+                'inEffect': 'slideTop'
             });
             
         }
@@ -132,8 +127,7 @@
                         message: ret.message,
                     },
                     'closeOnClick':false,
-                    'inEffect':'slideTop',
-                    'outEffect':'slideLeft'
+                    'inEffect':'slideTop'
                 });
                 //});
             } else {
@@ -146,8 +140,7 @@
                         message: ret.message,
                     },
                     'closeOnClick': false,
-                    'inEffect': 'slideTop',
-                    'outEffect': 'slideLeft'
+                    'inEffect': 'slideTop'
                 });
             }
         }
@@ -171,8 +164,7 @@
                         message: ret.message,
                     },
                     'closeOnClick': false,
-                    'inEffect': 'slideTop',
-                    'outEffect': 'slideLeft'
+                    'inEffect': 'slideTop'
                 });
             }
         }

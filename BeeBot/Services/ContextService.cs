@@ -62,6 +62,39 @@ namespace YTBot.Services
             return botUserSettings;
         }
 
+        public PlayListItem SaveSongRequest(ApplicationUser user, PlayListItem song)
+        {
+            var bcs = GetBotChannelSettings(GetUser(user.Email));
+
+            if (bcs.SongRequests == null)
+            {
+                bcs.SongRequests = new List<PlayListItem>();
+            }
+
+            bcs.SongRequests.Add(song);
+
+            Context.SaveChanges();
+
+            return song;
+        }
+
+        public void DeleteSongRequest(ApplicationUser user, string id)
+        {
+            var bcs = GetBotChannelSettings(GetUser(user.Email));
+
+            if (bcs.SongRequests == null)
+            {
+                return;
+            }
+
+            var dbSong = bcs.SongRequests.FirstOrDefault(s => s.Url.Contains(id));
+            if (dbSong != null)
+            {
+                Context.PlaylistItems.Remove(dbSong);
+                Context.SaveChanges();
+            }
+        }
+
         public BotChannelSettings SetInitialBotChannelSettings(ApplicationUser user)
         {
             // Check that the user has BotChannelSettings
@@ -254,29 +287,18 @@ namespace YTBot.Services
 
             if (user == null)
             {
-                //throw new Exception("No user object given");
                 return null;
             }
 
             try
             {
                 //var botChannelSettings = Context.BotChannelSettings.Include("Loyalty").Include("Triggers").Include("Timers").Include("Quotes").Include("StreamViewers").FirstOrDefault(b => b.User.Id == user.Id);
-                var botChannelSettings = Context.BotChannelSettings.Include("Loyalty").Include("Triggers").Include("Timers").Include("Quotes").FirstOrDefault(b => b.User.Id == user.Id);
+                var botChannelSettings = Context.BotChannelSettings.Include("Loyalty").Include("Triggers").Include("Timers").Include("Quotes").Include("SongRequests").FirstOrDefault(b => b.User.Id == user.Id);
 
                 return botChannelSettings;
             }
             catch (Exception e)
             {
-                //int retries = 0;
-
-                //BotChannelSettings botChannelSettings = null;
-
-                //while (retries < 3 || botChannelSettings != null)
-                //{
-                //    botChannelSettings = Context.BotChannelSettings.FirstOrDefault(b => b.User.Id == user.Id);
-                //}
-
-                //return botChannelSettings;
                 return null;
             }
             

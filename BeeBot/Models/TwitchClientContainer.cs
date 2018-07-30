@@ -21,9 +21,10 @@ namespace YTBot.Models
         public TwitchClient Client { get; set; }
         public TwitchPubSub PubSubClient { get; set; }
         public Thread WorkerThread { get; set; }
-
+        public string ConnectionId { get; set; }
         public ContextService ContextService { get; set; }
 
+        public List<string> ConsoleLog { get; set; }
         public List<string> ChatLog { get; set; }
         public List<string> Channelmods { get; set; }
         public Dictionary<string, int> CommandsUsed { get; set; }
@@ -38,6 +39,7 @@ namespace YTBot.Models
         public TwitchClientContainer()
         {
             ChatLog = new List<string>();
+            ConsoleLog = new List<string>();
             CommandsUsed = new Dictionary<string, int>();
             ChattersCount = new Dictionary<string, int>();
             Channelmods = new List<string>();

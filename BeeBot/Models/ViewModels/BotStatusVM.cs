@@ -16,5 +16,8 @@ namespace BeeBot.Models
 
         [JsonProperty("warning")]
         public string warning { get; set; }
+
+        [JsonProperty("connected")]
+        public bool connected { get; set; }
     }
 }

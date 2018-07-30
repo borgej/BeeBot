@@ -54,23 +54,28 @@ h5 {
     color: rgba(0, 0, 0, .4);
 }
 
-    .meta a {
-        text-decoration: none;
-        color: rgba(0, 0, 0, .4);
-    }
+.meta a {
+text-decoration: none;
+color: rgba(0, 0, 0, .4);
+}
 
-        .meta a:hover {
-            color: rgba(0, 0, 0, .87);
-        }
+.meta a:hover {
+    color: rgba(0, 0, 0, .87);
+}
 
 
 body {
-
-
     background-color: #f2f2f2;
 }
 
 
+#sidebar {
+    max-width: 250px !important;
+}
+.maincontent {
+    /*padding-left: 28px !important;*/
+    /*padding-right: 20px !important;*/
+}
 
 /* Set padding to keep content from hitting the edges */
 .body-content {
@@ -204,9 +209,9 @@ songrequests {
 
 .chatstats {
 
-    min-height: 300px;
-    background: #d4d4d5;
-    border: 1px solid black;
+    min-height: 340px;
+    background: #f3f3f3;
+    border: 1px solid #a9a9a9
 }
 
 .chatter {
@@ -248,9 +253,10 @@ songrequests {
 }
 
 .commandsstats {
-    min-height: 300px;
-    background: lightcyan;
-    border: 1px solid black;
+    min-height: 340px;
+    background: #f5fffa;
+    margin-top: 10px;
+    border: 1px solid #a9a9a9
 }
 
 .videoname {
@@ -505,15 +511,28 @@ songrequests {
 }
 
 @media (max-width:768px) {
-    #sidebar {
-        min-width: 35px;
-        max-width: 40px;
-        overflow-y: auto;
-        overflow-x: visible;
-        transition: all 0.25s ease;
-        transform: translateX(-45px);
-        position: fixed;
+
+    .channelMenuHeader {
+        display: none !important;
     }
+
+    .maincontent, .main {
+        margin-left: 30px;
+    }
+
+        .maincontent, .main  .collapse {
+            margin-left: 0px;
+        }
+
+        #sidebar {
+            min-width: 35px;
+            max-width: 40px;
+            overflow-y: auto;
+            overflow-x: visible;
+            transition: all 0.25s ease;
+            transform: translateX(-45px);
+            position: fixed;
+        }
     
     #sidebar.show {
         transform: translateX(0);

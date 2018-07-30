@@ -9,6 +9,8 @@ namespace BeeBot
         public void Configuration(IAppBuilder app)
         {
             ConfigureAuth(app);
+
+
         }
     }
 }
