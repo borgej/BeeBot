@@ -2,12 +2,13 @@
 
 <h2>Bot controls</h2>
 <hr />
+<div class="card card-body bg-light">
 <div class="row " style="display: none;">
     <div class="col-md-12">
         <button id="botConnectButton" type="button" class="btn btn-success wide" data-username="@Model.BotUsername" data-password="@Model.BotPassword" data-channel="@Model.BotChannel"><i class="fa fa-play"></i> Connect</button>
     </div>
 </div>
-<div class="row">
+<div class="row" style="display: none;">
     <div class="col-md-12">
         <button id="botDisconnectButton" type="button" class="btn btn-danger wide"><i class="fa fa-stop"></i> Disconnect</button>
     </div>
@@ -30,25 +31,18 @@
     </div>
 </div>
 
-
+</div>
 
 
 <script type="text/javascript">
 
     $(document).ready(function () {
-        // Check if bot is connected, if not connect
 
-        
-
-        // Update status text
     });
 
     var twitchHub = $.connection.twitchHub;
 
     (function() {
-        // Defining a connection to the server hub.
-
-        // Setting logging to true so that we can see whats happening in the browser console log. [OPTIONAL]
 
         $.connection.hub.logging = true;
 
@@ -65,8 +59,15 @@
         $.connection.hub.start().done(function() {
             $(".statusloader").toggleClass("dontshow");
             $.connection.twitchHub.server.botStatus("test", "test", "test");
+            $.connection.twitchHub.server.getConsoleLog();
         });
 
+        twitchHub.client.loadConsoleLog = function (log) {
+            $.each(log, function (i, element) {
+                $(".console").append(element + "<br>");
+            });
+            $(".console").animate({ scrollTop: $('.console').prop("scrollHeight") }, 1000);
+        };
         
         $.connection.hub.error(function (error) {
             console.log('SignalR error: ' + error);
@@ -78,8 +79,6 @@
 
         //Button click jquery handler
         $("#botConnectButton").click(function() {
-            // Call SignalR hub method
-
             var username = $(this).data("username");
             var password = $(this).data("password");
             var channel = $(this).data("channel");
@@ -97,10 +96,6 @@
 
         });
 
-        $("#botDisconnectButton").click(function() {
-            twitchHub.server.disconnectBot();
-
-        });
     })()
 </script>
 

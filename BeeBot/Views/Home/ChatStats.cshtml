@@ -3,32 +3,26 @@
 <hr/>
 
 <div class="card card-body bg-light">
-<div class="row">
-    <div class="col-md-6">
+<div class="">
+    @*<div class="col-md-6">
         <iframe frameborder="0"
                 scrolling="no"
                 id="chat_embed"
                 src="http://www.twitch.tv/embed/@ViewBag.Channel/chat"
                 height="750px"
                 width="100%"></iframe>
-    </div>
-    <div class="col-md-6">
-        <div>
-            <h3><i class="fa indicator text-center"></i><span class="alert-info viewercount pl-3 pr-3"> X </span> viewers</h3>
+    </div>*@
+    <div class="row">
+        <div class="col-md-10 mb-2">
+            <h3><i class="fa indicator text-center"></i><span class="badge badge-pill badge-info viewercount pl-2 pr-2">#</span> viewers</h3>
         </div>
-        <div class="row">
-
-            <div class="chatstats col-md-4 mr-5">
-                <h4>Top chatters</h4>
-                <div class="chatdata"></div>
-            </div>
-            
+        <div class="chatstats col-md-5 ml-2">
+            <h4>Top chatters</h4>
+            <div class="chatdata"></div>
         </div>
-        <div class="row">
-            <div class="commandsstats col-md-4 mr-5">
-                <h4>Top commands</h4>
-                <div class="commandsdata"></div>
-            </div>
+        <div class="commandsstats col-md-5 ml-2">
+            <h4>Top commands</h4>
+            <div class="commandsdata"></div>
         </div>
     </div>
     
@@ -36,8 +30,8 @@
 
 </div>
 <script type="text/javascript">
-    var UPDATEVIEWERCOUNTINSEC = 10;
-    var UPDATECHATTERSINSEC = 10;
+    var UPDATEVIEWERCOUNTINSEC = 60;
+    var UPDATECHATTERSINSEC = 30;
     $(document).ready(function() {
 
     });
@@ -46,6 +40,21 @@
     (function() {
         // Setting logging to true so that we can see whats happening in the browser console log. [OPTIONAL]
         $.connection.hub.logging = true;
+
+        $.connection.hub.start().done(function () {
+            twitchHub.server.updateChattersAndCommands();
+            twitchHub.server.updateViewerCount();
+
+            setInterval(function() {
+                    twitchHub.server.updateChattersAndCommands();
+                },
+                UPDATECHATTERSINSEC * 1000);
+
+            setInterval(function() {
+                    twitchHub.server.updateViewerCount();
+                },
+                UPDATEVIEWERCOUNTINSEC * 1000);
+        });
 
         twitchHub.client.ChattersAndCommands = function(retval) {
             $(".chatdata").html("");
@@ -67,7 +76,6 @@
                         "</span></span>");
                 });
         }
-
         twitchHub.client.UpdateViewers = function(retval) {
 
 
@@ -104,18 +112,7 @@
             $(".viewercount").html(retval);
         }
 
-        // Start the hub
-        $.connection.hub.start().done(function() {
-            setInterval(function() {
-                twitchHub.server.updateChattersAndCommands();
-                },
-                UPDATECHATTERSINSEC * 1000);
 
-            setInterval(function() {
-                    twitchHub.server.updateViewerCount();
-                },
-                UPDATEVIEWERCOUNTINSEC * 1000);
-        });
 
 
 

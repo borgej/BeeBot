@@ -30,6 +30,7 @@ using Timer = YTBot.Models.Timer;
 
 namespace BeeBot.Signalr
 {
+    [Authorize]
     public class TwitchHub : Hub
     {
         public string Username { get; set; }
@@ -462,7 +463,11 @@ namespace BeeBot.Signalr
         {
             try
             {
-                
+                if (GetClientContainer().LogOutInProgress)
+                {
+                    return;
+                }
+
                 var client = GetClient();
                 if (client != null)
                 {
@@ -650,7 +655,16 @@ namespace BeeBot.Signalr
         {
             var ccontainer = GetClientContainer();
 
-            ccontainer.Client.SendMessage(Channel, "/me is connected! YTBot 2018 by @Borge_Jakobsen ");
+            ccontainer.Client.SendMessage(Channel, "/me connected. - YTBot v.2 BETA by @Borge_Jakobsen ");
+            var botStatus = new BotStatusVM()
+            {
+                info = ccontainer.Client.IsConnected ? "Bot connected" : "Bot disconnected",
+                message = "",
+                warning = "",
+                connected = !ccontainer.Client.IsConnected
+            };
+
+            Clients.Caller.BotStatus(botStatus);
         }
 
         /// <summary>
@@ -660,11 +674,7 @@ namespace BeeBot.Signalr
         /// <param name="e"></param>
         private void OnJoinedChannel(object sender, OnJoinedChannelArgs e)
         {
-            var ccontainer = GetClientContainer();
-            var bcs = ContextService.GetBotChannelSettings(ccontainer.User);
-
             ConsoleLog("Connected to channel " + Channel);
-            ccontainer.Client.SendMessage(Channel, "/me @ Hello! ;) ");
         }
 
 
@@ -820,6 +830,24 @@ namespace BeeBot.Signalr
             }
         }
 
+        public async Task GetConsoleLog()
+        {
+            try
+            {
+                var cc = GetClientContainer();
+
+                Clients.Caller.loadConsoleLog(cc.ConsoleLog);
+            }
+            catch (Exception e)
+            {
+                
+            }
+        }
+
+        /// <summary>
+        /// Get Chat Preferences #TODO
+        /// </summary>
+        /// <returns></returns>
         public async Task GetChatOptions()
         {
             try
@@ -829,7 +857,6 @@ namespace BeeBot.Signalr
                 var channel = await Api.Channels.v5.GetChannelAsync(ChannelToken);
 
                 var chatOptions = channel;
-
                 var retval = new { data = "1", message = "", container = chatOptions };
                 Clients.Caller.SetChatOptions(retval);
             }
@@ -838,6 +865,20 @@ namespace BeeBot.Signalr
                 ConsoleLog(e.Message);
                 var retval = new { data = "-1", message = e.Message };
                 Clients.Caller.Fail(retval);
+            }
+        }
+
+        public async Task GetChatLimitations()
+        {
+            try
+            {
+                var channelChatOptions = await Api.Undocumented.GetChatPropertiesAsync(Channel);
+
+                Clients.Caller.LoadChatLimitations(channelChatOptions);
+            }
+            catch (Exception e)
+            {
+                ConsoleLog(e.Message);
             }
         }
 
@@ -872,9 +913,11 @@ namespace BeeBot.Signalr
         {
             try
             {
-                if (GetClientContainer().Client.IsConnected)
+                var ccontainer = GetClientContainer();
+                if (ccontainer.Client.IsConnected)
                 {
-                    DisconnectBot();
+                    ccontainer.Client.Disconnect();
+                    ConsoleLog("Disconnecting channel " + Channel);
                     ConsoleLog("Reconnecting to channel " + Channel);
                     Thread.Sleep(1000);
 
@@ -940,15 +983,19 @@ namespace BeeBot.Signalr
         {
             try
             {
+
                 var container = GetClientContainer();
+
+                // DisconnectBot only on logout from application, set value so bot is not trying to reconnect
+                container.LogOutInProgress = true;
+
                 container.Client.Disconnect();
                 if (container.WorkerThread != null)
                 {
                     container.WorkerThread.Abort();
-                    container.WorkerThread = null;
                 }
 
-                ConsoleLog("Disconnected channel " + Channel);
+                ConsoleLog("Disconnecting channel " + Channel);
 
                 var botStatus = new BotStatusVM()
                 {
@@ -959,6 +1006,9 @@ namespace BeeBot.Signalr
                 };
 
                 Clients.Caller.BotStatus(botStatus);
+                Clients.Caller.onBotDisconnected(botStatus);
+                DisposeSession();
+
             }
             catch (Exception e)
             {
@@ -966,6 +1016,14 @@ namespace BeeBot.Signalr
             }
         }
 
+        public void DisposeSession()
+        {
+            GetClientContainer().Client = null;
+            GetClientContainer().PubSubClient = null;
+            GetClientContainer().WorkerThread.Abort();
+            GetClientContainer().WorkerThread = null;
+            ClientContainers = null;
+        }
         /// <summary>
         /// Check if Client is still connected
         /// </summary>
@@ -1001,7 +1059,20 @@ namespace BeeBot.Signalr
         /// <param name="msg"></param>
         public void ConsoleLog(string msg, bool debug = false)
         {
-            Clients.Caller.ConsoleLog(DateTime.Now.ToString("HH:mm:ss").ToString() + " - " + msg);
+            try
+            {
+                var logEntry = DateTime.Now.ToString("HH:mm:ss").ToString() + " - " + msg;
+                if (GetClientContainer() != null)
+                {
+                    GetClientContainer().ConsoleLog.Add(logEntry);
+                }
+                Clients.Caller.ConsoleLog(DateTime.Now.ToString("HH:mm:ss").ToString() + " - " + msg);
+            }
+            catch (Exception e)
+            {
+
+            }
+            
         }
 
         public void ConsoleLog(object sender, OnLogArgs e)
@@ -1071,15 +1142,17 @@ namespace BeeBot.Signalr
             {
                 var ccontainer = GetClientContainer();
 
-                var stream = Api.Streams.v5.GetStreamByUserAsync(ccontainer.Id);
 
-                var numViewers = stream.Result.Stream.Viewers;
+                var user = Api.Users.v5.GetUserByNameAsync(Channel).Result;
+                var stream = Api.Streams.v5.GetStreamByUserAsync(user.Matches[0].Id).Result;
+
+                var numViewers = stream.Stream.Viewers;
 
                 return numViewers.ToString();
             }
             catch (Exception e)
             {
-                return "-";
+                return "offline";
             }
         }
 

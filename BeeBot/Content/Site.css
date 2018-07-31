@@ -196,7 +196,7 @@ textarea {
 
 .console {
     width: 100%;
-    min-height: 300px;
+    min-height: 500px;
     max-height: 300px;
     overflow: scroll;
     overflow-x: hidden;
@@ -238,14 +238,24 @@ songrequests {
 .playlistitem {
     margin-left: 4px;
     padding: 2px 2px 2px 2px;
+    border: 1px #eff0f1 solid;
 }
 
-.playlistitem:hover {
-    padding: 2px 2px 2px 2px;
-    background-color: #cdcdcd;
-    /*border: 1px solid #a9a9a9;*/
-    cursor: pointer;
+.playlistitem:nth-of-type(odd) {
+    background-color: #eff0f1;
 }
+
+    .playlistitem:nth-of-type(even) {
+        background-color: white;
+        border: 1px #aaaaaa solid
+    }
+
+    .playlistitem:hover {
+        padding: 2px 2px 2px 2px;
+        background-color: #cdcdcd;
+        /*border: 1px solid #a9a9a9;*/
+        cursor: pointer;
+    }
 
 .playing {
     background-color: thistle;
@@ -254,7 +264,6 @@ songrequests {
 .commandsstats {
     min-height: 340px;
     background: #f5fffa;
-    margin-top: 10px;
     border: 1px solid #a9a9a9
 }
 

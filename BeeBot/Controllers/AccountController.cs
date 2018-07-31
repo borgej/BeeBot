@@ -398,6 +398,14 @@ namespace WebApplication1.Controllers
             return RedirectToAction("Index", "Home");
         }
 
+        public ActionResult LogOffNoPost()
+        {
+            Session.Abandon();
+            Session.Clear();
+            AuthenticationManager.SignOut(DefaultAuthenticationTypes.ApplicationCookie);
+            return RedirectToAction("Index", "Home");
+        }
+
         //
         // GET: /Account/ExternalLoginFailure
         [AllowAnonymous]

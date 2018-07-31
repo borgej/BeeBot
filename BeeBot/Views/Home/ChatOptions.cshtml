@@ -6,35 +6,42 @@
 }
 <h2>Chat options</h2>
 <hr />
-<div class="card card-body bg-light">
-<div class="row dontshow">
-    <div class="col-md-12 mt-2 mb-3">
-        <div class="form-check">
-            <input class="form-check-input" type="checkbox" value="" id="followersonly" name="followersonly">
-            <label class="form-check-label" for="followersonly">
-                Followers only chat (10 mins)?
-            </label>
+<div class="card card-body bg-light ">
+    <div class="row dontshow">
+        <div class="col-md-12 mt-2 mb-3">
+            <div class="pretty p-switch">
+                <input class="" type="checkbox" value="" id="hidelinks" name="hidelinks">
+                <div class="state">
+                    <label class="" for="hidelinks">
+                        Hide links
+                    </label>
+                </div>
+            </div>
         </div>
-    </div>
+        <div class="col-md-12 mt-2 mb-3">
+            <div class="pretty p-switch">
+                <input class="" type="checkbox" value="" id="subsonly" name="subsonly">
+                <div class="state">
+                    <label class="" for="subsonly">
+                        Subs only chat
+                    </label>
+                </div>
+            </div>
+        </div>
 
-    <div class="col-md-12 mt-2 mb-3">
-        <div class="form-check">
-            <input class="form-check-input" type="checkbox" value="" id="slowchat" name="slowchat">
-            <label class="form-check-label" for="slowchat">
-                Slow chat?
-            </label>
-        </div>
-    </div>
+        @*<div class="col-md-12 mt-2 mb-3">
+            <div class="pretty p-switch">
+                <input class="" type="checkbox" value="" id="slowchat" name="slowchat">
+                <div class="state">
+                    <label class="" for="slowchat">
+                        Slow chat
+                    </label>
+                </div>
+            </div>
+        </div>*@
 
-    <div class="col-md-12 mt-2 mb-3">
-        <div class="form-check">
-            <input class="form-check-input" type="checkbox" value="" id="linksallowed" name="linksallowed">
-            <label class="form-check-label" for="linksallowed">
-                Links allowed?
-            </label>
-        </div>
+
     </div>
-</div>
 
 <div class="row">
     <div class="col-md-12">
@@ -53,7 +60,10 @@
 </div>
 <script type="text/javascript">
     $(document).ready(function () {
-        
+        // Onload spinner
+        $(".maincontent").LoadingOverlay("show", {
+            background: "rgba(0, 0, 0, 0.15)"
+        });
     });
     var twitchHub = $.connection.twitchHub;
 
@@ -64,17 +74,9 @@
         $.connection.hub.logging = true;
         // Start the hub
         $.connection.hub.start().done(function () {
-            setTimeout(function () {
-                twitchHub.server.getChatOptions();
-
-                if ($(".bannedwords").val() == "") {
-                    $(".loadbannedwordsbtn").toggleClass("dontshow");
-                }
-
-            }, 3000);
-
-                
-        }
+            twitchHub.server.getChatLimitations();
+            $(".maincontent").LoadingOverlay("hide");
+            }
         );
 
         $(".loadbannedwordsbtn").click(function () {
@@ -87,10 +89,7 @@
         });
 
 
-        // Onload spinner
-        $(".maincontent").LoadingOverlay("show", {
-            background: "rgba(0, 0, 0, 0.0)"
-        });
+        
 
         twitchHub.client.Fail = function (ret) {
             console.log(ret);
@@ -144,28 +143,11 @@
             }
         }
 
-        twitchHub.client.SetChatOptions = function(ret) {
-            console.log(ret);
+        twitchHub.client.LoadChatLimitations = function (ret) {
             $(".maincontent").LoadingOverlay("hide");
+            console.log(ret.HideChatLinks);
+            console.log(ret.SubsOnly);
 
-            if (ret.data == "1") {
-                console.log(ret.message);
-
-
-                //});
-            } else {
-                console.log(ret.message);
-                $.amaran({
-                    'theme': 'colorful',
-                    'content': {
-                        bgcolor: '#ff3300',
-                        color: '#fff',
-                        message: ret.message,
-                    },
-                    'closeOnClick': false,
-                    'inEffect': 'slideTop'
-                });
-            }
         }
 
 

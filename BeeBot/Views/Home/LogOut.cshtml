@@ -1,0 +1,40 @@
+﻿@model BeeBot.Models.BotUserSettings
+
+<h2>Logging out...</h2>
+<hr/>
+
+<div class="card card-body bg-light">
+    <span class=""><i class="loadingBot fa fa-spinner fa-spin fa-check"></i> Disconnecting bot</span>
+    <span class=""><i class="loadingProcess fa fa-spinner fa-spin"></i> Stop processes</span>
+    <span class=""><i class="loadingLogout fa fa-spinner fa-spin"></i> Logging out</span>
+</div>
+
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+
+    });
+
+    var twitchHub = $.connection.twitchHub;
+
+    (function() {
+        $.connection.hub.logging = true;
+
+        // Start the hub
+        $.connection.hub.start().done(function() {
+            twitchHub.server.disconnectBot();
+        });
+
+        twitchHub.client.onBotDisconnected = function (ret) {
+            console.log(ret.connected);
+            $(".loadingBot").removeClass("fa-spinner fa-spin").addClass("fa-check");
+            $(".loadingProcess").removeClass("fa-spinner fa-spin").addClass("fa-check");
+
+            window.location = "@Url.Action("LogOffNoPost", "Account")";
+        };
+
+
+
+    })()
+</script>

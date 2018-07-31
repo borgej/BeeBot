@@ -37,6 +37,7 @@ namespace YTBot.Models
         public RussianRoulette RRulette { get; set; }
         public DateTime LastRussian { get; set; }
         public List<PlayListItem> SongRequests { get; set; }
+        public bool LogOutInProgress { get; set; }
 
         public TwitchClientContainer()
         {
@@ -51,6 +52,7 @@ namespace YTBot.Models
             // initialize last russian run
             LastRussian = DateTime.Now.AddMinutes(-10);
             SongRequests = new List<PlayListItem>();
+            LogOutInProgress = false;
         }
 
 

@@ -244,5 +244,14 @@ namespace BeeBot.Controllers
 
             return View(userBotSettings);
         }
+
+        public ActionResult LogOut()
+        {
+            var userBotSettings = ContextService.GetBotUserSettingsForUser(ContextService.GetUser(User.Identity.Name));
+
+            ViewBag.Channel = userBotSettings.BotChannel;
+
+            return View(userBotSettings);
+        }
     }
 }
