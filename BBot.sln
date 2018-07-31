@@ -7,14 +7,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BeeBot", "BeeBot\BeeBot.csp
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BeeBot.Tests", "BeeBot.Tests\BeeBot.Tests.csproj", "{E681F23B-508B-47B4-BC0B-29CB85DC9CF7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BlackJack", "BlackJack\BlackJack.csproj", "{483D09BD-1215-4439-868F-17FECBC02BD1}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{394BC16E-B02A-47A4-830D-88595DF8DE40}"
 	ProjectSection(SolutionItems) = preProject
 		.a11yrc = .a11yrc
 	EndProjectSection
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConsoleApp1", "ConsoleApp1\ConsoleApp1.csproj", "{D03F7E01-10A5-4AF3-B5F5-F7A7ED21E186}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -30,14 +26,6 @@ Global
 		{E681F23B-508B-47B4-BC0B-29CB85DC9CF7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E681F23B-508B-47B4-BC0B-29CB85DC9CF7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E681F23B-508B-47B4-BC0B-29CB85DC9CF7}.Release|Any CPU.Build.0 = Release|Any CPU
-		{483D09BD-1215-4439-868F-17FECBC02BD1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{483D09BD-1215-4439-868F-17FECBC02BD1}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{483D09BD-1215-4439-868F-17FECBC02BD1}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{483D09BD-1215-4439-868F-17FECBC02BD1}.Release|Any CPU.Build.0 = Release|Any CPU
-		{D03F7E01-10A5-4AF3-B5F5-F7A7ED21E186}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{D03F7E01-10A5-4AF3-B5F5-F7A7ED21E186}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{D03F7E01-10A5-4AF3-B5F5-F7A7ED21E186}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{D03F7E01-10A5-4AF3-B5F5-F7A7ED21E186}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

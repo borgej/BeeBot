@@ -510,7 +510,6 @@
     <Content Include="Content\sorter\bg.gif" />
     <Content Include="Content\sorter\desc.gif" />
     <Content Include="Content\sorter\style.css" />
-    <Content Include="tablesorter.txt" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
     </Content>
