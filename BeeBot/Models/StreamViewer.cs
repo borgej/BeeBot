@@ -21,6 +21,7 @@ namespace YTBot.Models
         public bool Follower { get; set; }
         public DateTime? FollowerSince { get; set; }
         public bool Subscriber { get; set; }
+        public bool Mod { get; set; }
         public DateTime? SubscriberSince { get; set; }
         [Column(TypeName = "VARCHAR")]
         [StringLength(128)]

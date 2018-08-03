@@ -17,7 +17,7 @@
         <div class="col-md-4 mt-2 mb-3">
             <div class="pretty p-switch">
                 <input class="loyaltyenabled" type="checkbox" value="" id="loyalty" name="loyalty" @checkedTxt>
-                <div class="state">
+                <div class="state p-primary">
                     <label class="" for="loyalty">
                         Enable loyalty
                     </label>
@@ -29,16 +29,16 @@
     
 </div>
 <div class="loyaltyInput card card-body bg-light ">
-    <div class="row">
-        <div class="col-md-2">
+    <div class="row form-group">
+        <div class="col-md-2 ">
             Name of loyalty
         </div>
-        <div class="col-md-4">
+        <div class="col-md-3">
             <input type="text" class="form-control loyaltyname" value="@Model.LoyaltyName" />
         </div>
     </div>
 
-    <div class="row">
+    <div class="row form-group">
         <div class="col-md-2">
             Amount
         </div>
@@ -47,7 +47,7 @@
         </div>
     </div>
 
-    <div class="row">
+    <div class="row form-group">
         <div class="col-md-2">
             Interval (each minute)
         </div>
@@ -56,7 +56,7 @@
         </div>
     </div>
     
-    <div class="row">
+    <div class="row form-group">
         <div class="col-md-12 mt-3">
             <button type="button" class="btn btn-secondary mt-1 loyaltysavebtn"><i class="fa fa-save"></i> Save</button>
         </div>
@@ -75,35 +75,7 @@
         // Setting logging to true so that we can see whats happening in the browser console log. [OPTIONAL]
         $.connection.hub.logging = true;
 
-        twitchHub.client.SaveCallback = function(ret) {
-            console.log(ret);
-
-            if (ret.data == "1") {
-                console.log(ret.message);
-                $.amaran({
-                    'theme': 'colorful',
-                    'content'   :{
-                        bgcolor:'#27ae60',
-                        color:'#fff',
-                        message: ret.message,
-                    },
-                    'closeOnClick':false,
-                    'inEffect':'slideTop'
-                });
-            } else {
-                console.log(ret.message);
-                $.amaran({
-                    'theme': 'colorful',
-                    'content': {
-                        bgcolor: '#ff3300',
-                        color: '#fff',
-                        message: ret.message,
-                    },
-                    'closeOnClick': false,
-                    'inEffect': 'slideTop'
-                });
-            }
-        }
+        
 
         // Start the hub
         $.connection.hub.start();

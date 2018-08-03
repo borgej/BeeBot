@@ -44,7 +44,7 @@
                 <div class="col-md-1 mt-2 mb-3">
                     <div class="pretty p-switch">
                         <input class=" timeractive" type="checkbox" value="" id="active_@timer.Id" name="active" @(Convert.ToBoolean(timer.Active) == true ? "checked='checked'" : string.Empty)>
-                        <div class="state">
+                        <div class="state p-primary">
                             <label class="" for="active_@timer.Id">
                                 Active
                             </label>
@@ -53,8 +53,8 @@
                 </div>
 
                 <div class="col-md-2">
-                    <button type="button" class="btn btn-sm btn-light savetimerbtn" onclick="saveTimer(this);"><i class="fa fa-save"></i> Save</button>
                     <button type="button" class="btn btn-sm btn-warning removetimerbtn" onclick="deleteTimer(this);"><i class="fa fa-times"></i> Delete</button>
+                    <button type="button" class="btn btn-sm btn-light savetimerbtn" onclick="saveTimer(this);"><i class="fa fa-save"></i> Save</button>
                 </div>
 
             </form>
@@ -88,7 +88,7 @@
     <div class="col-md-1 mt-2 mb-3">
         <div class="pretty p-switch">
             <input class=" timeractive" type="checkbox" value="" id="timer_new[]" name="active">
-            <div class="state">
+            <div class="state p-primary">
                 <label class="" for="timer_new[]">
                     Active
                 </label>
@@ -97,8 +97,8 @@
     </div>
 
     <div class="col-md-2">
-        <button type="button" class="btn btn-sm btn-light savetimerbtn" onclick="saveTimer(this);"><i class="fa fa-save"></i> Save</button>
         <button type="button" class="btn btn-sm btn-warning removetimerbtn" onclick="deleteTimer(this);")><i class="fa fa-times"></i> Delete</button>
+        <button type="button" class="btn btn-sm btn-light savetimerbtn" onclick="saveTimer(this);"><i class="fa fa-save"></i> Save</button>
     </div>
 
 </form>

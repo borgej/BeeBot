@@ -26,6 +26,36 @@ h5 {
     border-radius: 50%;
 }
 
+.winner {
+    display: block;
+}
+
+.winner > .badge:first-of-type {
+    margin-left: 8px;
+}
+
+.winners {
+    max-height: 120px;
+    overflow: hidden;
+    overflow-y: scroll;
+    overflow-x: hidden;
+}
+
+.participants {
+    max-height: 250px;
+    overflow: hidden;
+    overflow-y: scroll;
+    overflow-x: hidden;
+}
+
+.participant > .badge:first-of-type {
+    margin-left: 8px;
+}
+
+.participants  > div:last-child {
+    padding-bottom: 30px !important;
+}
+
 .profile-avatar {
     display: block;
     width: 100%;
@@ -203,7 +233,9 @@ textarea {
     background: #d4d4d5;
     border: 1px solid black;
 }
-
+.trigger {
+    font-weight: 800;
+}
 songrequests {
     width: 100%;
     min-height: 300px;
@@ -241,18 +273,19 @@ songrequests {
     border: 1px #eff0f1 solid;
 }
 
-.playlistitem:nth-of-type(odd) {
-    background-color: #eff0f1;
-}
-
     .playlistitem:nth-of-type(even) {
+        background-color: #e6e6e6;
+    }
+
+    .playlistitem:nth-of-type(odd) {
         background-color: white;
-        border: 1px #aaaaaa solid
+        
     }
 
     .playlistitem:hover {
-        padding: 2px 2px 2px 2px;
-        background-color: #cdcdcd;
+        transition: 0.7s;
+        /*padding: 2px 2px 2px 2px;*/
+        border: 1px solid #b3b3b3;
         /*border: 1px solid #a9a9a9;*/
         cursor: pointer;
     }

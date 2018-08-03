@@ -23,14 +23,12 @@ namespace BeeBot.Controllers
     public class HomeController : Controller
     {
         private ContextService ContextService { get; set; }
-        private UserService UserService { get; set; }
 
         public TwitchClient Client { get; set; }
 
         public HomeController()
         {
             ContextService = new ContextService();
-            UserService = new UserService();
 
         }
 
@@ -227,6 +225,20 @@ namespace BeeBot.Controllers
             return Content(userBotSettings.BotChannel);
         }
 
+        public ActionResult BotUsername()
+        {
+            var userBotSettings = ContextService.GetBotUserSettingsForUser(ContextService.GetUser(User.Identity.Name));
+
+            return Content(userBotSettings.BotUsername);
+        }
+
+        public ActionResult BotPassword()
+        {
+            var userBotSettings = ContextService.GetBotUserSettingsForUser(ContextService.GetUser(User.Identity.Name));
+
+            return Content(userBotSettings.BotPassword);
+        }
+
         public ActionResult ChatLog()
         {
             var userBotSettings = ContextService.GetBotUserSettingsForUser(ContextService.GetUser(User.Identity.Name));
@@ -246,6 +258,15 @@ namespace BeeBot.Controllers
         }
 
         public ActionResult LogOut()
+        {
+            var userBotSettings = ContextService.GetBotUserSettingsForUser(ContextService.GetUser(User.Identity.Name));
+
+            ViewBag.Channel = userBotSettings.BotChannel;
+
+            return View(userBotSettings);
+        }
+
+        public ActionResult Giveaways()
         {
             var userBotSettings = ContextService.GetBotUserSettingsForUser(ContextService.GetUser(User.Identity.Name));
 

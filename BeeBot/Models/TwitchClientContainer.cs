@@ -28,6 +28,7 @@ namespace YTBot.Models
         public List<string> ConsoleLog { get; set; }
         public List<ChatMessage> ChatLog { get; set; }
         public List<ChatMessage> ChatMsgLog { get; set; }
+        public List<Giveaway> Giveaways { get; set; }
         public List<string> Channelmods { get; set; }
         public Dictionary<string, int> CommandsUsed { get; set; }
         public Dictionary<string, int> ChattersCount { get; set; }
@@ -43,6 +44,7 @@ namespace YTBot.Models
         {
             ChatLog = new List<ChatMessage>();
             ConsoleLog = new List<string>();
+            Giveaways = new List<Giveaway>();
             CommandsUsed = new Dictionary<string, int>();
             ChattersCount = new Dictionary<string, int>();
             Channelmods = new List<string>();

@@ -46,7 +46,7 @@
                 <div class="col-md-1 mt-2 mb-3">
                     <div class="pretty p-switch">
                         <input class=" modscantrigger" type="checkbox" value="" id="modscantrigger_@trigger.Id" name="modscantrigger" @(Convert.ToBoolean(trigger.ModCanTrigger) == true ? "checked='checked'" : string.Empty)>
-                        <div class="state">
+                        <div class="state p-primary">
                             <label class="" for="modscantrigger_@trigger.Id">
                                 Mod
                             </label>
@@ -57,7 +57,7 @@
                 <div class="col-md-1 mt-2 mb-3">
                     <div class="pretty p-switch">
                         <input class=" subcantrigger" type="checkbox" value="" id="subcantrigger_@trigger.Id" name="subcantrigger" @(Convert.ToBoolean(trigger.SubCanTrigger) == true ? "checked='checked'" : string.Empty)>
-                        <div class="state">
+                        <div class="state p-primary">
                             <label class="" for="subcantrigger_@trigger.Id">
                                 Sub
                             </label>
@@ -67,7 +67,7 @@
                 <div class="col-md-1 mt-2 mb-3">
                     <div class="pretty p-switch">
                         <input class=" viewercantrigger" type="checkbox" value="" id="viewercantrigger_@trigger.Id" name="viewercantrigger" @(Convert.ToBoolean(trigger.ViewerCanTrigger) == true ? "checked='checked'" : string.Empty)>
-                        <div class="state">
+                        <div class="state p-primary">
                             <label class="" for="viewercantrigger_@trigger.Id">
                                 Viewer
                             </label>
@@ -78,7 +78,7 @@
                     <div class="pretty p-switch">
 
                         <input class=" triggeractive" type="checkbox" value="" id="triggeractive_@trigger.Id" name="triggeractive" @(Convert.ToBoolean(trigger.Active) == true ? "checked='checked'" : string.Empty)>
-                        <div class="state">
+                        <div class="state p-primary">
                             <label class="" for="triggeractive_@trigger.Id">
                                 Active
                             </label>
@@ -86,8 +86,8 @@
                     </div>
                 </div>
                 <div class="col-md-2">
-                    <button type="button" class="btn btn-sm btn-light savetriggerbtn" onclick="saveTrigger(this)"><i class="fa fa-save"></i> Save</button>
                     <button type="button" class="btn btn-sm btn-warning removetriggerbtn" onclick="deleteTrigger(this)"><i class="fa fa-times"></i> Delete</button>
+                    <button type="button" class="btn btn-sm btn-light savetriggerbtn" onclick="saveTrigger(this)"><i class="fa fa-save"></i> Save</button>
                 </div>
             </form>
 
@@ -116,7 +116,7 @@
         <div class="col-md-1 mt-2 mb-3">
             <div class="pretty p-switch">
                 <input class=" modscantrigger" type="checkbox" value="" id="modscantrigger[]" name="modscantrigger">
-                <div class="state">
+                <div class="state p-primary">
                     <label class="" for="modscantrigger[]">
                         Mod
                     </label>
@@ -126,7 +126,7 @@
         <div class="col-md-1 mt-2 mb-3">
             <div class="pretty p-switch">
                 <input class=" subcantrigger" type="checkbox" value="" id="subcantrigger[]" name="subcantrigger">
-                <div class="state">
+                <div class="state p-primary">
                     <label class="" for="subcantrigger[]">
                         Sub
                     </label>
@@ -136,7 +136,7 @@
         <div class="col-md-1 mt-2 mb-3">
             <div class="pretty p-switch">
                 <input class="" type="checkbox" value="" id="viewercantrigger[]" name="viewercantrigger">
-                <div class="state">
+                <div class="state p-primary">
                     <label class="" for="viewercantrigger[]">
                         Viewer
                     </label>
@@ -146,7 +146,7 @@
         <div class="col-md-1 mt-2 mb-3">
             <div class="pretty p-switch">
                 <input class=" triggeractive" type="checkbox" value="" id="active[]" name="triggeractive">
-                <div class="state">
+                <div class="state p-primary">
                     <label class="" for="active[]">
                         Active
                     </label>
@@ -154,8 +154,8 @@
             </div>
         </div>
         <div class="col-md-2">
-            <button type="button" class="btn btn-sm btn-light savetriggerbtn" onclick="saveTrigger(this)"><i class="fa fa-save"></i> Save</button>
             <button type="button" class="btn btn-sm btn-warning removetriggerbtn" onclick="deleteTrigger(this)"><i class="fa fa-times"></i> Delete</button>
+            <button type="button" class="btn btn-sm btn-light savetriggerbtn" onclick="saveTrigger(this)"><i class="fa fa-save"></i> Save</button>
         </div>
     </form>
 

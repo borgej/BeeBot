@@ -15,8 +15,6 @@ namespace YTBot.Services
     {
         public ApplicationDbContext Context{ get; set; }
 
-
-
         /// <summary>
         /// Constructor
         /// </summary>

@@ -13,27 +13,37 @@ namespace YTBot.Models
         [Column(TypeName = "VARCHAR")]
         [StringLength(128)]
         public string TriggerName { get; set; }
+        public bool? Active { get; set; }
         public TriggerType TriggerType { get; set; }
         [Column(TypeName = "VARCHAR")]
         [StringLength(128)]
         public string TriggerResponse { get; set; }
+        
         // Trigger restrictions
         public bool? StreamerCanTrigger { get; set; }
         public bool? ModCanTrigger { get; set; }
         public bool? SubCanTrigger { get; set; }
         public bool? ViewerCanTrigger { get; set; }
-        public bool? Active { get; set; }
+        public bool? FollowerCanTrigger { get; set; }
+
+        // VideoOnDemand trigger video url
+        public string VideoUrl { get; set; }
+        
 
     }
 
 
-
+    /// <summary>
+    /// Trigger Type
+    /// </summary>
     public enum TriggerType
     {
         Message = 0,
         Quote = 1,
-        Statistic = 2,
+        Stat = 2,
         Game = 3,
-        Loyalty = 4
+        Loyalty = 4,
+        VideoOnDemand = 5,
+        BuiltIn = 9,
     }
 }

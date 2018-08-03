@@ -1,0 +1,322 @@
+﻿@model BeeBot.Models.BotUserSettings
+
+<h2>Giveaways</h2>
+<hr />
+
+<div class="card card-body bg-light">
+    <div class="row">
+        <div class="col-md-10 mb-3">
+            <button type="button" id="createNewBtn" class="btn btn-secondary createGiveawayButton"><i class="fa fa-plus"></i> Create new</button>
+        </div>
+        <hr />
+    </div>
+    <div class="row ">
+        <div class="col-md-12 newGiveawayForm">
+
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12 giveaways">
+
+        </div>
+    </div>
+</div>
+@* new giveaway template *@
+<div class="card card-body bg-white newGiveawayTemplate dontshow col-md-12 mb-3">
+    <h3>New giveaway</h3>
+    <form class="newGiveAway">
+        <div class="form-group row">
+            <label for="trigger" class="col-sm-2 col-form-label">Trigger</label>
+            <div class="col-sm-2">
+                <input type="text" class="form-control" id="trigger" placeholder="giveaway">
+            </div>
+        </div>
+        <div class="form-group row">
+            <label for="prize" class="col-sm-2 col-form-label">Prize</label>
+            <div class="col-sm-4">
+                <input type="text" class="form-control" id="prize" placeholder="One piece of smoked salmon :P">
+            </div>
+        </div>
+        <div class="form-group row">
+            <label for="timer" class="col-sm-2 col-form-label">Close in</label>
+            <div class="col-sm-1">
+                <input type="text" class="form-control" id="timer" placeholder="30">
+            </div>
+            <div class="col-md-2 float-md-left col-form-label" style="line-height: 1.5; padding-left: 0px !important;">minutes</div>
+        </div>
+        <fieldset class="form-group row">
+            <legend class="col-form-legend col-sm-2">Eligable for</legend>
+            <div class="col-sm-10">
+                <div class="pretty p-switch pb-2">
+                    <input id="viewer" class="form-check-input" type="checkbox" name="viewer" value="1" checked>
+                    <div class="state p-primary">
+                        <label for="viewer">
+                            Viewer
+                        </label>
+                    </div>
+                </div>
+                <div class="pretty p-switch pb-2">
+                    <input id="follower" class="form-check-input" type="checkbox" name="follower" value="1" checked>
+                    <div class="state p-primary">
+                        <label for="follower">
+                            Follower
+                        </label>
+                    </div>
+                </div>
+                <div class="pretty p-switch pb-2">
+                    <input id="sub" class="form-check-input" type="checkbox" name="sub" value="1" checked>
+                    <div class="state p-primary">
+                        <label for="sub">
+                            Sub
+                        </label>
+                    </div>
+                </div>
+                <div class="pretty p-switch pb-2">
+                    <input id="mod" class="form-check-input" type="checkbox" name="mod" value="1" checked>
+                    <div class="state p-primary">
+                        <label for="mod">
+                            Mod
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </fieldset>
+        <div class="form-group row">
+            <div class="col-sm-10">
+                <button type="button" class="btn btn-warning" onclick="abandonNewGiveaway(this);"><i class="fa fa-times cancelNewGiveawayButton"></i> Abandon</button>
+                <button type="button" class="btn btn-light" onclick="saveNewGiveaway(this);"><i class="fa fa-hourglass-start startNewGiveawayButton"></i> Start</button>
+            </div>
+        </div>
+    </form>
+    
+</div>
+
+@* giveaway template *@
+<div data-id="" class="card card-body giveaway giveawayTemplate dontshow mb-2">
+    <div class="row">
+        <div class="col-md-7">
+            <div class="form-group row">
+                <div class="col-sm-4 col-form-label">Trigger</div>
+                <div class="col-sm trigger col-form-label"></div>
+            </div>
+            <div class="form-group row">
+                <div class="col-sm-4 col-form-label">Prize</div>
+                <div class="col-sm col-form-label prize"></div>
+            </div>
+            <div class="form-group row">
+                <div class="col-sm-4 col-form-label">Ends at</div>
+                <div class="col-sm  col-form-label endsAt"></div>
+            </div>
+
+            <div class="form-group row">
+                <div class="col">
+                    <button type="button" class="btn btn-info closeButton" onclick="closeGiveaway(this);"><i class="fa fa-stop-circle"></i> Close</button>
+                    <button type="button" class="btn btn-primary drawButton" onclick="drawGiveaway(this, false);"><i class="fa fa-bullseye"></i> Draw winner</button>
+                    <button type="button" class="btn btn-success drawAndMsgChatButton" onclick="drawGiveaway(this, true);"><i class="fa fa-bullseye"></i> Draw and post</button>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-5">
+            <div class="card card-body bg-light mb-1 winners dontshow">
+                <h5 class="mb-3">Winners <span class="winnersCount badge badge-pill badge-info"></span></h5>
+            </div>
+            <div class="card card-body bg-light participants">
+                <h5 class="mb-3">Participants <span class="participantsCount badge badge-pill badge-info"></span></h5>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    var twitchHub = $.connection.twitchHub;
+
+    $(document).ready(function () {
+        $("#createNewBtn").click(function () {
+
+            var newGiveaway = $(".newGiveawayTemplate").clone().removeClass("newGiveawayTemplate");
+
+            newGiveaway.removeClass("dontshow").appendTo(".newGiveawayForm");
+        });
+    });
+
+    function abandonNewGiveaway(elem)
+    {
+        $(elem).closest("form").parent().remove();
+    }
+
+    function closeGiveaway(ga) {
+        var id = $(ga).closest(".giveaway").data("id");
+        twitchHub.server.closeGiveaway(id);
+    }
+
+    function drawGiveaway(ga, postToChat) {
+        var id = $(ga).closest(".giveaway").data("id");
+        twitchHub.server.drawGiveaway(id, postToChat);
+    }
+
+    function saveNewGiveaway(elem) {
+        var form = $(elem).closest("form");
+        var trigger = form.find("#trigger").val();
+        var prize = form.find("#prize").val();
+        var timer = form.find("#timer").val();
+
+        var sub = form.find("#sub").is(':checked');
+        var follower = form.find("#follower").is(':checked');
+        var viewer = form.find("#viewer").is(':checked');
+        var mod = form.find("#mod").is(':checked');
+        $(elem).closest("form").parent().remove();
+
+        twitchHub.server.saveNewGiveAway(trigger, prize, timer, sub, follower, viewer, mod);
+    }
+
+    function loadNewGiveaway(giveaway) {
+        console.log("Creating existing giveaway with id: " + giveaway.Id);
+        var newGiveaway = $(".giveawayTemplate").clone().removeClass("giveawayTemplate");
+
+        newGiveaway.attr("data-id", giveaway.Id);
+        newGiveaway.find(".trigger").html("!"+giveaway.Trigger);
+        newGiveaway.find(".prize").html(giveaway.Prize);
+        newGiveaway.find(".endsAt").html(giveaway.EndsAt);
+        
+        try {
+            newGiveaway.find(".participantsCount").html(giveaway.Participants.length);
+            enterParticipants(newGiveaway, giveaway.Participants);
+            
+        } catch (e) {
+            newGiveaway.find(".participantsCount").html("0");
+        }
+        try {
+            newGiveaway.find(".winnersCount").html(giveaway.Winners.length);
+            enterWinners(newGiveaway, giveaway.Winners);
+        } catch (e) {
+            newGiveaway.find(".winnersCount").html("0");
+            console.log(e);
+        } 
+        
+        newGiveaway.removeClass("dontshow").appendTo(".giveaways");
+    }
+
+    // clears all participants in giveaway 
+    function clearParticipants(ga) {
+        var giveaway = $("[data-id='" + ga.Id + "']");
+        giveaway.find(".participant").empty();
+    }
+
+    function clearWinners(ga) {
+        var giveaway = $("[data-id='" + ga.Id + "']");
+        giveaway.find(".winner").empty();
+    }
+
+    // Reloades all participants in giveaway
+    function updateGiveaway(ga) {
+        var giveaway = $("[data-id='" + ga.Id + "']");
+        console.log("Updating existing giveaway with id: " + ga.Id);
+        // clear participants
+        clearParticipants(ga);
+        clearWinners(ga);
+        // update counter
+        try {
+            giveaway.find(".participantsCount").html(ga.Participants.length);
+            giveaway.find(".winnersCount").html(ga.Winners.length);
+        } catch (e) {
+            giveaway.find(".participantsCount").html("0");
+            giveaway.find(".winnersCount").html("0");
+        }
+        // load participants to giveaway
+        enterParticipants(giveaway, ga.Participants);
+        // load winners to giveaway
+        enterWinners(giveaway, ga.Winners);
+    }
+
+    // inserts all winners in giveaway into winnersDiv
+    function enterWinners(giveawayDiv, winners) {
+        $.each(winners, function (i, user) {
+            var badges = "";
+            try {
+
+                //if (user.Viewer) {
+                //    badges += "<span class=\"badge badge-pill badge-light\">Viewer</span>";
+                //}
+                if (user.Follower) {
+                    badges += "<span class='badge badge-pill badge-success'>Follower</span>";
+                }
+                if (user.Subscriber) {
+                    badges += "<span class='badge badge-pill badge-primary'>Sub</span>";
+                }
+                if (user.Mod) {
+                    badges += "<span class='badge badge-pill badge-dark'>Mod</span>";
+                }
+            } catch (e) {
+                badges += "- NoBadge";
+            }
+
+            var winner = "<div class='winner'><i class='fa fa-star' style='color:yellow;'></i> " + user.TwitchUsername + badges + "</div>";
+            var winnersDiv = giveawayDiv.find(".winners");
+            
+            console.log("adding winner: " + user.TwitchUsername + " to ga.Id = " + giveawayDiv.data("id"));
+            winnersDiv.append(winner);
+
+        });
+        if (winners != null && winners.length > 0) {
+            giveawayDiv.find(".winners").removeClass("dontshow");
+        }
+    }
+
+    // inserts all participants in giveaway into giveaway div
+    function enterParticipants(giveawayDiv, participants) {
+        $.each(participants, function (i, user) {
+            var badges = "";
+            try {
+
+                //if (user.Viewer) {
+                //    badges += "<span class=\"badge badge-pill badge-light\">Viewer</span>";
+                //}
+                if (user.Follower) {
+                    badges += "<span class='badge badge-pill badge-success'>Follower</span>";
+                }
+                if (user.Subscriber) {
+                    badges += "<span class='badge badge-pill badge-primary'>Sub</span>";
+                }
+                if (user.Mod) {
+                    badges += "<span class='badge badge-pill badge-dark'>Mod</span>";
+                }
+            } catch (e) {
+                badges += "- NoBadge";
+            }
+            
+            var enrolledUser = "<div class='participant'>" + user.TwitchUsername + badges + "</div>";
+            var participantsDiv = giveawayDiv.find(".participants");
+            console.log("adding " + user.TwitchUsername + " to ga.Id = " + giveawayDiv.data("id"));
+            participantsDiv.append(enrolledUser);
+            
+        });
+    }
+
+    (function () {
+
+        $.connection.hub.logging = true;
+
+        // Start the hub
+        $.connection.hub.start().done(function () {
+            twitchHub.server.getAllGiveaways();
+
+        });
+
+        twitchHub.client.loadAllGiveaways = function (ret) {
+            $.each(ret, function (i, elem) {
+                loadNewGiveaway(elem);
+            });
+        };
+
+        twitchHub.client.loadGiveaway = function (ret) {
+            loadNewGiveaway(ret);
+        };
+
+        twitchHub.client.refreshGiveaway = function (ret) {
+            updateGiveaway(ret);
+        };
+
+    })();
+
+
+</script>
