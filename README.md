@@ -10,7 +10,7 @@ MSSQL Database
 
 
 ## Functionality
-1.Triggers
+1. Triggers
 * User triggers with mod/subscriber/follower/viewer restrictions
 2. Loyalty points system
 3. Dashboard
