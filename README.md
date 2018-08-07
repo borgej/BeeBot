@@ -20,17 +20,17 @@ The plan is to finish "basis" functionality and host it for free for everyone th
 * Microsoft SQL Server Standard (64-bit) (Tested on version 13.0.1742.0)
 * IIS (Tested on version 10.0.14393.0)
 
-## Example Screenshots
-### Login screen
+## Some screenshots
+### Login
 ![Login screen](https://github.com/borgej/YTBot/blob/master/login.PNG "Login screen")
 
-### Logged in screen
+### Logged in
 ![Logged in](https://github.com/borgej/YTBot/blob/master/loggedin.PNG "Logged in")
 
-### Songrequests screen
+### Songrequests
 ![Songrequests](https://github.com/borgej/YTBot/blob/master/songrequests.png "Songrequests")
 
-### System triggers screen
+### System triggers
 ![System triggers](https://github.com/borgej/YTBot/blob/master/systemtriggers.PNG "System triggers")
 
 ## Functionality
