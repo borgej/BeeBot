@@ -4,11 +4,19 @@ Twitch bot C# MVC project
 This started out as a "fun" little project to try to make myself a Twitch.tv Chatbot.
 It has now getting some serious functionality ;)
 
+
+
 ## Requirements 
 * .Net Framework 4.6.1
 * Microsoft SQL Server Standard (64-bit) (Tested on version 13.0.1742.0)
 * IIS (Tested on version 10.0.14393.0)
 
+## Screenshots
+### Login screen
+![Login screen](https://github.com/borgej/YTBot/blob/master/login.PNG "Login screen")
+
+### Logged in screen
+![Logged in](https://github.com/borgej/YTBot/blob/master/loggedin.PNG "Logged in")
 
 ## Functionality
 1. Triggers
