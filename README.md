@@ -12,7 +12,7 @@ MSSQL Database
 ## Functionality
 1.Triggers
 
-  *User triggers with mod/subscriber/follower/viewer restrictions
+ *User triggers with mod/subscriber/follower/viewer restrictions
   
 2. Loyalty points system
 
@@ -20,34 +20,41 @@ MSSQL Database
 
 4. Stream info
 
-  *Set your title and game
+ *Set your title and game
   
 5. Chat stats
   
-  *Most used commands
+ *Most used commands
   
-  *Most active users
+ *Most active users
   
-  *Channel chat options (still not done)
+ *Channel chat options (still not done)
   
-  *Channel chat log
+ *Channel chat log
   
-  *Timeout users using words in "bad-words"-list
+ *Timeout users using words in "bad-words"-list
   
 6. Built in triggers containing:
-  Games (Roulette, gamble, russian(roulette))
-  Clip (Create a stream clip directly from chat)
-  Loyalty points checking
-  Channel stats (followers, subs)
-   How long has user been a follower or sub
-  Uptime (how long has the channel been streaming)
+
+*Games (Roulette, gamble, russian(roulette))
+ 
+ *Clip (Create a stream clip directly from chat)
+  
+ *Loyalty points checking
+  
+ *Channel stats (followers, subs)
+
+ *How long has user been a follower or sub
+
+ *Uptime (how long has the channel been streaming)
   
 7. Giveaway system
 
 8. Songrequest system
 
-  *Adding and removing songs from YouTube either by link or name of video (search will enter first search hit)
-  *Mods can control play/stop/volume/next/prev if allowed.
+ *Adding and removing songs from YouTube either by link or name of video (search will enter first search hit)
+
+ *Mods can control play/stop/volume/next/prev if allowed.
 
 9. Polls
  
