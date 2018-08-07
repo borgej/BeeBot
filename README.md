@@ -7,7 +7,13 @@ Twitch bot C# MVC project
 This started out as a "fun" little project to try to make myself a Twitch.tv Chatbot.
 It has now getting some serious functionality ;)
 
+The plan is to finish "basis" functionality and host it for free for everyone that wants to use this.
 
+
+## TODO's
+* Add StreamLabs API functionality
+* Make the application Thread-Safe
+* Optimize database calls
 
 ## Requirements 
 * .Net Framework 4.6.1
