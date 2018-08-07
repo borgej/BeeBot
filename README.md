@@ -25,7 +25,7 @@ It has now getting some serious functionality ;)
 ![Songrequests](https://github.com/borgej/YTBot/blob/master/songrequests.png "Songrequests")
 
 ### System triggers screen
-![System triggers](https://github.com/borgej/YTBot/blob/master/systemtriggers.png "System triggers")
+![System triggers](https://github.com/borgej/YTBot/blob/master/systemtriggers.PNG "System triggers")
 
 ## Functionality
 1. Triggers
