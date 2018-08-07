@@ -5,8 +5,9 @@ This started out as a "fun" little project to try to make myself a Twitch.tv Cha
 It has now getting some serious functionality ;)
 
 ## Requirements 
-.Net Framework 4.6.1
-MSSQL Database 
+* .Net Framework 4.6.1
+* Microsoft SQL Server Standard (64-bit) (Tested on version 13.0.1742.0)
+* IIS (Tested on version 10.0.14393.0)
 
 
 ## Functionality
