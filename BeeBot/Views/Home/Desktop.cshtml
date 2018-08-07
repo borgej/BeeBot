@@ -1,0 +1,28 @@
+﻿@model BeeBot.Models.BotUserSettings
+
+<h2>Dashboard</h2>
+<hr/>
+
+<div class="row">
+    <div class="col-md-3 card card-body bg-light ml-1">
+        
+    </div>
+    <div class="col-md-4 card card-body bg-light ml-1">
+        <iframe
+            src="http://player.twitch.tv/?channel=@Model.BotChannel&muted=true"
+            height="300"
+            width="100%"
+            frameborder="0"
+            scrolling="no"
+            allowfullscreen="1">
+        </iframe>
+    </div>
+    <div class="col-md-4 card card-body bg-light ml-1">
+        <iframe frameborder="0"
+                scrolling="yes"
+                id="chat_embed"
+                src="http://www.twitch.tv/embed/@Model.BotChannel/chat"
+                height="600"
+                width="100%"></iframe>
+    </div>
+</div>

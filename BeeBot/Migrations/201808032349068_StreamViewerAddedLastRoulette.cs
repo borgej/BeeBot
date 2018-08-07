@@ -3,17 +3,16 @@ namespace YTBot.Migrations
     using System;
     using System.Data.Entity.Migrations;
     
-    public partial class AddedmodToStreamViewer : DbMigration
+    public partial class StreamViewerAddedLastRoulette : DbMigration
     {
         public override void Up()
         {
-            AddColumn("dbo.StreamViewers", "Mod", c => c.Boolean(nullable: false));
+            AddColumn("dbo.StreamViewers", "LastRoulette", c => c.DateTime());
         }
         
         public override void Down()
         {
-            DropColumn("dbo.StreamViewers", "Mod");
-
+            DropColumn("dbo.StreamViewers", "LastRoulette");
         }
     }
 }

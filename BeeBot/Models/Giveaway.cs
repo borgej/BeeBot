@@ -40,9 +40,9 @@ namespace YTBot.Models
         /// <returns></returns>
         public bool CanEnroll(StreamViewer user)
         {
-            bool follower = this.Follower == user.Follower;
-            bool sub = this.Sub == user.Subscriber;
-            bool mod = this.Mod == user.Mod;
+            bool follower = Follower == user.Follower;
+            bool sub = Sub == user.Subscriber;
+            bool mod = Mod == user.Mod;
 
             return (follower | sub | mod);
         }
@@ -53,7 +53,7 @@ namespace YTBot.Models
         /// <param name="viewer">StreamViewer to add to perticipants list</param>
         public void Enroll(StreamViewer viewer)
         {
-            this.Participants.Add(viewer);
+            Participants.Add(viewer);
         }
     }
 }

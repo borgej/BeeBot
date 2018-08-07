@@ -41,8 +41,20 @@ h5 {
     overflow-x: hidden;
 }
 
+.winnersChatCountdownDiv {
+    font-size: 13px;
+}
+
 .participants {
     max-height: 250px;
+    overflow: hidden;
+    overflow-y: scroll;
+    overflow-x: hidden;
+}
+
+.winnerchat {
+    min-height: 130px;
+    max-height: 130px;
     overflow: hidden;
     overflow-y: scroll;
     overflow-x: hidden;
@@ -489,12 +501,15 @@ songrequests {
 #sidebar {
     overflow: hidden;
     z-index: 3;
+    min-height: 100% !important;
 }
-#sidebar .list-group {
-    max-width: 200px;
-    background-color: #333;
-    min-height: 100vh;
-}
+    #sidebar .list-group {
+        max-width: 200px;
+        background-color: #333;
+        min-height: 100vh;
+        /*min-height: 100% !important;*/
+        /*max-height: 100% !important;*/
+    }
 #sidebar i {
     margin-right: 6px;
 }

@@ -1,44 +1,116 @@
 ﻿@model dynamic
 
 <h2 class="mb-4">Polls</h2>
-
+<button type="button" class="btn btn-secondary " id="newPollButton"><i class="fa fa-plus"></i> Create</button>
 <hr/>
+<div class="card card-body bg-light dontshow mb-2 newPollTemplate">
+
+    <form id="newPoll" class="">
+        <div class="form-group row">
+            <label for="inputEmail3" class="col-sm-2 col-form-label">Question</label>
+            <div class="col-sm-10">
+                <input type="text" class="form-control" id="question" name="question" placeholder="What game should we play today?">
+            </div>
+        </div>
+        <div class="form-group row">
+            <label for="inputPassword3" class="col-sm-2 col-form-label">Options</label>
+            <div class="col-sm-10">
+                <input type="text" name="option[]" class="form-control col-sm-4 mb-1 option" />
+                <input type="text" name="option[]" class="form-control col-sm-4 mb-1 option" />
+                <input type="text" name="option[]" class="form-control col-sm-4 mb-1 option" />
+                <button type="button" class="btn btn-sm btn-light" id="addMoreOptionsButton"><i class="fa fa-plus"></i> Add one more option</button>
+            </div>
+        </div>
+        
+        <div class="form-group row">
+            <div class="col-sm-10">
+                <button type="button" class="btn btn-warning" id="abandonPollButton"><i class="fa fa-times"></i> Abandon</button>
+                <button type="button" class="btn btn-secondary" id="createPollButton"><i class="fa fa-save"></i> Start poll</button>
+            </div>
+        </div>
+    </form>
+
+    
+</div>
 <div class="polls card card-body bg-light">
-
-
-<div class="pollTemplate dontshow poll">
-    <a class="badge badge-info pollTitle" data-url="" data-id="" onclick="loadPollData(this)"></a>
-    <div class="pollData"></div>
 </div>
-</div>
-<script type="text/javascript">
-    var twitchHub = $.connection.twitchHub;
+    <div class="pollTemplate dontshow poll">
+        <a class="badge badge-info pollTitle" data-url="" data-id="" onclick="loadPollData(this)"></a>
+        <div class="pollData"></div>
+    </div>
 
-    (function () {
-        $.connection.hub.logging = true;
+    <script type="text/javascript">
+        var twitchHub = $.connection.twitchHub;
 
-        // Start the hub
-        $.connection.hub.start().done(function () {
-            twitchHub.server.loadPolls();
+        (function () {
+            $.connection.hub.logging = true;
+
+            // Start the hub
+            $.connection.hub.start().done(function () {
+                twitchHub.server.loadPolls();
+            });
+
+            twitchHub.client.LoadPoll = function (ret) {
+
+                var newPoll = $(".pollTemplate").clone();
+                newPoll.find(".pollTitle").html(ret.Title);
+                newPoll.find(".pollTitle").data("url", ret.PollUrl).attr("href", ret.PollUrl + "/r");
+                newPoll.find(".pollTitle").attr("target", "_blank");
+                newPoll.find(".pollTitle").data("id", ret.Id);
+                newPoll.removeClass("dontshow").removeClass("pollTemplate");
+                newPoll.find(".pollData").addClass("pollData_" + ret.Id);
+                newPoll.appendTo(".polls");
+            }
+
+        })()
+
+        function loadPollData(elem) {
+            var url = $(elem).data("url");
+            var id = $(elem).data("id");
+            $(".pollData_" + id).load(url + "/r");
+        }
+
+        $("#addMoreOptionsButton").click(function() {
+            var newOption = '<input type="text" name="option[]" class="form-control col-sm-4 mb-1 option" />';
+            $(newOption).insertBefore("#addMoreOptionsButton");
         });
 
-        twitchHub.client.LoadPoll = function (ret) {
-            
-            var newPoll = $(".pollTemplate").clone();
-            newPoll.find(".pollTitle").html(ret.Title);
-            newPoll.find(".pollTitle").data("url", ret.PollUrl).attr("href", ret.PollUrl +"/r");
-            newPoll.find(".pollTitle").attr("target", "_blank");
-            newPoll.find(".pollTitle").data("id", ret.Id);
-            newPoll.removeClass("dontshow").removeClass("pollTemplate");
-            newPoll.find(".pollData").addClass("pollData_" + ret.Id);
-            newPoll.appendTo(".polls");
-        }
-        
-    })()
+        $("#newPollButton").click(function() {
+            $(".newPollTemplate").removeClass("dontshow");
+        });
 
-    function loadPollData(elem) {
-        var url = $(elem).data("url");
-        var id = $(elem).data("id");
-        $(".pollData_" + id).load(url + "/r");
-    }
-</script>
+        $("#abandonPollButton").click(function() {
+            $(".newPollTemplate").addClass("dontshow");
+            clearForm();
+        });
+
+        $("#createPollButton").click(function() {
+            // TODO: save to SignalR hub
+            var question = $("#question").val();
+
+            var options = [];
+            $.each($(".option"), function (i, elem) {
+                if ($(elem).val() != "") {
+                    options.push($(elem).val());
+                }
+                
+            });
+            
+            twitchHub.server.saveNewPoll(question, options);
+
+            $(".newPollTemplate").addClass("dontshow");
+
+            clearForm();
+        });
+
+
+        // Reset form
+        function clearForm()
+        {
+            $("#question").val("");
+            $.each($(".option"), function (i, elem) {
+                $(elem).val("");
+            });
+        }
+
+    </script>

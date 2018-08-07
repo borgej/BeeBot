@@ -22,9 +22,9 @@
 
 <br />
 
-<h2>Console</h2>
+<h2 class="mt-3">Console</h2>
 <div class="row">
-    <div class="col-md-12">
+    <div class="col-md-12 mt-1">
         <div class="console">
 
         </div>
@@ -83,7 +83,7 @@
             var password = $(this).data("password");
             var channel = $(this).data("channel");
 
-            twitchHub.server.connectBot(username, password, channel);
+            $.connection.twitchHub.server.connectBot(username, password, channel);
 
         });
 
@@ -92,7 +92,7 @@
             var password = $(this).data("password");
             var channel = $(this).data("channel");
 
-            twitchHub.server.reconnect(username, password, channel);
+            $.connection.twitchHub.server.reconnect(username, password, channel);
 
         });
 

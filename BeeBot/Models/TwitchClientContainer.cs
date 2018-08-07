@@ -23,11 +23,9 @@ namespace YTBot.Models
         public TwitchPubSub PubSubClient { get; set; }
         public Thread WorkerThread { get; set; }
         public string ConnectionId { get; set; }
-        public ContextService ContextService { get; set; }
 
         public List<string> ConsoleLog { get; set; }
         public List<ChatMessage> ChatLog { get; set; }
-        public List<ChatMessage> ChatMsgLog { get; set; }
         public List<Giveaway> Giveaways { get; set; }
         public List<string> Channelmods { get; set; }
         public Dictionary<string, int> CommandsUsed { get; set; }
@@ -51,6 +49,7 @@ namespace YTBot.Models
             Polls = new List<int>();
             ModsControlSongrequest = false;
             RRulette = null;
+
             // initialize last russian run
             LastRussian = DateTime.Now.AddMinutes(-10);
             SongRequests = new List<PlayListItem>();

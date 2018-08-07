@@ -25,7 +25,9 @@ namespace BeeBot
                 "~/Scripts/bootstrap-toggle.js",
                 "~/Scripts/respond.js",
                 "~/Scripts/chartist.js",
+                "~/Scripts/jquery.sticky.js",
                 "~/Scripts/jquery.easy-autocomplete.js",
+                "~/Scripts/easytimer.min.js",
                 "~/Scripts/jquery.amaran.min.js"));
 
             bundles.Add(new ScriptBundle("~/bundles/signalr").Include(

@@ -1,117 +1,469 @@
-﻿@model IOrderedEnumerable<YTBot.Models.Trigger>
+﻿@using YTBot.Models
+@model IOrderedEnumerable<YTBot.Models.Trigger>
 
 <h2>Triggers</h2>
 <hr />
 <div class="card card-body bg-light">
-<div class="triggers">
-    @if (Model.Any())
+    <div class="triggers">
+
+        <ul class="nav nav-tabs" id="myTab" role="tablist">
+            <li class="nav-item">
+                <a class="nav-link active" id="messages-tab" data-toggle="tab" href="#messages" role="tab" aria-controls="home" aria-selected="true">Messages</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="builtin-tab" data-toggle="tab" href="#builtin" role="tab" aria-controls="profile" aria-selected="false">System</a>
+            </li>
+        </ul>
+        <div class="tab-content mb-3" id="tabContent">
+            <div class="tab-pane fade show active ml-1 mt-2" id="messages" role="tabpanel" aria-labelledby="messages-tab">
+                    <div class="row mb-1 ">
+                        <div class="col-md-2">
+                            <p>Trigger name</p>
+                        </div>
+                        <div class="col-md-4">
+                            <p>Response</p>
+                        </div>
+                        <div class="col-md-1 mt-2 mb-3">
+                        </div>
+                        <div class="col-md-1 mt-2 mb-3">
+                        </div>
+                        <div class="col-md-1 mt-2 mb-3">
+                        </div>
+                        <div class="col-md-1 mt-2 mb-3">
+                        </div>
+                    </div>
+
+                    @foreach (var trigger in Model.Where(t => t.TriggerType == TriggerType.Message))
+                    {
+                        <div class="row mb-1 trigger">
+                            <form class="col-md-12 row trigger_@trigger.Id">
+                                <div class="col-md-2">
+                                    <input name="triggerid" class="form-control dontshow triggerid" value="@trigger.Id" />
+                                    <input name="triggertype" class="form-control dontshow triggertype" value="@trigger.TriggerType" />
+                                    <input name="triggername" class="form-control triggername" value="@trigger.TriggerName" />
+
+                                </div>
+                                <div class="col-md-4">
+                                    <textarea class="form-control triggerresponse" name="triggerresponse">@trigger.TriggerResponse</textarea>
+                                </div>
+                                <div class="col-md-1 mt-2 mb-3">
+                                    <div class="pretty p-switch">
+                                        <input class=" modscantrigger" type="checkbox" value="" id="modscantrigger_@trigger.Id" name="modscantrigger" @(Convert.ToBoolean(trigger.ModCanTrigger) == true ? "checked='checked'" : string.Empty)>
+                                        <div class="state p-primary">
+                                            <label class="" for="modscantrigger_@trigger.Id">
+                                                Mod
+                                            </label>
+                                        </div>
+
+                                    </div>
+                                </div>
+                                <div class="col-md-1 mt-2 mb-3">
+                                    <div class="pretty p-switch">
+                                        <input class=" subcantrigger" type="checkbox" value="" id="subcantrigger_@trigger.Id" name="subcantrigger" @(Convert.ToBoolean(trigger.SubCanTrigger) == true ? "checked='checked'" : string.Empty)>
+                                        <div class="state p-primary">
+                                            <label class="" for="subcantrigger_@trigger.Id">
+                                                Sub
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-1 mt-2 mb-3">
+                                    <div class="pretty p-switch">
+                                        <input class=" viewercantrigger" type="checkbox" value="" id="viewercantrigger_@trigger.Id" name="viewercantrigger" @(Convert.ToBoolean(trigger.ViewerCanTrigger) == true ? "checked='checked'" : string.Empty)>
+                                        <div class="state p-primary">
+                                            <label class="" for="viewercantrigger_@trigger.Id">
+                                                Viewer
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-1 mt-2 mb-3">
+                                    <div class="pretty p-switch">
+
+                                        <input class=" triggeractive" type="checkbox" value="" id="triggeractive_@trigger.Id" name="triggeractive" @(Convert.ToBoolean(trigger.Active) == true ? "checked='checked'" : string.Empty)>
+                                        <div class="state p-primary">
+                                            <label class="" for="triggeractive_@trigger.Id">
+                                                Active
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-2">
+                                    <button type="button" class="btn btn-sm btn-warning removetriggerbtn" onclick="deleteTrigger(this)"><i class="fa fa-times"></i> Delete</button>
+                                    <button type="button" class="btn btn-sm btn-light savetriggerbtn" onclick="saveTrigger(this)"><i class="fa fa-save"></i> Save</button>
+                                </div>
+                            </form>
+
+                        </div>
+                    }
+                <div class="rowplaceholder"></div>
+
+                <div class="row">
+                    <div class="col-md-12 mt-3">
+                        <button type="button" class="btn btn-secondary newtriggerbtn"><i class="fa fa-plus"></i> Create trigger</button>
+                    </div>
+                </div>
+
+                </div>
+            <div class="tab-pane fade ml-1 mt-2" id="builtin" role="tabpanel" aria-labelledby="builtin-tab">
+                <div class="row mb-1 ">
+                    <div class="col-md-2">
+                        <p>Trigger name</p>
+                    </div>
+                    <div class="col-md-4">
+                        <p>Description</p>
+                    </div>
+                    <div class="col-md-1 mt-2 mb-3">
+                    </div>
+                    <div class="col-md-1 mt-2 mb-3">
+                    </div>
+                    <div class="col-md-1 mt-2 mb-3">
+                    </div>
+                    <div class="col-md-1 mt-2 mb-3">
+                    </div>
+
+
+                </div>
+                <h4>Built-in</h4>
+                @foreach (var tr1 in Model.Where(t => t.TriggerType == TriggerType.BuiltIn))
     {
-        <div class="row mb-1 ">
-            <div class="col-md-2">
-                <p>Trigger name</p>
-            </div>
-            <div class="col-md-4">
-                <p>Response</p>
-            </div>
+            <div class="row mb-1 trigger">
+                <form class="col-md-12 row trigger_@tr1.Id">
+                    <div class="col-md-2">
+                        <input name="triggerid" class="form-control dontshow triggerid" value="@tr1.Id" />
+                        <input name="triggertype" class="form-control dontshow triggertype" value="@tr1.TriggerType" />
+                        <input name="triggername" class="form-control triggername" disabled value="@tr1.TriggerName" />
 
-            <div class="col-md-1 mt-2 mb-3">
+                    </div>
+                    <div class="col-md-4">
+                        <textarea class="form-control triggerresponse" disabled  name="triggerresponse">@tr1.TriggerResponse</textarea>
+                    </div>
+                    <div class="col-md-1 mt-2 mb-3">
+                        <div class="pretty p-switch">
+                            <input class=" modscantrigger" type="checkbox" value="" id="modscantrigger_@tr1.Id" name="modscantrigger" @(Convert.ToBoolean(tr1.ModCanTrigger) == true ? "checked='checked'" : string.Empty)>
+                            <div class="state p-primary">
+                                <label class="" for="modscantrigger_@tr1.Id">
+                                    Mod
+                                </label>
+                            </div>
+
+                        </div>
+                    </div>
+                    <div class="col-md-1 mt-2 mb-3">
+                        <div class="pretty p-switch">
+                            <input class=" subcantrigger" type="checkbox" value="" id="subcantrigger_@tr1.Id" name="subcantrigger" @(Convert.ToBoolean(tr1.SubCanTrigger) == true ? "checked='checked'" : string.Empty)>
+                            <div class="state p-primary">
+                                <label class="" for="subcantrigger_@tr1.Id">
+                                    Sub
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-1 mt-2 mb-3">
+                        <div class="pretty p-switch">
+                            <input class=" viewercantrigger" type="checkbox" value="" id="viewercantrigger_@tr1.Id" name="viewercantrigger" @(Convert.ToBoolean(tr1.ViewerCanTrigger) == true ? "checked='checked'" : string.Empty)>
+                            <div class="state p-primary">
+                                <label class="" for="viewercantrigger_@tr1.Id">
+                                    Viewer
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-1 mt-2 mb-3">
+                        <div class="pretty p-switch">
+
+                            <input class=" triggeractive" type="checkbox" value="" id="triggeractive_@tr1.Id" name="triggeractive" @(Convert.ToBoolean(tr1.Active) == true ? "checked='checked'" : string.Empty)>
+                            <div class="state p-primary">
+                                <label class="" for="triggeractive_@tr1.Id">
+                                    Active
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        
+                        <button type="button" class="btn btn-sm btn-light savetriggerbtn" onclick="saveTrigger(this)"><i class="fa fa-save"></i> Save</button>
+                    </div>
+                </form>
 
             </div>
-            <div class="col-md-1 mt-2 mb-3">
+}
+                <h4 class="mt-4 mb-3">Statistic</h4>
+                @foreach (var tr2 in Model.Where(t => t.TriggerType == TriggerType.Stat))
+    {
+            <div class="row mb-1 trigger">
+                <form class="col-md-12 row trigger_@tr2.Id">
+                    <div class="col-md-2">
+                        <input name="triggerid" class="form-control dontshow triggerid" value="@tr2.Id" />
+                        <input name="triggertype" class="form-control dontshow triggertype" value="@tr2.TriggerType" />
+                        <input name="triggername" class="form-control triggername" disabled value="@tr2.TriggerName" />
+
+                    </div>
+                    <div class="col-md-4">
+                        <textarea class="form-control triggerresponse" disabled  name="triggerresponse">@tr2.TriggerResponse</textarea>
+                    </div>
+                    <div class="col-md-1 mt-2 mb-3">
+                        <div class="pretty p-switch">
+                            <input class=" modscantrigger" type="checkbox" value="" id="modscantrigger_@tr2.Id" name="modscantrigger" @(Convert.ToBoolean(tr2.ModCanTrigger) == true ? "checked='checked'" : string.Empty)>
+                            <div class="state p-primary">
+                                <label class="" for="modscantrigger_@tr2.Id">
+                                    Mod
+                                </label>
+                            </div>
+
+                        </div>
+                    </div>
+                    <div class="col-md-1 mt-2 mb-3">
+                        <div class="pretty p-switch">
+                            <input class=" subcantrigger" type="checkbox" value="" id="subcantrigger_@tr2.Id" name="subcantrigger" @(Convert.ToBoolean(tr2.SubCanTrigger) == true ? "checked='checked'" : string.Empty)>
+                            <div class="state p-primary">
+                                <label class="" for="subcantrigger_@tr2.Id">
+                                    Sub
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-1 mt-2 mb-3">
+                        <div class="pretty p-switch">
+                            <input class=" viewercantrigger" type="checkbox" value="" id="viewercantrigger_@tr2.Id" name="viewercantrigger" @(Convert.ToBoolean(tr2.ViewerCanTrigger) == true ? "checked='checked'" : string.Empty)>
+                            <div class="state p-primary">
+                                <label class="" for="viewercantrigger_@tr2.Id">
+                                    Viewer
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-1 mt-2 mb-3">
+                        <div class="pretty p-switch">
+
+                            <input class=" triggeractive" type="checkbox" value="" id="triggeractive_@tr2.Id" name="triggeractive" @(Convert.ToBoolean(tr2.Active) == true ? "checked='checked'" : string.Empty)>
+                            <div class="state p-primary">
+                                <label class="" for="triggeractive_@tr2.Id">
+                                    Active
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                         
+                        <button type="button" class="btn btn-sm btn-light savetriggerbtn" onclick="saveTrigger(this)"><i class="fa fa-save"></i> Save</button>
+                    </div>
+                </form>
 
             </div>
-            <div class="col-md-1 mt-2 mb-3">
+}
+                <h4 class="mt-4 mb-3">Loyalty</h4>
+                @foreach (var tr3 in Model.Where(t => t.TriggerType == TriggerType.Loyalty))
+    {
+            <div class="row mb-1 trigger">
+                <form class="col-md-12 row trigger_@tr3.Id">
+                    <div class="col-md-2">
+                        <input name="triggerid" class="form-control dontshow triggerid" value="@tr3.Id" />
+                        <input name="triggertype" class="form-control dontshow triggertype" value="@tr3.TriggerType" />
+                        <input name="triggername" class="form-control triggername" disabled value="@tr3.TriggerName" />
+
+                    </div>
+                    <div class="col-md-4">
+                        <textarea class="form-control triggerresponse" disabled  name="triggerresponse">@tr3.TriggerResponse</textarea>
+                    </div>
+                    <div class="col-md-1 mt-2 mb-3">
+                        <div class="pretty p-switch">
+                            <input class=" modscantrigger" type="checkbox" value="" id="modscantrigger_@tr3.Id" name="modscantrigger" @(Convert.ToBoolean(tr3.ModCanTrigger) == true ? "checked='checked'" : string.Empty)>
+                            <div class="state p-primary">
+                                <label class="" for="modscantrigger_@tr3.Id">
+                                    Mod
+                                </label>
+                            </div>
+
+                        </div>
+                    </div>
+                    <div class="col-md-1 mt-2 mb-3">
+                        <div class="pretty p-switch">
+                            <input class=" subcantrigger" type="checkbox" value="" id="subcantrigger_@tr3.Id" name="subcantrigger" @(Convert.ToBoolean(tr3.SubCanTrigger) == true ? "checked='checked'" : string.Empty)>
+                            <div class="state p-primary">
+                                <label class="" for="subcantrigger_@tr3.Id">
+                                    Sub
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-1 mt-2 mb-3">
+                        <div class="pretty p-switch">
+                            <input class=" viewercantrigger" type="checkbox" value="" id="viewercantrigger_@tr3.Id" name="viewercantrigger" @(Convert.ToBoolean(tr3.ViewerCanTrigger) == true ? "checked='checked'" : string.Empty)>
+                            <div class="state p-primary">
+                                <label class="" for="viewercantrigger_@tr3.Id">
+                                    Viewer
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-1 mt-2 mb-3">
+                        <div class="pretty p-switch">
+
+                            <input class=" triggeractive" type="checkbox" value="" id="triggeractive_@tr3.Id" name="triggeractive" @(Convert.ToBoolean(tr3.Active) == true ? "checked='checked'" : string.Empty)>
+                            <div class="state p-primary">
+                                <label class="" for="triggeractive_@tr3.Id">
+                                    Active
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                         
+                        <button type="button" class="btn btn-sm btn-light savetriggerbtn" onclick="saveTrigger(this)"><i class="fa fa-save"></i> Save</button>
+                    </div>
+                </form>
 
             </div>
-            <div class="col-md-1 mt-2 mb-3">
+}
+                <h4 class="mt-4 mb-3">Games</h4>
+                @foreach (var tr4 in Model.Where(t => t.TriggerType == TriggerType.Game))
+    {
+            <div class="row mb-1 trigger">
+                <form class="col-md-12 row trigger_@tr4.Id">
+                    <div class="col-md-2">
+                        <input name="triggerid" class="form-control dontshow triggerid" value="@tr4.Id" />
+                        <input name="triggertype" class="form-control dontshow triggertype" value="@tr4.TriggerType" />
+                        <input name="triggername" class="form-control triggername" disabled value="@tr4.TriggerName" />
 
+                    </div>
+                    <div class="col-md-4">
+                        <textarea class="form-control triggerresponse" disabled  name="triggerresponse">@tr4.TriggerResponse</textarea>
+                    </div>
+                    <div class="col-md-1 mt-2 mb-3">
+                        <div class="pretty p-switch">
+                            <input class=" modscantrigger" type="checkbox" value="" id="modscantrigger_@tr4.Id" name="modscantrigger" @(Convert.ToBoolean(tr4.ModCanTrigger) == true ? "checked='checked'" : string.Empty)>
+                            <div class="state p-primary">
+                                <label class="" for="modscantrigger_@tr4.Id">
+                                    Mod
+                                </label>
+                            </div>
+
+                        </div>
+                    </div>
+                    <div class="col-md-1 mt-2 mb-3">
+                        <div class="pretty p-switch">
+                            <input class=" subcantrigger" type="checkbox" value="" id="subcantrigger_@tr4.Id" name="subcantrigger" @(Convert.ToBoolean(tr4.SubCanTrigger) == true ? "checked='checked'" : string.Empty)>
+                            <div class="state p-primary">
+                                <label class="" for="subcantrigger_@tr4.Id">
+                                    Sub
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-1 mt-2 mb-3">
+                        <div class="pretty p-switch">
+                            <input class=" viewercantrigger" type="checkbox" value="" id="viewercantrigger_@tr4.Id" name="viewercantrigger" @(Convert.ToBoolean(tr4.ViewerCanTrigger) == true ? "checked='checked'" : string.Empty)>
+                            <div class="state p-primary">
+                                <label class="" for="viewercantrigger_@tr4.Id">
+                                    Viewer
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-1 mt-2 mb-3">
+                        <div class="pretty p-switch">
+
+                            <input class=" triggeractive" type="checkbox" value="" id="triggeractive_@tr4.Id" name="triggeractive" @(Convert.ToBoolean(tr4.Active) == true ? "checked='checked'" : string.Empty)>
+                            <div class="state p-primary">
+                                <label class="" for="triggeractive_@tr4.Id">
+                                    Active
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                         
+                        <button type="button" class="btn btn-sm btn-light savetriggerbtn" onclick="saveTrigger(this)"><i class="fa fa-save"></i> Save</button>
+                    </div>
+                </form>
+
+            </div>
+}
+                <h4 class="mt-4 mb-3">Songrequests</h4>
+                @foreach (var tr5 in Model.Where(t => t.TriggerType == TriggerType.PlayList))
+    {
+            <div class="row mb-1 trigger">
+                <form class="col-md-12 row trigger_@tr5.Id">
+                    <div class="col-md-2">
+                        <input name="triggerid" class="form-control dontshow triggerid" value="@tr5.Id" />
+                        <input name="triggertype" class="form-control dontshow triggertype" value="@tr5.TriggerType" />
+                        <input name="triggername" class="form-control triggername" disabled value="@tr5.TriggerName" />
+
+                    </div>
+                    <div class="col-md-4">
+                        <textarea class="form-control triggerresponse" disabled  name="triggerresponse">@tr5.TriggerResponse</textarea>
+                    </div>
+                    <div class="col-md-1 mt-2 mb-3">
+                        <div class="pretty p-switch">
+                            <input class=" modscantrigger" type="checkbox" value="" id="modscantrigger_@tr5.Id" name="modscantrigger" @(Convert.ToBoolean(tr5.ModCanTrigger) == true ? "checked='checked'" : string.Empty)>
+                            <div class="state p-primary">
+                                <label class="" for="modscantrigger_@tr5.Id">
+                                    Mod
+                                </label>
+                            </div>
+
+                        </div>
+                    </div>
+                    <div class="col-md-1 mt-2 mb-3">
+                        <div class="pretty p-switch">
+                            <input class=" subcantrigger" type="checkbox" value="" id="subcantrigger_@tr5.Id" name="subcantrigger" @(Convert.ToBoolean(tr5.SubCanTrigger) == true ? "checked='checked'" : string.Empty)>
+                            <div class="state p-primary">
+                                <label class="" for="subcantrigger_@tr5.Id">
+                                    Sub
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-1 mt-2 mb-3">
+                        <div class="pretty p-switch">
+                            <input class=" viewercantrigger" type="checkbox" value="" id="viewercantrigger_@tr5.Id" name="viewercantrigger" @(Convert.ToBoolean(tr5.ViewerCanTrigger) == true ? "checked='checked'" : string.Empty)>
+                            <div class="state p-primary">
+                                <label class="" for="viewercantrigger_@tr5.Id">
+                                    Viewer
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-1 mt-2 mb-3">
+                        <div class="pretty p-switch">
+
+                            <input class=" triggeractive" type="checkbox" value="" id="triggeractive_@tr5.Id" name="triggeractive" @(Convert.ToBoolean(tr5.Active) == true ? "checked='checked'" : string.Empty)>
+                            <div class="state p-primary">
+                                <label class="" for="triggeractive_@tr5.Id">
+                                    Active
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                         
+                        <button type="button" class="btn btn-sm btn-light savetriggerbtn" onclick="saveTrigger(this)"><i class="fa fa-save"></i> Save</button>
+                    </div>
+                </form>
+
+            </div>
+}
+            </div>
             </div>
 
 
         </div>
-    }
-
-    @foreach (var trigger in Model)
-    {
-        <div class="row mb-1 trigger">
-            <form class="col-md-12 row trigger_@trigger.Id">
-                <div class="col-md-2">
-                    <input name="triggerid" class="form-control dontshow triggerid" value="@trigger.Id" />
-                    <input name="triggername" class="form-control triggername" value="@trigger.TriggerName" />
-
-                </div>
-                <div class="col-md-4">
-                    <textarea class="form-control triggerresponse" name="triggerresponse">@trigger.TriggerResponse</textarea>
-                </div>
-                <div class="col-md-1 mt-2 mb-3">
-                    <div class="pretty p-switch">
-                        <input class=" modscantrigger" type="checkbox" value="" id="modscantrigger_@trigger.Id" name="modscantrigger" @(Convert.ToBoolean(trigger.ModCanTrigger) == true ? "checked='checked'" : string.Empty)>
-                        <div class="state p-primary">
-                            <label class="" for="modscantrigger_@trigger.Id">
-                                Mod
-                            </label>
-                        </div>
-
-                    </div>
-                </div>
-                <div class="col-md-1 mt-2 mb-3">
-                    <div class="pretty p-switch">
-                        <input class=" subcantrigger" type="checkbox" value="" id="subcantrigger_@trigger.Id" name="subcantrigger" @(Convert.ToBoolean(trigger.SubCanTrigger) == true ? "checked='checked'" : string.Empty)>
-                        <div class="state p-primary">
-                            <label class="" for="subcantrigger_@trigger.Id">
-                                Sub
-                            </label>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-1 mt-2 mb-3">
-                    <div class="pretty p-switch">
-                        <input class=" viewercantrigger" type="checkbox" value="" id="viewercantrigger_@trigger.Id" name="viewercantrigger" @(Convert.ToBoolean(trigger.ViewerCanTrigger) == true ? "checked='checked'" : string.Empty)>
-                        <div class="state p-primary">
-                            <label class="" for="viewercantrigger_@trigger.Id">
-                                Viewer
-                            </label>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-1 mt-2 mb-3">
-                    <div class="pretty p-switch">
-
-                        <input class=" triggeractive" type="checkbox" value="" id="triggeractive_@trigger.Id" name="triggeractive" @(Convert.ToBoolean(trigger.Active) == true ? "checked='checked'" : string.Empty)>
-                        <div class="state p-primary">
-                            <label class="" for="triggeractive_@trigger.Id">
-                                Active
-                            </label>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-2">
-                    <button type="button" class="btn btn-sm btn-warning removetriggerbtn" onclick="deleteTrigger(this)"><i class="fa fa-times"></i> Delete</button>
-                    <button type="button" class="btn btn-sm btn-light savetriggerbtn" onclick="saveTrigger(this)"><i class="fa fa-save"></i> Save</button>
-                </div>
-            </form>
-
-        </div>
-    }
 </div>
-<div class="rowplaceholder"></div>
 
-<div class="row">
-    <div class="col-md-12 mt-3">
-        <button type="button" class="btn btn-secondary newtriggerbtn"><i class="fa fa-plus"></i> Create trigger</button>
-    </div>
-</div>
-</div>
+    
+
 
 
 <div class="row mb-1 triggertemplate dontshow">
     <form class="col-md-12 row trigger_0">
         <div class="col-md-2">
             <input name="triggerid" class="form-control dontshow triggerid" value="0" />
+            <input name="triggertype" class="form-control dontshow triggertype" value="@TriggerType.Message" />
             <input name="triggername" class="form-control triggername" value="" />
         </div>
         <div class="col-md-4">
-            <textarea class="form-control triggerresponse" name="triggerresponse"></textarea>
+            <textarea class="form-control triggerresponse" disabled  name="triggerresponse"></textarea>
         </div>
         <div class="col-md-1 mt-2 mb-3">
             <div class="pretty p-switch">
@@ -154,7 +506,7 @@
             </div>
         </div>
         <div class="col-md-2">
-            <button type="button" class="btn btn-sm btn-warning removetriggerbtn" onclick="deleteTrigger(this)"><i class="fa fa-times"></i> Delete</button>
+             
             <button type="button" class="btn btn-sm btn-light savetriggerbtn" onclick="saveTrigger(this)"><i class="fa fa-save"></i> Save</button>
         </div>
     </form>
@@ -185,13 +537,14 @@
 
         var id = $(elem).parent().parent().find(".triggerid").val();
         var name = $(elem).parent().parent().find(".triggername").val();
+        var type = $(elem).parent().parent().find(".triggertype").val();
         var response = $(elem).parent().parent().find(".triggerresponse").val();
         var mods = $(elem).parent().parent().find(".modscantrigger").prop('checked');
         var viewer = $(elem).parent().parent().find(".viewercantrigger").prop('checked');
         var sub = $(elem).parent().parent().find(".subcantrigger").prop('checked');
         var active = $(elem).parent().parent().find(".triggeractive").prop('checked');
 
-        twitchHub.server.saveTrigger(id, name, response, mods, sub, viewer, active);
+        twitchHub.server.saveTrigger(id, name, response, mods, sub, viewer, active, type);
 
     }
 
@@ -202,7 +555,7 @@
             $(elem).closest(".trigger").remove();
             return;
         }
-            
+
 
         twitchHub.server.deleteTrigger(id);
     }

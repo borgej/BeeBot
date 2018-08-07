@@ -28,11 +28,19 @@ namespace YTBot.Models
 
         // VideoOnDemand trigger video url
         public string VideoUrl { get; set; }
-        
 
+        public bool CanTrigger(StreamViewer user)
+        {
+            bool viewer = Convert.ToBoolean(ViewerCanTrigger);
+            bool follower = FollowerCanTrigger == user.Follower;
+            bool sub = SubCanTrigger == user.Subscriber;
+            bool mod = ModCanTrigger == user.Mod;
+
+            return (viewer | follower | sub | mod);
+        }
     }
 
-
+    
     /// <summary>
     /// Trigger Type
     /// </summary>
@@ -44,6 +52,9 @@ namespace YTBot.Models
         Game = 3,
         Loyalty = 4,
         VideoOnDemand = 5,
+        PlayList = 6,
         BuiltIn = 9,
     }
+
+
 }

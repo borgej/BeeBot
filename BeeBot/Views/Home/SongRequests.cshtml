@@ -24,6 +24,7 @@
                 <div class="btn-group text-center pb-2">
                     <button class="btn btn-lg btn-outline-secondary" onclick="stopYt();"><i class="fa fa-stop"></i></button>
                     <button class="btn btn-lg btn-outline-secondary" onclick="playYt();"><i class="fa fa-play"></i></button>
+                    <button class="btn btn-lg btn-outline-secondary" onclick="pauseYt();"><i class="fa fa-pause"></i></button>
                     <button class="btn btn-lg btn-outline-secondary" onclick="prevYt();"><i class="fa fa-backward"></i></button>
                     <button class="btn btn-lg btn-outline-secondary" onclick="nextYt();"><i class="fa fa-forward"></i></button>
                 </div>
@@ -68,6 +69,7 @@
 
 <script type="text/javascript">
     var ytplayer;
+    var isPaused = false;
     var twitchHub = $.connection.twitchHub;
 
     function VideoAlreadyInList(vid) {
@@ -144,11 +146,17 @@
         twitchHub.client.stopSong = function (ret) {
             stopYt();
         }
+        twitchHub.client.pauseSong = function (ret) {
+            pauseYt();
+        }
         twitchHub.client.nextSong = function (ret) {
             nextYt();
         }
         twitchHub.client.prevSong = function (ret) {
             prevYt();
+        }
+        twitchHub.client.volume = function (ret) {
+            volume(ret);
         }
 
         twitchHub.client.deleteSongAck = function(response) {
@@ -377,6 +385,11 @@
     }
 
     function playYt() {
+        if (isPaused) {
+            ytplayer.playVideo();
+            isPaused = false;
+            return;
+        }
         var $video = getLastPlayedVideo();
         if ($video.length == 0) {
             $video = getFirstUnplayedVideo();
@@ -387,8 +400,16 @@
         setThisAsPlaying($video);
     }
 
-    function stopYt() {
+    function pauseYt() {
+        var $video = getLastPlayedVideo();
+        isPaused = true;
+        console.log("Paused: " + "//www.youtube.com/embed/" + $video.attr("id") + "?rel=0&autoplay=1");
+        ytplayer.pauseVideo();
+    }
 
+    function stopYt() {
+        var $video = getLastPlayedVideo();
+        console.log("Stopped: " + "//www.youtube.com/embed/" + $video.attr("id") + "?rel=0&autoplay=1");
         ytplayer.stopVideo();
     }
 
@@ -401,7 +422,7 @@
             }
         }
         if ($video.length != 0) {
-            console.log("Playing: " + "//www.youtube.com/embed/" + $video.attr("id") + "?rel=0&autoplay=1");
+            console.log("Playing(Next): " + "//www.youtube.com/embed/" + $video.attr("id") + "?rel=0&autoplay=1");
             ytplayer.loadVideoById($video.attr("id"));
             resetAllPlaying();
             setThisAsPlaying($video);
@@ -414,10 +435,15 @@
         if ($video.length === 0) {
             return;
         }
-        console.log("Playing: " + "//www.youtube.com/embed/" + $video.attr("id") + "?rel=0&autoplay=1");
+        console.log("Playing(Prev): " + "//www.youtube.com/embed/" + $video.attr("id") + "?rel=0&autoplay=1");
         ytplayer.loadVideoById($video.attr("id"));
         resetAllPlaying();
         setThisAsPlaying($video);
+    }
+
+    function volume(volumeLevel) {
+        console.log("Volume set to: " + volumeLevel);
+        ytplayer.setVolume(volumeLevel);
     }
 
 </script>

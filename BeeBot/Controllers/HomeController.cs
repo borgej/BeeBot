@@ -274,5 +274,23 @@ namespace BeeBot.Controllers
 
             return View(userBotSettings);
         }
+
+        public ActionResult TriggerPlay()
+        {
+            var userBotSettings = ContextService.GetBotUserSettingsForUser(ContextService.GetUser(User.Identity.Name));
+
+            ViewBag.Channel = userBotSettings.BotChannel;
+
+            return View(userBotSettings);
+        }
+
+        public ActionResult Desktop()
+        {
+            var userBotSettings = ContextService.GetBotUserSettingsForUser(ContextService.GetUser(User.Identity.Name));
+
+            ViewBag.Channel = userBotSettings.BotChannel;
+
+            return View(userBotSettings);
+        }
     }
 }

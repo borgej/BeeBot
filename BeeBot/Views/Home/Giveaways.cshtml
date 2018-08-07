@@ -113,6 +113,16 @@
                     <button type="button" class="btn btn-info closeButton" onclick="closeGiveaway(this);"><i class="fa fa-stop-circle"></i> Close</button>
                     <button type="button" class="btn btn-primary drawButton" onclick="drawGiveaway(this, false);"><i class="fa fa-bullseye"></i> Draw winner</button>
                     <button type="button" class="btn btn-success drawAndMsgChatButton" onclick="drawGiveaway(this, true);"><i class="fa fa-bullseye"></i> Draw and post</button>
+                    <span class="mr-5"></span>
+                    <button type="button" class="btn btn-light rerollButton" onclick="redrawGiveaway(this, false);"><i class="fa fa-bullseye"></i> Redraw</button>
+                    <button type="button" class="btn btn-secondary rerollAndMsgChatButton" onclick="redrawGiveaway(this, true);"><i class="fa fa-bullseye"></i> Redraw and post</button>
+                </div>
+            </div>
+            <div class="form-group row winnerchatDiv dontshow">
+                <div class="col">
+                    <h5>Winner chat - <span class="winnersChatCountdownDiv badge badge-secondary badge-pill">00:00</span></h5>
+                    
+                    <div class="card card-body bg-light winnerchat"></div>
                 </div>
             </div>
         </div>
@@ -152,6 +162,11 @@
     function drawGiveaway(ga, postToChat) {
         var id = $(ga).closest(".giveaway").data("id");
         twitchHub.server.drawGiveaway(id, postToChat);
+    }
+
+    function redrawGiveaway(ga, postToChat) {
+        var id = $(ga).closest(".giveaway").data("id");
+        twitchHub.server.redrawGiveaway(id, postToChat);
     }
 
     function saveNewGiveaway(elem) {
@@ -207,6 +222,13 @@
         giveaway.find(".winner").empty();
     }
 
+    // Add this to winners chat window
+    function updateWinnerChat(ga, chatMsg) {
+        var giveaway = $("[data-id='" + ga.Id + "']");
+        var message = "<span style='display=inline;'>" + GetTimeNow() + " <span style='color: "+ chatMsg.ColorHex + ";'>" + chatMsg.DisplayName + "</span>: " + chatMsg.Message + "<br></span>";
+        giveaway.find(".winnerchat").append(message);
+    }
+
     // Reloades all participants in giveaway
     function updateGiveaway(ga) {
         var giveaway = $("[data-id='" + ga.Id + "']");
@@ -218,6 +240,14 @@
         try {
             giveaway.find(".participantsCount").html(ga.Participants.length);
             giveaway.find(".winnersCount").html(ga.Winners.length);
+            
+            // start timer and show winner chat if winners
+            if (ga.Winners.length > 0) {
+                giveaway.find(".winnerchatDiv").removeClass("dontshow");
+                startGiveAwayTimer(giveaway.find(".winnersChatCountdownDiv"));
+            }
+            
+
         } catch (e) {
             giveaway.find(".participantsCount").html("0");
             giveaway.find(".winnersCount").html("0");
@@ -292,6 +322,32 @@
         });
     }
 
+    function startGiveAwayTimer($element) {
+        var timer = new Timer();
+        timer.start();
+        timer.addEventListener('secondsUpdated',
+            function(e) {
+                $element.html(timer.getTimeValues().toString());
+            });
+    }
+
+    // Get Time.now as string
+    function GetTimeNow() {
+        var d = new Date();
+        var h = addZero(d.getHours());
+        var m = addZero(d.getMinutes());
+        var s = addZero(d.getSeconds());
+        return h + ":" + m + ":" + s;
+    }
+
+    // add leading zero to number 01-09
+    function addZero(i) {
+        if (i < 10) {
+            i = "0" + i;
+        }
+        return i;
+    }
+
     (function () {
 
         $.connection.hub.logging = true;
@@ -315,6 +371,10 @@
         twitchHub.client.refreshGiveaway = function (ret) {
             updateGiveaway(ret);
         };
+
+        twitchHub.client.winnerChatAdd = function(ga, chatmsg) {
+            updateWinnerChat(ga, chatmsg);
+        }
 
     })();
 

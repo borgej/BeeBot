@@ -27,5 +27,6 @@ namespace YTBot.Models
         [StringLength(128)]
         public string Channel { get; set; }
         public DateTime? LastGamble { get; set; }
+        public DateTime? LastRoulette { get; set; }
     }
 }

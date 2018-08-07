@@ -1,0 +1,139 @@
+﻿@model BeeBot.Models.BotUserSettings
+
+    <h2>Trigger-videos</h2>
+    <hr />
+
+<div>
+
+    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#triggerModal">
+        Open
+    </button>
+
+
+    <!-- The Modal -->
+    <div class="modal" id="triggerModal">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content">
+
+                <!-- Modal Header -->
+                <div class="modal-header">
+                    <h4 class="modal-title">Trigger player</h4>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+
+                <!-- Modal body -->
+                <div class="modal-body">
+                    <div id="ytplayerTrigger" class="pb-2"></div>
+                </div>
+
+                <!-- Modal footer -->
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-light closePlayer" data-dismiss="modal">Close</button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+</div>
+
+
+
+<script type="text/javascript">
+    var triggerplayer;
+    var twitchHub = $.connection.twitchHub;
+
+    $(document).ready(function () {
+        $(".closePlayer").click(function() {
+            stopTrigger();
+        });
+    });
+    
+
+    function playTrigger(trigger) {
+        triggerplayer.loadVideoById(trigger.VideoUrl);
+    }
+
+    function stopTrigger() {
+        triggerplayer.stop();
+    }
+
+    // Load the IFrame Player API code asynchronously.
+    var tag = document.createElement('script');
+    tag.src = "https://www.youtube.com/iframe_api";
+    var firstScriptTag = document.getElementsByTagName('script')[0];
+    firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+
+    // Replace the 'ytplayer' element with an <iframe> and
+    // YouTube player after the API code downloads.
+    function onYouTubePlayerAPIReady() {
+        triggerplayer = new YT.Player('ytplayerTrigger', {
+            height: '375',
+            width: '100%',
+            videoId: 'C0DPdy98e4c',
+            events: {
+                'onReady': onPlayerReady,
+                'onStateChange': onPlayerStateChange,
+                'onPlaybackQualityChange': onPlayerPlaybackQualityChange,
+                'onPlaybackRateChange': onPlayerPlaybackRateChange,
+                'onError': onPlayerError,
+                'onApiChange': onPlayerApiChange
+            }
+        });
+    }
+
+    function onPlayerStateChange(event) {
+        console.log("onPlayerStateChange()");
+        console.log('State is:', event.data);
+        var playerStatus = event.data;
+        console.log("playerStatus = " + playerStatus);
+        if (playerStatus == -1) {
+            // unstarted = gray
+            console.log("ytplayerTrigger: unstarted");
+        } else if (playerStatus == 0) {
+            // ended = yellow
+            console.log("ytplayerTrigger: ended");
+            nextYt();
+        } else if (playerStatus == 1) {
+            // playing
+            console.log("ytplayerTrigger: playing");
+        } else if (playerStatus == 2) {
+            // paused = red
+            console.log("ytplayerTrigger: paused");
+        } else if (playerStatus == 3) {
+            // buffering = purple
+            console.log("ytplayerTrigger: buffering");
+        } else if (playerStatus == 5) {
+            // video cued = orange
+            console.log("ytplayerTrigger: cued");
+        }
+    }
+
+    function onPlayerReady() {
+        console.log('Video is ready to play');
+    }
+
+    function onPlayerPlaybackQualityChange(playbackQuality) {
+        console.log('playback quality changed to ' + playbackQuality.data);
+    }
+
+    function onPlayerPlaybackRateChange(playbackRate) {
+        console.log('playback rate changed to ' + playbackRate.data);
+    }
+
+    function onPlayerError(e) {
+        console.log('An error occurred: ' + e.data);
+    }
+
+    function onPlayerApiChange() {
+        console.log('The player API changed');
+    }
+
+    // Youtube player functions
+    twitchHub.client.playTrigger = function (ret) {
+        playTrigger();
+    }
+    twitchHub.client.stopTrigger = function (ret) {
+        stopTrigger();
+    }
+</script>
