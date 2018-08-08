@@ -16,7 +16,7 @@ Ps. Please dont snag my ClientId =P
 * Optimize database calls
 * Publish "giveaways closing" to chat
 * Add items to Dashboard
-* Polish Chat Stat
+* Style Chat Stat
 * Add StreamLabs API functionality
 
 
