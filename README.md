@@ -12,9 +12,13 @@ The plan is to finish "basis" functionality and host it for free for everyone th
 Ps. Please dont snag my ClientId =P
 
 ## TODO's
-* Add StreamLabs API functionality
-* Make the application Thread-Safe
+* Add system triggers on create new user
 * Optimize database calls
+* Publish "giveaways closing" to chat
+* Add items to Dashboard
+* Style Chat Stat
+* Add StreamLabs API functionality
+
 
 ## Requirements 
 * .Net Framework 4.6.1
