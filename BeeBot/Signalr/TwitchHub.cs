@@ -101,21 +101,22 @@ namespace BeeBot.Signalr
                 Client = tcc.Client
             };
 
-            if (!HasRunningThread())
+            try
             {
-               
-                var parameterizedThreadStart = new ParameterizedThreadStart(TrackLoyaltyAndTimers);
-                var newThread = new Thread(parameterizedThreadStart) {IsBackground = true};
-                newThread.Name = GetUsername();
-                AddThread(newThread);
-                newThread.Start(arg);
-            }
-            //else
-            //{
-            //    RemoveThread();
+                if (!HasRunningThread())
+                {
 
-            //}
-            
+                    var parameterizedThreadStart = new ParameterizedThreadStart(TrackLoyaltyAndTimers);
+                    var newThread = new Thread(parameterizedThreadStart) {IsBackground = true};
+                    newThread.Name = GetUsername();
+                    AddThread(newThread);
+                    newThread.Start(arg);
+                }
+            }
+            catch (Exception e)
+            {
+                ConsoleLog("Error on OnConnected(): " + e.Message);
+            }
 
             var user = ContextService.GetUser(GetUsername());
             BotUserSettings = ContextService.GetBotUserSettingsForUser(user);
@@ -1845,12 +1846,10 @@ namespace BeeBot.Signalr
 
             foreach (var user in streamUsers)
             {
-                var tmpUser = Api.Users.v5.GetUserByNameAsync(user.Username);
 
                 var t = new StreamViewer();
 
                 t.TwitchUsername = user.Username;
-                t.TwitchUserId = tmpUser.Result.Matches[0].Id;
 
                 if (users.All(u => u.TwitchUserId != t.TwitchUserId)) users.Add(t);
             }
