@@ -99,7 +99,7 @@ namespace YTBot.Services
                 switch (trigger.TriggerType)
                 {
                     case TriggerType.Message:
-                        TcContainer.Client.SendMessage(TcContainer.Channel, trigger.TriggerName);
+                        TcContainer.Client.SendMessage(TcContainer.Channel, trigger.TriggerResponse);
                         break;
                     case TriggerType.BuiltIn:
                         // !addpoll
@@ -329,7 +329,7 @@ namespace YTBot.Services
                         // !top
                         else if (trigger.TriggerName.Equals("top"))
                         {
-                            var regEx = Regex.Match(command.ArgumentsAsString.ToLower(), "!top\\s+(\\d+)");
+                            var regEx = Regex.Match(command.ArgumentsAsString.ToLower(), "(\\d+)");
 
                             var number = Convert.ToInt32(regEx.Groups[1].Value);
                             if (number > 10) number = 10;
@@ -464,9 +464,9 @@ namespace YTBot.Services
                                 else if (loyaltyAmount != null && sourceViewerLoyalty != null &&
                                          sourceViewerLoyalty.CurrentPoints >= loyaltyAmount)
                                 {
-                                    ContextService.AddLoyalty(ContextService.GetUser(sourceViewerName),
+                                    ContextService.AddLoyalty(User,
                                         command.ChatMessage.Channel.ToLower(), sourceViewerLoyalty, -loyaltyAmount);
-                                    ContextService.AddLoyalty(ContextService.GetUser(sourceViewerName),
+                                    ContextService.AddLoyalty(User,
                                         command.ChatMessage.Channel.ToLower(), destinationViewerLoyalty, loyaltyAmount);
 
                                     TwitchClient
@@ -543,8 +543,7 @@ namespace YTBot.Services
                                                     .SendMessage(TcContainer.Channel,
                                                         "/me " +
                                                         $"@{command.ChatMessage.DisplayName} rolled a sad {rolledNumber}, lost {gambleAmount} and now has {newAmount} {BotChannelSettings.Loyalty.LoyaltyName}!! #theSaltIsReal #rigged");
-                                                ContextService.AddLoyalty(
-                                                    ContextService.GetUser(User.UserName),
+                                                ContextService.AddLoyalty(User,
                                                     command.ChatMessage.Channel.ToLower(), sourceViewerLoyalty,
                                                     -gambleAmount);
                                             }
@@ -558,8 +557,7 @@ namespace YTBot.Services
                                                     .SendMessage(TcContainer.Channel, "/me " +
                                                                                       $"@{command.ChatMessage.DisplayName} rolled {rolledNumber}, won {gambleAmount * 2} and now has {newAmount} {BotChannelSettings.Loyalty.LoyaltyName}!");
 
-                                                ContextService.AddLoyalty(
-                                                    ContextService.GetUser(User.UserName),
+                                                ContextService.AddLoyalty(User,
                                                     command.ChatMessage.Channel.ToLower(), sourceViewerLoyalty,
                                                     gambleAmount);
                                             }
@@ -573,14 +571,12 @@ namespace YTBot.Services
                                                     .SendMessage(TcContainer.Channel, "/me " +
                                                                                       $"@{command.ChatMessage.DisplayName} did an epic roll, threw {rolledNumber}, won {gambleAmount * 10} and now has {newAmount} {BotChannelSettings.Loyalty.LoyaltyName}!! #houseCries");
 
-                                                ContextService.AddLoyalty(
-                                                    ContextService.GetUser(User.UserName),
+                                                ContextService.AddLoyalty(User,
                                                     command.ChatMessage.Channel.ToLower(), sourceViewerLoyalty,
                                                     gambleAmount * 3);
                                             }
 
-                                            ContextService.StampLastGamble(
-                                                ContextService.GetUser(User.UserName),
+                                            ContextService.StampLastGamble(User,
                                                 command.ChatMessage.Channel.ToLower(), sourceViewerLoyalty);
                                         }
                                     }

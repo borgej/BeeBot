@@ -52,7 +52,7 @@ namespace YTBot.Services
 
             // Check if user has botchannelsettings stored in db
             var bcs = GetBotChannelSettings(user);
-            if (bcs == null || (!bcs.Triggers.Any(t => t.TriggerName.Equals("help") && !bcs.Triggers.Any(tt => tt.TriggerName.Equals("commands")))))
+            if (bcs == null)
             {
                 SetInitialBotChannelSettings(user);
             }
@@ -105,7 +105,7 @@ namespace YTBot.Services
                     User = GetUser(user.UserName),
                     StreamViewers = new List<StreamViewer>(),
                     Timers = new List<Timer>(),
-                    Triggers = CreateInitialSystemTriggers(),
+                    Triggers = GetInitialSystemTriggers(),
                     Loyalty = new Loyalty(),
                     StreamGame = "",
                     StreamTitle = ""
@@ -115,29 +115,22 @@ namespace YTBot.Services
                 return newBcs;
             }
 
-            //var any = !bcs.Triggers.Any(t =>
-            //    t.TriggerName.Equals("help") && !bcs.Triggers.Any(tt => tt.TriggerName.Equals("commands")));
-            //if (any)
-            //{
-            //    var builtInTriggers = CreateInitialSystemTriggers();
-
-            //    foreach (var newTrigger in builtInTriggers)
-            //    {
-            //        try
-            //        {
-            //            SaveTrigger(newTrigger, bcs);
-            //        }
-            //        catch (Exception e)
-            //        {
-            //            break;
-            //        }
-            //    }
-            //}
-
             return bcs;
         }
 
-        private static List<Trigger> CreateInitialSystemTriggers()
+        public bool HasSystemTriggers(string username)
+        {
+            var bcs = GetBotChannelSettings(GetUser(username));
+
+            if (bcs.Triggers.Where(t => t.TriggerType != TriggerType.Message).Count() == 0)
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+        private static List<Trigger> GetInitialSystemTriggers()
         {
             var triggers = new List<Trigger>();
 
@@ -574,6 +567,23 @@ namespace YTBot.Services
             return triggers;
         }
 
+        public void AddSystemTriggers(string identityName)
+        {
+            var bcs = GetBotChannelSettings(GetUser(identityName));
+
+            var systemTriggers = GetInitialSystemTriggers();
+
+            foreach (var systemTrigger in systemTriggers)
+            {
+                if (!bcs.Triggers.Any(t => t.TriggerName.ToLower() == systemTrigger.TriggerName.ToLower()))
+                {
+                    bcs.Triggers.Add(systemTrigger);
+                }
+            }
+
+            Context.SaveChanges();
+        }
+
         public StreamViewer GetStreamViewer(string username, string channel, string twitchId, string twitchusername = null)
         {
             if (twitchusername == null)
@@ -665,6 +675,8 @@ namespace YTBot.Services
                 {
                     Context.BotUserSettings.Add(botUserSettings);
                 }
+
+
 
                 Context.SaveChanges();
             }
@@ -1271,5 +1283,7 @@ namespace YTBot.Services
                 disposableServiceProvider.Dispose();
             }
         }
+
+
     }
 }

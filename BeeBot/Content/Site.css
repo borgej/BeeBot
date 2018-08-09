@@ -279,28 +279,45 @@ songrequests {
     max-width: 85px !important;
 }
 
+.controlBox {
+    max-height: 500px;
+}
+
+.playlist {
+    overflow: scroll;
+    overflow-x: hidden;
+    max-height: 800px;
+}
+
 .playlistitem {
     margin-left: 4px;
     padding: 2px 2px 2px 2px;
     border: 1px #eff0f1 solid;
+    width: 98%
 }
 
-    .playlistitem:nth-of-type(even) {
-        background-color: #e6e6e6;
-    }
+.playlistitem:nth-of-type(even) {
+    background-color: #e6e6e6;
+}
 
-    .playlistitem:nth-of-type(odd) {
-        background-color: white;
+.playlistitem:nth-of-type(odd) {
+    background-color: white;
         
-    }
+}
 
-    .playlistitem:hover {
-        transition: 0.7s;
-        /*padding: 2px 2px 2px 2px;*/
-        border: 1px solid #b3b3b3;
-        /*border: 1px solid #a9a9a9;*/
-        cursor: pointer;
-    }
+.playlistitem:hover {
+    transition: 0.7s;
+    padding: 2px 2px 2px 2px;
+    border-left: 20px solid transparent;
+    background-color: rgba(0, 105, 217, 0.2) !important;
+    /*border: 1px solid #a9a9a9;*/
+    cursor: pointer;
+}
+
+[data-playing="true"] {
+    transition: 0.7s;
+    background-color: rgba(0, 105, 217, 0.5) !important;
+}
 
 .playing {
     background-color: thistle;

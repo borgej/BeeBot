@@ -325,10 +325,16 @@
     function startGiveAwayTimer($element) {
         var timer = new Timer();
         timer.start();
+        $element.html("00:00:00");
+        $element.removeEventListener("secondsUpdated",
+            function (e) {
+                $element.html(timer.getTimeValues().toString());
+            }, true);
         timer.addEventListener('secondsUpdated',
             function(e) {
                 $element.html(timer.getTimeValues().toString());
             });
+        
     }
 
     // Get Time.now as string

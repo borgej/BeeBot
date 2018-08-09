@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Web;
+using TwitchLib.Client.Models;
 
 namespace YTBot.Models
 {
@@ -29,14 +30,36 @@ namespace YTBot.Models
         // VideoOnDemand trigger video url
         public string VideoUrl { get; set; }
 
-        public bool CanTrigger(StreamViewer user)
+        public bool CanTrigger(StreamViewer user, ChatCommand command)
         {
-            bool viewer = Convert.ToBoolean(ViewerCanTrigger);
-            bool follower = FollowerCanTrigger == user.Follower;
-            bool sub = SubCanTrigger == user.Subscriber;
-            bool mod = ModCanTrigger == user.Mod;
+            
+            if (command.ChatMessage.IsBroadcaster)
+            {
+                return true;
+            }
 
-            return (viewer | follower | sub | mod);
+            bool viewer = Convert.ToBoolean(ViewerCanTrigger);
+            if (viewer)
+            {
+                return true;
+            }
+            if (FollowerCanTrigger == true)
+            {
+                if (user.Follower)
+                    return true;
+            }
+            if (SubCanTrigger == true)
+            {
+                if (user.Subscriber)
+                    return true;
+            }
+            if (ModCanTrigger == true)
+            {
+                if (user.Mod)
+                    return true;
+            }
+
+            return false;
         }
     }
 

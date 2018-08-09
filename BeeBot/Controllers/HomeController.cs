@@ -77,9 +77,6 @@ namespace BeeBot.Controllers
         }
 
 
-
-
-
         public ActionResult Preferences(string message = null)
         {
             var userName = User.Identity.Name;
@@ -117,6 +114,10 @@ namespace BeeBot.Controllers
 
                 ContextService.SetBotUserSettingsForUser(botUserSettings);
 
+                if (!ContextService.HasSystemTriggers(User.Identity.Name))
+                {
+                    ContextService.AddSystemTriggers(User.Identity.Name);
+                }
 
                 return Json(new { data = "1", message = "Saved!" }, JsonRequestBehavior.AllowGet);
 
@@ -125,6 +126,8 @@ namespace BeeBot.Controllers
             {
                 return Json(new { data = "-1", message = "Error saving: " + e.Message }, JsonRequestBehavior.AllowGet);
             }
+
+
         }
 
         public ActionResult Triggers()

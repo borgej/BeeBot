@@ -2065,12 +2065,23 @@ namespace BeeBot.Signalr
                         Follower = isFollower,
                         Subscriber = command.ChatMessage.IsSubscriber,
                         TwitchUsername = command.ChatMessage.DisplayName,
-                        Mod = command.ChatMessage.IsModerator
+                        Mod = command.ChatMessage.IsModerator,
+                        
                     };
 
                     foreach (var trigger in triggers)
-                        if (trigger.CanTrigger(chatter))
+                    {
+                        if (trigger.CanTrigger(chatter, command))
+                        {
                             TriggerService.Run(trigger, command);
+                        }
+                        else
+                        {
+                            var t = trigger;
+                        }
+                    }
+                        
+                            
                 }
             }
             catch (Exception e)
