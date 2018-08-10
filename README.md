@@ -12,7 +12,6 @@ The plan is to finish "basis" functionality and host it for free for everyone th
 Ps. Please dont snag my ClientId =P
 
 ## TODO's
-* Add system triggers on create new user
 * Optimize database calls
 * Publish "giveaways closing" to chat
 * Add items to Dashboard
