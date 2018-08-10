@@ -27,12 +27,14 @@ namespace YTBot.Models
         public List<string> ConsoleLog { get; set; }
         public List<ChatMessage> ChatLog { get; set; }
         public List<Giveaway> Giveaways { get; set; }
+        public Dictionary<string, DateTime> LinkPermits { get; set; }
         public List<string> Channelmods { get; set; }
         public Dictionary<string, int> CommandsUsed { get; set; }
         public Dictionary<string, int> ChattersCount { get; set; }
         public List<int> Polls { get; set; }
-        public bool ModsControlSongrequest { get; set; }
 
+        public bool ModsControlSongrequest { get; set; }
+        public bool LinksInChatAllowed { get; set; }
         public RussianRoulette RRulette { get; set; }
         public DateTime LastRussian { get; set; }
         public List<PlayListItem> SongRequests { get; set; }
@@ -46,8 +48,10 @@ namespace YTBot.Models
             CommandsUsed = new Dictionary<string, int>();
             ChattersCount = new Dictionary<string, int>();
             Channelmods = new List<string>();
+            LinkPermits = new Dictionary<string, DateTime>();
             Polls = new List<int>();
             ModsControlSongrequest = false;
+            LinksInChatAllowed = true;
             RRulette = null;
 
             // initialize last russian run

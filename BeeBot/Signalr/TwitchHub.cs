@@ -144,6 +144,48 @@ namespace BeeBot.Signalr
             RunningThreads.Remove(Context.User.Identity.Name);
         }
 
+        public void AddLinkPermit(ChatMessage chatmessage, StreamViewer streamViewer)
+        {
+            var chatterUsername = chatmessage.Username ?? streamViewer.TwitchUsername;
+            chatterUsername = chatterUsername.ToLower();
+
+            var tcc = GetClientContainer();
+
+            if (tcc.LinkPermits != null)
+            {
+                if (tcc.LinkPermits.ContainsKey(chatterUsername))
+                {
+                    tcc.LinkPermits[chatterUsername] = DateTime.Now.AddMinutes(5);
+                }
+                else
+                {
+                    tcc.LinkPermits.Add(chatterUsername, DateTime.Now.AddMinutes(5));
+                }
+            }
+        }
+
+        private bool HasLinkPermission(ChatMessage chatmessage, StreamViewer streamViewer)
+        {
+            var chatterUsername = chatmessage.Username ?? streamViewer.TwitchUsername;
+            chatterUsername = chatterUsername.ToLower();
+            var tcc = GetClientContainer();
+
+            if (tcc.LinkPermits != null)
+            {
+                if (tcc.LinkPermits.ContainsKey(chatterUsername) && tcc.LinkPermits[chatterUsername] >= DateTime.Now)
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+
+            // no link permits
+            return false;
+        }
+
         /// <summary>
         ///     Initialize TwitchAPI with clientId and clientSecret
         /// </summary>
@@ -1015,9 +1057,10 @@ namespace BeeBot.Signalr
         {
             try
             {
-                var channelChatOptions = await Api.Undocumented.GetChatPropertiesAsync(Channel);
+                var tcc = GetClientContainer();
+                var channelChatOptions = await Api.Undocumented.GetChatPropertiesAsync(tcc.Channel);
 
-                Clients.Caller.LoadChatLimitations(channelChatOptions);
+                Clients.Caller.LoadChatLimitations(channelChatOptions, tcc.LinksInChatAllowed);
             }
             catch (Exception e)
             {
@@ -1412,6 +1455,20 @@ namespace BeeBot.Signalr
 
             // Add to chat log
             AddToChatLog(e);
+        }
+
+        public void SetChatLinksAllowed(bool hidelinks)
+        {
+            try
+            {
+                GetClientContainer().LinksInChatAllowed = !hidelinks;
+
+                Clients.Caller.Notify(new {data = "1", message = "Saved"});
+            }
+            catch (Exception e)
+            {
+                ConsoleLog("Error on SetChatLinksAllowed():" + e.Message);
+            }
         }
 
         public void Play()
@@ -1991,7 +2048,36 @@ namespace BeeBot.Signalr
         private void ChatMessageCheck(object sender, OnMessageReceivedArgs e)
         {
             ChatScanForBadWords(e.ChatMessage);
+            ChatScanMessageContainsUrl(e.ChatMessage);
             GiveawayWinnerChatCheck(e.ChatMessage);
+        }
+
+        private async void ChatScanMessageContainsUrl(ChatMessage chatMsg)
+        {
+            if (chatMsg.IsBroadcaster || chatMsg.IsModerator)
+                return;
+
+            var tcc = GetClientContainer();
+            if (tcc.LinksInChatAllowed == true)
+                return;
+
+            var message = chatMsg.Message;
+            if(message.StartsWith("!sr "))
+                return;
+            
+            Regex r = new Regex(@"(http|ftp|https)://([\w_-]+(?:(?:\.[\w_-]+)+))([\w.,@?^=%&:/~+#-]*[\w@?^=%&/~+#-])?");
+
+            if (!r.IsMatch(message)) return;
+            if (HasLinkPermission(chatMsg, null))
+            {
+                return;
+            }
+
+            var joinedChannel = tcc.Channel;
+
+            var timeoutMessage = "@" + chatMsg.Username +
+                          " Links are not allowed in chat, ask permission to post links first!";
+            tcc.Client.TimeoutUser(joinedChannel, chatMsg.Username, new TimeSpan(0, 0, 1, 0), timeoutMessage);
         }
 
         /// <summary>
@@ -2005,11 +2091,11 @@ namespace BeeBot.Signalr
             ChatCommandTriggerCheck(e.Command, e);
         }
 
-        private async Task GiveawayWinnerChatCheck(ChatMessage commandChatMessage)
+        private void GiveawayWinnerChatCheck(ChatMessage commandChatMessage)
         {
             var tcc = GetClientContainer();
 
-            if (tcc.Giveaways.Any(g => g.EndsAt < DateTime.Now &&
+            if (tcc.Giveaways.Any(g => g.EndsAt < DateTime.Now && g.EndsAt <= DateTime.Now.AddMinutes(30) && 
                                        g.Winners
                                            .Any(w => w.TwitchUsername.ToLower()
                                                .Equals(commandChatMessage.DisplayName.ToLower()))))

@@ -3,7 +3,13 @@
 <h2>Dashboard</h2>
 <hr/>
 
+@*<div class="row">
+    <div class="card card-body bg-light col-md-11 ml-1 statisticDiv">
+        @{Html.RenderAction("GetChannelStats", new {channelname = @Model.BotChannel});}
+    </div>
+</div>*@
 <div class="row">
+
     <div class="col-md-5 card card-body bg-light ml-1">
         <iframe frameborder="0"
                 scrolling="yes"

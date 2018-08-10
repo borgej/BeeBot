@@ -264,6 +264,12 @@ namespace YTBot.Services
                             TwitchClient.UnbanUser(TcContainer.Channel, command.ArgumentsAsList.FirstOrDefault());
                         }
 
+                        // !permit
+                        else if (trigger.TriggerName.Equals("permit"))
+                        {
+                            hub.AddLinkPermit(command.ChatMessage, null);
+                        }
+
                         break;
                     case TriggerType.Stat:
                         // !follower

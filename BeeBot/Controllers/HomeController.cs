@@ -8,14 +8,18 @@ using System.Web.Helpers;
 using System.Web.Mvc;
 using BeeBot.Models;
 using BeeBot.Signalr;
+using HtmlAgilityPack;
 using Newtonsoft.Json;
 using TwitchLib.Api;
 using TwitchLib.Api.Models.v5.Games;
 using TwitchLib.Client;
+using TwitchLib.Api;
+using TwitchLib.Api.Exceptions;
 using YTBot.Migrations;
 using YTBot.Models;
 using YTBot.Models.ViewModels;
 using YTBot.Services;
+
 
 namespace BeeBot.Controllers
 {
@@ -23,8 +27,6 @@ namespace BeeBot.Controllers
     public class HomeController : Controller
     {
         private ContextService ContextService { get; set; }
-
-        public TwitchClient Client { get; set; }
 
         public HomeController()
         {
@@ -295,5 +297,26 @@ namespace BeeBot.Controllers
 
             return View(userBotSettings);
         }
+
+        //public ActionResult GetChannelStats(string channelname)
+        //{
+        //    try
+        //    {
+        //        var clientId = ConfigurationManager.AppSettings["clientId"];
+        //        var clientSecret = ConfigurationManager.AppSettings["clientSecret"];
+        //        var Api = new TwitchAPI();
+        //        Api.Settings.AccessToken = clientSecret;
+        //        Api.Settings.ClientId = clientId;
+        //        var userBotSettings = ContextService.GetBotUserSettingsForUser(ContextService.GetUser(User.Identity.Name));
+        //        var channel = Api.Channels.v5.GetChannelAsync(userBotSettings.ChannelToken);
+        //        var channelData = channel.Result;
+
+        //    }
+        //    catch (Exception e)
+        //    {
+        //        return Content("N/A");
+        //    }
+            
+        //}
     }
 }

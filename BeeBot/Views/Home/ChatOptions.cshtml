@@ -7,18 +7,18 @@
 <h2>Chat options</h2>
 <hr />
 <div class="card card-body bg-light ">
-    <div class="row dontshow">
+    <div class="row">
         <div class="col-md-12 mt-2 mb-3">
             <div class="pretty p-switch">
                 <input class="" type="checkbox" value="" id="hidelinks" name="hidelinks">
-                <div class="state">
-                    <label class="" for="hidelinks">
-                        Hide links
+                <div class="state p-primary">
+                    <label class="form-check-label" for="hidelinks">
+                        Hide links (will require !permit [username])
                     </label>
                 </div>
             </div>
         </div>
-        <div class="col-md-12 mt-2 mb-3">
+        @*<div class="col-md-12 mt-2 mb-3">
             <div class="pretty p-switch">
                 <input class="" type="checkbox" value="" id="subsonly" name="subsonly">
                 <div class="state">
@@ -27,7 +27,7 @@
                     </label>
                 </div>
             </div>
-        </div>
+        </div>*@
 
         @*<div class="col-md-12 mt-2 mb-3">
             <div class="pretty p-switch">
@@ -88,7 +88,9 @@
             twitchHub.server.saveBannedWords($(".bannedwords").val());
         });
 
-
+        $("#hidelinks").click(function() {
+            twitchHub.server.setChatLinksAllowed($(this).prop("checked"));
+        });
         
 
         twitchHub.client.Fail = function (ret) {
@@ -143,8 +145,43 @@
             }
         }
 
-        twitchHub.client.LoadChatLimitations = function (ret) {
+        twitchHub.client.Notify = function (ret) {
+            if (ret.data == "1") {
+                console.log(ret.message);
+                $.amaran({
+                    'theme': 'colorful',
+                    'content': {
+                        bgcolor: '#27ae60',
+                        color: '#fff',
+                        message: ret.message,
+                    },
+                    'closeOnClick': false,
+                    'inEffect': 'slideTop'
+                });
+                //});
+            } else {
+                console.log(ret.message);
+                $.amaran({
+                    'theme': 'colorful',
+                    'content': {
+                        bgcolor: '#ff3300',
+                        color: '#fff',
+                        message: ret.message,
+                    },
+                    'closeOnClick': false,
+                    'inEffect': 'slideTop'
+                });
+            }
+        }
+
+        twitchHub.client.LoadChatLimitations = function (ret, linksAllowed) {
             $(".maincontent").LoadingOverlay("hide");
+
+            if (!linksAllowed) {
+                $("#hidelinks").prop("checked", "checked");
+            } else {
+                $("#hidelinks").prop("checked", "");
+            }
             console.log(ret.HideChatLinks);
             console.log(ret.SubsOnly);
 

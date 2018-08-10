@@ -122,7 +122,7 @@ namespace YTBot.Services
         {
             var bcs = GetBotChannelSettings(GetUser(username));
 
-            if (bcs.Triggers.Where(t => t.TriggerType != TriggerType.Message).Count() == 0)
+            if (bcs.Triggers.Where(t => t.TriggerType != TriggerType.Message).Count() == GetInitialSystemTriggers().Count)
             {
                 return false;
             }
@@ -563,6 +563,21 @@ namespace YTBot.Services
                 TriggerType = TriggerType.BuiltIn
             };
             triggers.Add(addpoll);
+
+            // !permit
+            var permit = new Trigger()
+            {
+                Active = true,
+                ViewerCanTrigger = false,
+                FollowerCanTrigger = false,
+                SubCanTrigger = false,
+                ModCanTrigger = true,
+                StreamerCanTrigger = true,
+                TriggerName = "permit",
+                TriggerResponse = "Permit [username] Permits a user to post link to chat for 5 minutes.",
+                TriggerType = TriggerType.BuiltIn
+            };
+            triggers.Add(permit);
 
             return triggers;
         }

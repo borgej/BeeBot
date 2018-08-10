@@ -1,39 +1,49 @@
 ﻿@model dynamic
 
 <h2 class="mb-4">Polls</h2>
-<button type="button" class="btn btn-secondary " id="newPollButton"><i class="fa fa-plus"></i> Create</button>
 <hr/>
-<div class="card card-body bg-light dontshow mb-2 newPollTemplate">
+<div class="card card-body bg-light">
+    <div class="row">
+        <div class="col-md-10 mb-3">
+            <button type="button" class="btn btn-secondary " id="newPollButton"><i class="fa fa-plus"></i> Create</button>
+        </div>
 
-    <form id="newPoll" class="">
-        <div class="form-group row">
-            <label for="inputEmail3" class="col-sm-2 col-form-label">Question</label>
-            <div class="col-sm-10">
-                <input type="text" class="form-control" id="question" name="question" placeholder="What game should we play today?">
-            </div>
-        </div>
-        <div class="form-group row">
-            <label for="inputPassword3" class="col-sm-2 col-form-label">Options</label>
-            <div class="col-sm-10">
-                <input type="text" name="option[]" class="form-control col-sm-4 mb-1 option" />
-                <input type="text" name="option[]" class="form-control col-sm-4 mb-1 option" />
-                <input type="text" name="option[]" class="form-control col-sm-4 mb-1 option" />
-                <button type="button" class="btn btn-sm btn-light" id="addMoreOptionsButton"><i class="fa fa-plus"></i> Add one more option</button>
-            </div>
-        </div>
-        
-        <div class="form-group row">
-            <div class="col-sm-10">
-                <button type="button" class="btn btn-warning" id="abandonPollButton"><i class="fa fa-times"></i> Abandon</button>
-                <button type="button" class="btn btn-secondary" id="createPollButton"><i class="fa fa-save"></i> Start poll</button>
-            </div>
-        </div>
-    </form>
-
+    </div>
+    <div class="row">
+        <div class="polls"></div>
+    </div>
+</div>
     
-</div>
-<div class="polls card card-body bg-light">
-</div>
+    <div class="card card-body bg-light dontshow mb-2 newPollTemplate">
+
+        <form id="newPoll" class="">
+            <div class="form-group row">
+                <label for="inputEmail3" class="col-sm-2 col-form-label">Question</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" id="question" name="question" placeholder="What game should we play today?">
+                </div>
+            </div>
+            <div class="form-group row">
+                <label for="inputPassword3" class="col-sm-2 col-form-label">Options</label>
+                <div class="col-sm-10">
+                    <input type="text" name="option[]" class="form-control col-sm-4 mb-1 option" />
+                    <input type="text" name="option[]" class="form-control col-sm-4 mb-1 option" />
+                    <input type="text" name="option[]" class="form-control col-sm-4 mb-1 option" />
+                    <button type="button" class="btn btn-sm btn-light" id="addMoreOptionsButton"><i class="fa fa-plus"></i> Add one more option</button>
+                </div>
+            </div>
+
+            <div class="form-group row">
+                <div class="col-sm-10">
+                    <button type="button" class="btn btn-warning" id="abandonPollButton"><i class="fa fa-times"></i> Abandon</button>
+                    <button type="button" class="btn btn-secondary" id="createPollButton"><i class="fa fa-save"></i> Start poll</button>
+                </div>
+            </div>
+        </form>
+
+
+    </div>
+
     <div class="pollTemplate dontshow poll">
         <a class="badge badge-info pollTitle" data-url="" data-id="" onclick="loadPollData(this)"></a>
         <div class="pollData"></div>
@@ -70,21 +80,21 @@
             $(".pollData_" + id).load(url + "/r");
         }
 
-        $("#addMoreOptionsButton").click(function() {
+        $("#addMoreOptionsButton").click(function () {
             var newOption = '<input type="text" name="option[]" class="form-control col-sm-4 mb-1 option" />';
             $(newOption).insertBefore("#addMoreOptionsButton");
         });
 
-        $("#newPollButton").click(function() {
+        $("#newPollButton").click(function () {
             $(".newPollTemplate").removeClass("dontshow");
         });
 
-        $("#abandonPollButton").click(function() {
+        $("#abandonPollButton").click(function () {
             $(".newPollTemplate").addClass("dontshow");
             clearForm();
         });
 
-        $("#createPollButton").click(function() {
+        $("#createPollButton").click(function () {
             // TODO: save to SignalR hub
             var question = $("#question").val();
 
@@ -93,9 +103,9 @@
                 if ($(elem).val() != "") {
                     options.push($(elem).val());
                 }
-                
+
             });
-            
+
             twitchHub.server.saveNewPoll(question, options);
 
             $(".newPollTemplate").addClass("dontshow");
@@ -105,8 +115,7 @@
 
 
         // Reset form
-        function clearForm()
-        {
+        function clearForm() {
             $("#question").val("");
             $.each($(".option"), function (i, elem) {
                 $(elem).val("");
