@@ -294,7 +294,7 @@ songrequests {
 .playlist {
     overflow: scroll;
     overflow-x: hidden;
-    max-height: 800px;
+    max-height: 70vh;
 }
 
 .playlistitem {
@@ -316,7 +316,7 @@ songrequests {
 .playlistitem:hover {
     transition: 0.7s;
     padding: 2px 2px 2px 2px;
-    border-left: 20px solid transparent;
+    /*border-left: 20px solid transparent;*/
     background-color: rgba(0, 105, 217, 0.2) !important;
     /*border: 1px solid #a9a9a9;*/
     cursor: pointer;
@@ -618,6 +618,7 @@ songrequests {
 
     .maincontent, .main {
         margin-left: 40px;
+        margin-right: 20px;
     }
 
     .maincontent, .main  .collapse {
