@@ -26,16 +26,25 @@ Ps. Please dont snag my ClientId =P
 
 ## Some screenshots
 ### Login
-![Login screen](https://github.com/borgej/YTBot/blob/master/login.PNG "Login screen")
+![Login screen](https://github.com/borgej/YTBot/blob/master/github_docs/login.PNG "Login screen")
 
 ### Logged in
-![Logged in](https://github.com/borgej/YTBot/blob/master/loggedin.PNG "Logged in")
+![Logged in](https://github.com/borgej/YTBot/blob/master/github_docs/loggedin.PNG "Logged in")
+
+### Dashboard
+![Dashboard](https://github.com/borgej/YTBot/blob/master/github_docs/dashboard.PNG "Dashboard")
+
+### Stream info
+![Stream info](https://github.com/borgej/YTBot/blob/master/github_docs/streaminfo.PNG "Stream info")
 
 ### Songrequests
-![Songrequests](https://github.com/borgej/YTBot/blob/master/songrequests.png "Songrequests")
+![Songrequests](https://github.com/borgej/YTBot/blob/master/github_docs/songrequests.png "Songrequests")
+
+### Timers
+![Timers](https://github.com/borgej/YTBot/blob/master/github_docs/timers.PNG "Timers")
 
 ### System triggers
-![System triggers](https://github.com/borgej/YTBot/blob/master/systemtriggers.PNG "System triggers")
+![System triggers](https://github.com/borgej/YTBot/blob/master/github_docs/systemtriggers.PNG "System triggers")
 
 ## Functionality
 1. Triggers
