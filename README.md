@@ -1,5 +1,5 @@
 # YTBot
-![Logo](https://github.com/borgej/YTBot/blob/master/ytb_logo2.png "Logo")
+![Logo](https://github.com/borgej/YTBot/blob/master/github_docs/ytb_logo2.png "Logo")
 
 
 Twitch bot C# MVC project
