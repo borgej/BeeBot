@@ -526,15 +526,13 @@ songrequests {
 #sidebar {
     overflow: hidden;
     z-index: 3;
-
+    min-width: 180px;
+    min-height: 100vh;
 }
 #sidebar .list-group {
     max-width: 200px;
     background-color: #333;
-    min-height: 100vh;
-    /*min-height: 100% !important;*/
-    /*max-height: 100% !important;*/
-
+    min-height: 100%;
 }
 #sidebar i {
     margin-right: 6px;
@@ -614,30 +612,29 @@ songrequests {
         display: none !important;
     }
 
-
-
     .botstatus {
         display: none !important;
     }
 
     .maincontent, .main {
-        margin-left: 30px;
+        margin-left: 40px;
     }
 
-        .maincontent, .main  .collapse {
-            margin-left: 0px;
-        }
+    .maincontent, .main  .collapse {
+        margin-left: 0px;
+    }
 
-        #sidebar {
-            min-width: 35px;
-            max-width: 40px;
-            overflow-y: auto;
-            overflow-x: visible;
-            transition: all 0.25s ease;
-            transform: translateX(-45px);
-            position: fixed;
-
-        }
+    #sidebar {
+        min-width: 35px;
+        max-width: 40px;
+        min-height: 100vh !important;
+        overflow-y: auto;
+        overflow-x: visible;
+        transition: all 0.25s ease;
+        transform: translateX(-45px);
+        position: fixed;
+        
+    }
     
     #sidebar.show {
         transform: translateX(0);
@@ -645,11 +642,11 @@ songrequests {
     }
 
     #sidebar::-webkit-scrollbar{ width: 0px;  }
-    
+
     #sidebar, #sidebar .list-group {
         min-width: 35px;
         overflow: visible;
-
+        min-height: 100vh !important;
     }
     /* overlay sub levels on small screens */
     #sidebar .list-group .collapse.show, #sidebar .list-group .collapsing {
@@ -657,6 +654,7 @@ songrequests {
         z-index: 1;
         width: 190px;
         top: 0;
+
 
     }
     #sidebar .list-group > .list-group-item {

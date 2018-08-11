@@ -23,9 +23,9 @@
 </head>
 <body>
     <div class="container-fluid">
-        <div class="row d-flex d-md-block flex-nowrap wrapper">
-            <div class="float-left  pl-0 pr-0 collapse width show sticky-top" id="sidebar">
-                <div class="list-group border-0 card text-center text-md-left">
+        <div class="row flex-nowrap wrapper">
+            <div class="float-left pl-0 mr-1 pr-0 collapse width show" id="sidebar">
+                <div class="list-group border-0 card text-center text-md-left flex-grow-1">
                     <div class="text-center d-inline-block collapsed mt-1">
                         <img class="ytbotLogo" src="@Url.Content("~/Content/ytb_logo_small.png")" height="100"/>
                     </div>
@@ -75,15 +75,15 @@
                     </div>
                 </div>
             </div>
-            <main class="col-md-9 float-left pt-2 main" style="width: 98% !important;">
-                <div>
+            <main class="main col" >
+                <div class="flex-grow-1">
                     <a href="#" data-target="#sidebar" data-toggle="collapse" class="pull-left"><i class="fa fa-navicon fa-2x py-2 p-1"></i></a>
                 </div>
 
                 <div class="page-header">
 
                 </div>
-                <div class="maincontent">
+                <div class="maincontent mr-1 mb-1">
                     @RenderBody()
                 </div>
 
@@ -96,7 +96,7 @@
 
         </div>
     </div>
-</div>
+
 
 @{
 
