@@ -858,18 +858,26 @@ namespace BeeBot.Signalr
         /// <param name="e"></param>
         private void OnConnectToChannel(object sender, OnConnectedArgs e)
         {
-            var ccontainer = GetClientContainer();
-
-            ccontainer.Client.SendMessage(Channel, "/me connected. - YTBot v.2 RC1 by @Borge_Jakobsen ");
-            var botStatus = new BotStatusVM
+            try
             {
-                info = ccontainer.Client.IsConnected ? "Bot connected" : "Bot disconnected",
-                message = "",
-                warning = "",
-                connected = !ccontainer.Client.IsConnected
-            };
+                var ccontainer = GetClientContainer();
 
-            Clients.Caller.BotStatus(botStatus);
+                ccontainer.Client.SendMessage(Channel, "/me connected. - YTBot by @Borge_Jakobsen ");
+                var botStatus = new BotStatusVM
+                {
+                    info = ccontainer.Client.IsConnected ? "Bot connected" : "Bot disconnected",
+                    message = "",
+                    warning = "",
+                    connected = !ccontainer.Client.IsConnected
+                };
+
+                Clients.Caller.BotStatus(botStatus);
+            }
+            catch (Exception)
+            {
+                // Catch premature connection
+            }
+            
         }
 
         /// <summary>
