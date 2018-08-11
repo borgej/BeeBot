@@ -26,7 +26,7 @@ Ps. Please dont snag my ClientId =P
 
 ## Some screenshots
 ### Login
-![Login screen](https://github.com/borgej/YTBot/blob/master/login.PNG "Login screen")
+![Login screen](https://github.com/borgej/YTBot/blob/master/login.PNG "Login screen ")
 
 ### Logged in
 ![Logged in](https://github.com/borgej/YTBot/blob/master/loggedin.PNG "Logged in")
