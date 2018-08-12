@@ -370,10 +370,11 @@
 
     function getRandomVideo() {
         var videos = $('.playlistitem');
+        var newVideo = null;
 
         var numVideos = videos.length;
         if (numVideos > 1) {
-            var newVideo = videos.random();
+            newVideo = videos.random();
 
             while (newVideo.data("id") != getLastPlayedVideo().data("id")) {
                 newVideo = videos.random();
