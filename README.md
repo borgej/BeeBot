@@ -9,7 +9,9 @@ It has now getting some serious functionality ;)
 
 The plan is to finish "basis" functionality and host it for free for everyone that wants to use this.
 
-Ps. Please dont snag my ClientId =P
+Ps. 
+-If anyone wants to join in on the project, please do! I'd live to get more heads in on this.
+-Please dont snag my ClientId =P
 
 ## TODO's
 * Optimize database calls
