@@ -557,11 +557,12 @@ songrequests {
     min-width: 180px;
     min-height: 100vh;
 }
-#sidebar .list-group {
-    max-width: 200px;
-    background-color: #333;
-    min-height: 100%;
-}
+    #sidebar .list-group {
+        max-width: 200px;
+        background-color: #333;
+        min-height: 100%;
+        border-radius: 0 !important;
+    }
 #sidebar i {
     margin-right: 6px;
 
@@ -578,6 +579,7 @@ songrequests {
     border-color: #2c2c2c;
     white-space: nowrap;
     height: 100% !important;
+    
 }
 
     #sidebar .list-group-item:hover {
