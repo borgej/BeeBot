@@ -1,7 +1,16 @@
-﻿@{
-    ViewBag.Title = "About";
-}
-<h2>@ViewBag.Title.</h2>
-<h3>@ViewBag.Message</h3>
+﻿<h2>About YTBot</h2>
+<hr />
 
-<p>Use this area to provide additional information.</p>
+<div class="col">
+    <img src="@Url.Content("~/Content/ytb_logo2.png")"/>
+    <p>
+        YTBot is a Twitch bot created by @Html.ActionLink("BorgeJ", "Https://www.github/borgej"), currently under under feature development.
+    </p>
+    <p>
+    If you have any feature requests I will gladly hear them out and maybe implement them into the solution. 
+    </p>
+    <p>You can request a feature request through GitHub <a href="https://github.com/borgej/YTBot/issues/new?template=feature_request.md" target="_blank">here</a>.
+        Or send me an e-mail at <a href="mailto:borge.jakobsen@gmail.com?subject=YTBot%20feature%20request">borge.jakobsen@gmail.com</a>.
+    </p>
+
+</div>

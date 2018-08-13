@@ -604,6 +604,7 @@
     <Content Include="Views\Home\Giveaways.cshtml" />
     <Content Include="Views\Home\TriggerPlay.cshtml" />
     <Content Include="Views\Home\Desktop.cshtml" />
+    <Content Include="Views\Home\Faq.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

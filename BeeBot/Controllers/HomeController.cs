@@ -318,5 +318,14 @@ namespace BeeBot.Controllers
         //    }
             
         //}
+        public ActionResult Faq()
+        {
+            return View();
+        }
+
+        public ActionResult About()
+        {
+            return View();
+        }
     }
 }
