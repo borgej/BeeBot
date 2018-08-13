@@ -2072,6 +2072,8 @@ namespace BeeBot.Signalr
             var message = chatMsg.Message;
             if(message.StartsWith("!sr "))
                 return;
+            else if (message.StartsWith("https://clips.twitch.tv") || message.StartsWith("http://clips.twitch.tv"))
+                return;
             
             Regex r = new Regex(@"(http|ftp|https)://([\w_-]+(?:(?:\.[\w_-]+)+))([\w.,@?^=%&:/~+#-]*[\w@?^=%&/~+#-])?");
 
