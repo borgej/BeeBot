@@ -914,7 +914,7 @@ namespace YTBot.Services
                         isFollower = false;
                     }
 
-                    var viewer = new StreamViewer
+                    var thisViewer = new StreamViewer
                     {
                         Channel = TcContainer.Channel,
                         Follower = isFollower,
@@ -930,10 +930,10 @@ namespace YTBot.Services
 //                    viewer.Mod = NextBool(20);
 //#endif
                     // enter giveaway
-                    if (giveaway.CanEnroll(viewer))
-                        giveaway.Enroll(viewer);
+                    if (giveaway.CanEnroll(thisViewer))
+                        giveaway.Enroll(thisViewer);
                     // is broadcaster
-                    else if (command.ChatMessage.IsBroadcaster) giveaway.Enroll(viewer);
+                    else if (command.ChatMessage.IsBroadcaster) giveaway.Enroll(thisViewer);
 
                     // Call update on client
                     hub.UpdateGiveaway(giveaway);

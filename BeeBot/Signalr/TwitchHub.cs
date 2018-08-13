@@ -2119,9 +2119,11 @@ namespace BeeBot.Signalr
         }
 
         /// <summary>
-        ///     Check for chat triggers
+        /// Check for chat triggers
         /// </summary>
-        /// <param name="command"></param>
+        /// <param name="command">Chatcommand</param>
+        /// <param name="arg"></param>
+        /// <returns></returns>
         private async Task ChatCommandTriggerCheck(ChatCommand command, OnChatCommandReceivedArgs arg)
         {
             try
@@ -2132,10 +2134,11 @@ namespace BeeBot.Signalr
                 var giveaways = TriggerService.GiveAwayCheck(command);
                 var triggers = TriggerService.TriggerCheck(command);
                 var loyalty = TriggerService.LoyaltyCheck(command);
-                if (giveaways.Any()) TriggerService.Run(null, command);
+                if (giveaways.Any()) TriggerService.Run(null, null, command);
 
-                if (loyalty) TriggerService.Run(null, command);
-                if (triggers.Any())
+                if (loyalty) TriggerService.Run(null, null, command);
+                var enumerable = triggers as Trigger[] ?? triggers.ToArray();
+                if (enumerable.Any())
                 {
                     var twitchUser = await Api.Users.v5.GetUserByNameAsync(command.ChatMessage.Username);
                     var channel = await Api.Users.v5.GetUserByNameAsync(tcc.Channel);
@@ -2162,7 +2165,7 @@ namespace BeeBot.Signalr
                         
                     };
 
-                    foreach (var trigger in triggers)
+                    foreach (var trigger in enumerable)
                     {
                         if (trigger.CanTrigger(chatter, command))
                         {
