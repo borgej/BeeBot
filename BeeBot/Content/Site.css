@@ -350,14 +350,16 @@ songrequests {
     bottom: 0;
     height: 20px;
     color: #f0f0f0;
+    background-color: #696969;
     width: 100%;
 }
 
 .ytbotLinks {
+    font-size: 1.2em;
     position: absolute;
     color: #f0f0f0 !important;
-    bottom: 25px;
-    height: 40px;
+    bottom: 15px;
+    height: 55px;
     width: 100%;
 }
 
@@ -367,9 +369,10 @@ songrequests {
 
 .footerLink a{
     display: inline-block;
-    height: 20px;
+    height: 25px;
     color: #f0f0f0 !important;
     width: 100%;
+    text-align-all: center
 }
 
 .footerLink a:hover {
@@ -565,6 +568,8 @@ songrequests {
 }
 
 #sidebar .list-group-item {
+    font-size: 1.05em;
+    font-weight: 200;
     border-radius: 0;
     background-color: #333;
     color: #ccc;
@@ -577,7 +582,14 @@ songrequests {
 
     #sidebar .list-group-item:hover {
         background-color: rgba(255, 255, 255, 0.1) !important;
+
     }
+
+#sidebar .list-group-item:hover > span{
+    
+    color: #f0e68c !important;
+}
+
 /* highlight active menu */
 #sidebar .list-group-item:not(.collapsed) {
     background-color: #222;
