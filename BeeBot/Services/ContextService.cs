@@ -6,6 +6,7 @@ using System.Security.Principal;
 using System.Web;
 using System.Web.Mvc;
 using BeeBot.Models;
+using TwitchLib.Client.Models;
 using YTBot.Context;
 using YTBot.Models;
 
@@ -1021,6 +1022,13 @@ namespace YTBot.Services
             var user = Context.Users.FirstOrDefault(u => u.UserName == username);
 
             return GetTriggers(user);
+        }
+
+        public IQueryable<Trigger> GetCallableTriggers(ApplicationUser user, StreamViewer chatter, ChatCommand msg)
+        {
+            var allTriggers = GetTriggers(user);
+
+            return  (IQueryable<Trigger>) allTriggers.Where(t => t.CanTrigger(chatter, msg) && t.Active == true);
         }
 
         /// <summary>

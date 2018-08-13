@@ -2166,7 +2166,7 @@ namespace BeeBot.Signalr
                     {
                         if (trigger.CanTrigger(chatter, command))
                         {
-                            TriggerService.Run(trigger, command);
+                            TriggerService.Run(trigger, chatter, command);
                         }
                         else
                         {

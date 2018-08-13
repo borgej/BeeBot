@@ -27,7 +27,8 @@
             <div class="float-left pl-0 mr-1 pr-0 collapse width show" id="sidebar">
                 <div class="list-group border-0 card text-center text-md-left flex-grow-1">
                     <div class="text-center d-inline-block collapsed mt-1">
-                        <img class="ytbotLogo" src="@Url.Content("~/Content/ytb_logo_small.png")"/>
+                        
+                        <a href="@Url.Action("Index", "Home")" class="channelMenuHeader "><img class="ytbotLogo" src="@Url.Content("~/Content/ytb_logo_small.png")" /></a>
                     </div>
                     <div class="text-center d-inline-block collapsed">
                         <a href="@Url.Action("Index", "Home")" class="channelMenuHeader ">@Html.Action("ChannelName", "Home")</a>

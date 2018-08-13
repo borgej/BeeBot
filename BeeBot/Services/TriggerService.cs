@@ -13,6 +13,7 @@ using TwitchLib.Api.Exceptions;
 using TwitchLib.Client;
 using TwitchLib.Client.Extensions;
 using TwitchLib.Client.Models;
+using TwitchLib.Client.Services;
 using YoutubeSearch;
 using YTBot.Models;
 using SysRandom = System.Random;
@@ -92,7 +93,7 @@ namespace YTBot.Services
                 g.Trigger.ToLower().Equals(command.CommandText) && g.EndsAt >= DateTime.Now);
         }
 
-        public async void Run(Trigger trigger, ChatCommand command)
+        public async void Run(Trigger trigger, StreamViewer viewer, ChatCommand command)
         {
             if (trigger != null)
             {
@@ -147,11 +148,15 @@ namespace YTBot.Services
                             }
                         }
 
-                        // !commands
-                        else if (trigger.TriggerName.Equals("commands"))
+                        // !commands || !help
+                        else if (trigger.TriggerName.Equals("commands") || trigger.TriggerName.Equals("help"))
                         {
-                            TwitchClient
-                                .BanUser(TcContainer.Channel, command.ArgumentsAsList.FirstOrDefault(), "Banned!");
+                            var availableTriggers = ContextService.GetCallableTriggers(User, viewer, command);
+                            TwitchClient.WhisperThrottler = new MessageThrottler(TwitchClient, 3, new TimeSpan(0, 0, 3) );
+                            foreach (var availableTrigger in availableTriggers)
+                            {
+                                TwitchClient.SendWhisper(command.ChatMessage.Username, $"!{availableTrigger.TriggerName.ToLower()} - {availableTrigger.TriggerResponse}");
+                            }
                         }
 
                         // !giveaway
@@ -167,8 +172,6 @@ namespace YTBot.Services
                                 "/me Giveaway !" + giveaway.Trigger + " for \"" + giveaway.Prize + "\" closing in " +
                                 closingInMinutes + " minutes.");
                         }
-
-                        // !help
 
                         // !multilink
                         else if (trigger.TriggerName.Equals("multilink"))
@@ -328,7 +331,7 @@ namespace YTBot.Services
                             catch (BadResourceException e)
                             {
                                 TwitchClient.SendMessage(TcContainer.Channel,
-                                    $@"{command.ChatMessage.DisplayName} is not a subscriber yet. :(");
+                                    $@"{command.ChatMessage.DisplayName} is not a subscriber yet :(");
                             }
                         }
 
