@@ -652,6 +652,17 @@ songrequests {
 
 }
 
+.ytbotLogoResponsive {
+    display: none;
+}
+
+
+@media (max-width:768px) {
+    .ytbotLogoResponsive  {
+        display: inline-block;
+    }
+}
+
 @media (max-width:768px) {
 
     .channelMenuHeader {

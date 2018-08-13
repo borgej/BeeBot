@@ -452,6 +452,7 @@
     <Content Include="Content\ytb_logo.png" />
     <Content Include="Content\ytb_logo2.png" />
     <Content Include="Content\ytb_logo_small.png" />
+    <Content Include="Content\ytb_logo_small_responsive.png" />
     <Content Include="favicon.ico" />
     <Content Include="fonts\fontawesome-webfont.svg" />
     <Content Include="Global.asax" />
