@@ -83,7 +83,7 @@
             var password = $(this).data("password");
             var channel = $(this).data("channel");
 
-            $.connection.twitchHub.server.connectBot(username, password, channel);
+            $.connection.twitchHub.server.reconnectBot(username, password, channel);
 
         });
 
@@ -92,7 +92,7 @@
             var password = $(this).data("password");
             var channel = $(this).data("channel");
 
-            $.connection.twitchHub.server.reconnect(username, password, channel);
+            $.connection.twitchHub.server.reconnectBot(username, password, channel);
 
         });
 

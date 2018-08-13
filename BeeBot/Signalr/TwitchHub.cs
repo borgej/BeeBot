@@ -677,6 +677,19 @@ namespace BeeBot.Signalr
             }
         }
 
+        public async Task ReconnectBot(string username, string password, string channel)
+        {
+            try
+            {
+                GetClientContainer().LogOutInProgress = false;
+                ConnectBot(username, password, channel);
+            }
+            catch (Exception e)
+            {
+                ConsoleLog("ReConnectBot error: " + e.Message);
+            }
+        }
+
         /// <summary>
         ///     Client sent connect to channel
         /// </summary>

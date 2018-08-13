@@ -188,7 +188,7 @@
                 function tryBotReconnectIfDisconnected() {
                     try {
                         if (botConnected == false) {
-                            $.connection.twitchHub.server.connectBot("@{Html.RenderAction("GetUsername", "Home");}", "@{Html.RenderAction("GetPassword", "Home");}", "@{Html.RenderAction("GetChannel", "Home");}");
+                            $.connection.twitchHub.server.reconnectBot("@{Html.RenderAction("GetUsername", "Home");}", "@{Html.RenderAction("GetPassword", "Home");}", "@{Html.RenderAction("GetChannel", "Home");}");
                         }
                     } catch (e) {
                         $.amaran({
