@@ -2,7 +2,7 @@
 ![Logo](https://github.com/borgej/YTBot/blob/master/github_docs/ytb_logo2.png "Logo")
 
 
-Twitch bot C# MVC project
+Twitch bot C# MVC project based on TwitchLib https://github.com/TwitchLib/TwitchLib
 
 This started out as a "fun" little project to try to make myself a Twitch.tv Chatbot.
 It has now getting some serious functionality ;)
