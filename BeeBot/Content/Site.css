@@ -381,6 +381,13 @@ songrequests {
     text-decoration: none !important;
 }
 
+@media (max-width: 768px) {
+    .footerLink a, ytbotLinks {
+        display: none;
+    }
+}
+
+
 .channelMenuHeader  {
     color: #afeeee !important;
     font-size: 21px;
@@ -582,10 +589,14 @@ songrequests {
     
 }
 
+
+@media (min-width: 768px) {
     #sidebar .list-group-item:hover {
         background-color: rgba(255, 255, 255, 0.1) !important;
-
     }
+}
+
+
 
 #sidebar .list-group-item:hover > span{
     
