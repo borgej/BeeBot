@@ -859,9 +859,10 @@ namespace BeeBot.Signalr
         {
             var ccontainer = GetClientContainer();
             var bcs = ContextService.GetBotChannelSettings(ccontainer.User);
-            var hoster = e.Channel;
+            var hoster = e.RaidNotificaiton.DisplayName;
+            var number = e.RaidNotificaiton.MsgParamViewerCount;
 
-            ccontainer.Client.SendMessage(Channel, "/me @" + hoster + " is raiding!");
+            ccontainer.Client.SendMessage(Channel, "/me @" + hoster + " is raiding with a party of " + number + "!");
         }
 
         /// <summary>

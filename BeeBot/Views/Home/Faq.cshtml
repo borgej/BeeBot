@@ -1,0 +1,49 @@
+﻿<h2>FAQ - Frequently asked questions</h2>
+<hr/>
+<div>
+    <div class="card mb-3">
+        <div class="card-header">
+            My bot is not connecting to my channel?
+        </div>
+        <div class="card-body">
+            Have you setup the correct bot oauth and channel tokens in @Html.ActionLink("preferences", "Preferences", "Home")?
+        </div>
+    </div>
+
+
+    <div class="card mb-3">
+        <div class="card-header">
+            I can't set channel title and game?
+        </div>
+        <div class="card-body">
+            The bot needs both <b>user_read</b> and <b>channel_editor</b> access when generating a channel authentication token for the bot. Get channel token from <a href="https://twitchtokengenerator.com/" target="_blank"> here</a>. Set channel token @Html.ActionLink("here", "Preferences", "Home").
+        </div>
+    </div>
+
+    <div class="card mb-3">
+        <div class="card-header">
+            Why are the viewers not getting any [channel-loyalty]?
+        </div>
+        <div class="card-body">
+            The channel needs to be online before the user hands out any loot to viewers. This will happen at most every minute.
+        </div>
+    </div>
+
+    <div class="card mb-3">
+        <div class="card-header">
+            My ![channel-loyalty-name] command is not working?
+        </div>
+        <div class="card-body">
+            Channel loyalty needs to be activated for the ![channel-loyalty-name] to work.
+        </div>
+    </div>
+
+    <div class="card mb-3">
+        <div class="card-header">
+            Why are my triggers getting answered twice?
+        </div>
+        <div class="card-body">
+            There could be an issue with the process thread running the bot, this should have been ficed by now. If it still appears, please add an issue at my github repo <a href="https://github.com/borgej/YTBot/issues/new?template=bug_report.md" target="_blank"> here</a>.
+        </div>
+    </div>
+</div>
