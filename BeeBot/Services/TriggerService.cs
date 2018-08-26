@@ -333,6 +333,10 @@ namespace YTBot.Services
                                 TwitchClient.SendMessage(TcContainer.Channel,
                                     $@"{command.ChatMessage.DisplayName} is not a subscriber yet :(");
                             }
+                            catch (BadScopeException e)
+                            {
+                                hub.ConsoleLog("Error on !sub: " + e.Message, true);
+                            }
                         }
 
                         // !top
@@ -341,7 +345,10 @@ namespace YTBot.Services
                             var regEx = Regex.Match(command.ArgumentsAsString.ToLower(), "(\\d+)");
 
                             var number = Convert.ToInt32(regEx.Groups[1].Value);
-                            if (number > 10) number = 10;
+                            if (number > 10)
+                            {
+                                number = 10;
+                            }
 
                             var thisUser = User;
                             var topLoyalty = ContextService.TopLoyalty(thisUser, number);

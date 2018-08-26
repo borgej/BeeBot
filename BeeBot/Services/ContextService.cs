@@ -728,9 +728,10 @@ namespace YTBot.Services
             {
                 Context = new ApplicationDbContext();
 
-                var botChannelSettings = Context.BotChannelSettings.Include("StreamViewers").FirstOrDefault(b => b.User.Id == user.Id);
+                var botChannelSettings = Context.BotChannelSettings.FirstOrDefault(b => b.User.Id == user.Id);
+                var userSettings = GetBotUserSettingsForUser(user);
 
-                List<StreamViewer> topLoyalty = botChannelSettings.StreamViewers.OrderByDescending(p => p.CurrentPoints).Take(topNumber).ToList();
+                List<StreamViewer> topLoyalty = Context.Viewers.Where(s => s.Channel.ToLower().Equals(userSettings.BotChannel.ToLower())).OrderByDescending(p => p.CurrentPoints).Take(topNumber).ToList();
 
                 return topLoyalty;
             }
@@ -818,9 +819,10 @@ namespace YTBot.Services
         public IEnumerable<StreamViewer> GetStreamViewers(ApplicationUser user, string channel)
         {
             Context = new ApplicationDbContext();
-            var botChannelSettings = Context.BotChannelSettings.Include("StreamViewers").FirstOrDefault(b => b.User.Id == user.Id);
+            var botChannelSettings = Context.BotChannelSettings.FirstOrDefault(b => b.User.Id == user.Id);
+            var userSettings = GetBotUserSettingsForUser(user);
 
-            return botChannelSettings.StreamViewers;
+            return Context.Viewers.Where(s => s.Channel.ToLower().Equals(userSettings.BotChannel.ToLower()));
 
         }
 
@@ -942,7 +944,7 @@ namespace YTBot.Services
                         viewer.AllTimePoints = Convert.ToInt32(loyaltyPoints);
                         viewer.Channel = channel;
 
-                        Context.BotChannelSettings.Include("StreamViewers").FirstOrDefault(b => b.User.Id == user.Id).StreamViewers.Add(viewer);
+                        Context.Viewers.Add(viewer);
                     }
                 }
             }
@@ -976,7 +978,7 @@ namespace YTBot.Services
                             }
                             viewer.AllTimePoints = botChannelSettings.Loyalty.LoyaltyValue;
                             viewer.Channel = channel;
-                            Context.BotChannelSettings.Include("StreamViewers").FirstOrDefault(b => b.User.Id == user.Id).StreamViewers.Add(viewer);
+                            Context.Viewers.Add(viewer);
                         }
                     }
                 }
