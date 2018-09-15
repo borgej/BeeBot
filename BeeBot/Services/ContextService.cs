@@ -1299,6 +1299,82 @@ namespace YTBot.Services
             return trigger;
         }
 
+        public Trigger GetTrigger(string triggername, string username)
+        {
+            Context = new ApplicationDbContext();
+            var bcs = GetBotChannelSettings(GetUser(username));
+            return bcs.Triggers.FirstOrDefault(t => t.TriggerName.ToLower() == triggername.ToLower());
+        }
+
+        public Trigger ModAddedTriggerMessage(Trigger trigger, string username)
+        {
+            Context = new ApplicationDbContext();
+            var bcs = GetBotChannelSettings(GetUser(username));
+
+            if (trigger.Id == 0)
+            {
+                trigger.Active = true;
+                trigger.FollowerCanTrigger = true;
+                trigger.ModCanTrigger = true;
+                trigger.StreamerCanTrigger = true;
+                trigger.SubCanTrigger = true;
+                trigger.TriggerType = TriggerType.Message;
+                trigger.ViewerCanTrigger = true;
+                bcs.Triggers.Add(trigger);
+            }
+
+            Context.SaveChanges();
+
+            return trigger;
+        }
+
+        public Trigger ModRemovedTriggerMessage(Trigger trigger, string username)
+        {
+            Context = new ApplicationDbContext();
+            var bcs = GetBotChannelSettings(GetUser(username));
+
+            var deleteTrigger =
+                bcs.Triggers.FirstOrDefault(t => t.Id == trigger.Id);
+            if (deleteTrigger.TriggerType == TriggerType.Message)
+            {
+                bcs.Triggers.Remove(deleteTrigger);
+            }
+            else
+            {
+                return null;
+            }
+            
+
+            Context.SaveChanges();
+
+            return trigger;
+        }
+
+        public Trigger ModChangedTriggerMessage(Trigger trigger, string username)
+        {
+            Context = new ApplicationDbContext();
+            var bcs = GetBotChannelSettings(GetUser(username));
+
+            if (trigger.TriggerType != TriggerType.Message)
+            {
+                return null;
+            }
+            var dbTrigger = bcs.Triggers.FirstOrDefault(t => t.Id == trigger.Id);
+
+            dbTrigger.Active = trigger.Active = true;
+            dbTrigger.FollowerCanTrigger = trigger.FollowerCanTrigger = true;
+            dbTrigger.ModCanTrigger = trigger.ModCanTrigger = true;
+            dbTrigger.StreamerCanTrigger = trigger.StreamerCanTrigger = true;
+            dbTrigger.SubCanTrigger = trigger.SubCanTrigger = true;
+            dbTrigger.TriggerType = trigger.TriggerType = TriggerType.Message;
+            dbTrigger.ViewerCanTrigger = trigger.ViewerCanTrigger = true;
+            dbTrigger.TriggerResponse = trigger.TriggerResponse;
+
+            Context.SaveChanges();
+
+            return trigger;
+        }
+
         public virtual void Dispose()
         {
             var disposableServiceProvider = Context as IDisposable;

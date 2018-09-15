@@ -121,6 +121,69 @@ namespace YTBot.Services
 
                             CreateStrawPoll(title, arguments);
                         }
+                        else if (trigger.TriggerName.Equals("addcommand"))
+                        {
+                            if (ContextService.GetTrigger(command.ArgumentsAsList.FirstOrDefault(), User.UserName) != null)
+                            {
+                                TwitchClient.SendMessage(TcContainer.Channel, "/me !" + command.ArgumentsAsList.FirstOrDefault() + " already exists.");
+                                return;
+                            }
+
+                            var triggerName = command.ArgumentsAsList.FirstOrDefault();
+                            var tmp = command.ArgumentsAsList;
+                            tmp.RemoveAt(0);
+                            var truiggerMsg = string.Join("  ", tmp);
+                            
+                            var newTrigger = new Trigger
+                            {
+                                Id = 0,
+                                TriggerName = triggerName,
+                                TriggerResponse = truiggerMsg
+                            };
+                            ContextService.ModAddedTriggerMessage(newTrigger, User.UserName);
+                            TwitchClient.SendMessage(TcContainer.Channel, "/me !" + newTrigger.TriggerName + " added.");
+
+                        }
+                        else if (trigger.TriggerName.Equals("removecommand"))
+                        {
+                            var dbTrigger = ContextService.GetTrigger(command.ArgumentsAsList.FirstOrDefault(),
+                                User.UserName);
+                            if (dbTrigger == null)
+                            {
+                                TwitchClient.SendMessage(TcContainer.Channel, "/me !" + command.ArgumentsAsList.FirstOrDefault() + " no such command.");
+                                return;
+                            }
+
+                            var removedTrigger = ContextService.ModRemovedTriggerMessage(dbTrigger, User.UserName);
+
+                            if (removedTrigger == null)
+                            {
+                                hub.ConsoleLog("Error on !removecommand: Mod tried to remove non-message trigger", true);
+                            }
+
+                            TwitchClient.SendMessage(TcContainer.Channel, "/me !" + dbTrigger.TriggerName + " removed.");
+                        }
+                        else if (trigger.TriggerName.Equals("changecommand"))
+                        {
+                            var dbTrigger = ContextService.GetTrigger(command.ArgumentsAsList.FirstOrDefault(),
+                                User.UserName);
+                            if (dbTrigger == null)
+                            {
+                                TwitchClient.SendMessage(TcContainer.Channel, "/me !" + command.ArgumentsAsList.FirstOrDefault() + " no such command.");
+                                return;
+                            }
+                            var tmp = command.ArgumentsAsList;
+                            tmp.RemoveAt(0);
+                            var triggerMsg = string.Join("  ", tmp);
+                            dbTrigger.TriggerResponse = triggerMsg;
+
+                            var returnTrigger = ContextService.ModChangedTriggerMessage(dbTrigger, User.UserName);
+                            if (returnTrigger == null)
+                            {
+                                hub.ConsoleLog("Error on !changecommand: Mod tried to change non-message trigger text", true);
+                            }
+                            TwitchClient.SendMessage(TcContainer.Channel, "/me !" + dbTrigger.TriggerName + " changed.");
+                        }
 
                         // !ban
                         else if (trigger.TriggerName.Equals("ban"))
@@ -152,7 +215,7 @@ namespace YTBot.Services
                         else if (trigger.TriggerName.Equals("commands") || trigger.TriggerName.Equals("help"))
                         {
                             var availableTriggers = ContextService.GetCallableTriggers(User, viewer, command);
-                            TwitchClient.WhisperThrottler = new MessageThrottler(TwitchClient, 3, new TimeSpan(0, 0, 3) );
+                            TwitchClient.WhisperThrottler = new MessageThrottler(TwitchClient, 50, new TimeSpan(0, 0, 1) );
                             foreach (var availableTrigger in availableTriggers)
                             {
                                 TwitchClient.SendWhisper(command.ChatMessage.Username, $"!{availableTrigger.TriggerName.ToLower()} - {availableTrigger.TriggerResponse}");
@@ -519,7 +582,7 @@ namespace YTBot.Services
                                                         loyalty.LastGamble.Value.AddMinutes(6) <= DateTime.Now))
                                     try
                                     {
-                                        var r = new Random.Org.Random {UseLocalMode = true};
+                                        var r = new Random.Org.Random();
 
                                         // get who to give it to
                                         var gambleAmount = command.ChatMessage.Message.Split(' ')[1].ToLower()
