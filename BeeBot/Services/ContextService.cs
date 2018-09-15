@@ -150,6 +150,51 @@ namespace YTBot.Services
             };
             triggers.Add(help);
 
+            // !addcommand
+            var addcommand = new Trigger()
+            {
+                Active = true,
+                ViewerCanTrigger = false,
+                FollowerCanTrigger = false,
+                SubCanTrigger = false,
+                ModCanTrigger = true,
+                StreamerCanTrigger = true,
+                TriggerName = "addcommand",
+                TriggerResponse = "Adds trigger. !addcommand [triggername] [message]",
+                TriggerType = TriggerType.BuiltIn
+            };
+            triggers.Add(addcommand);
+
+            // !removecommand
+            var removecommand = new Trigger()
+            {
+                Active = true,
+                ViewerCanTrigger = false,
+                FollowerCanTrigger = false,
+                SubCanTrigger = false,
+                ModCanTrigger = true,
+                StreamerCanTrigger = true,
+                TriggerName = "removecommand",
+                TriggerResponse = "Removes trigger. !removecommand [triggername]",
+                TriggerType = TriggerType.BuiltIn
+            };
+            triggers.Add(removecommand);
+
+            // !changecommand
+            var changecommand = new Trigger()
+            {
+                Active = true,
+                ViewerCanTrigger = false,
+                FollowerCanTrigger = false,
+                SubCanTrigger = false,
+                ModCanTrigger = true,
+                StreamerCanTrigger = true,
+                TriggerName = "changecommand",
+                TriggerResponse = "Changes message for trigger. !changecommand [trigger] [respnse message]",
+                TriggerType = TriggerType.BuiltIn
+            };
+            triggers.Add(changecommand);
+
             // !commands
             var commands = new Trigger()
             {
