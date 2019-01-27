@@ -17,7 +17,7 @@ namespace YTBot.Models
         public bool? Active { get; set; }
         public TriggerType TriggerType { get; set; }
         [Column(TypeName = "VARCHAR")]
-        [StringLength(128)]
+        [StringLength(500)]
         public string TriggerResponse { get; set; }
         
         // Trigger restrictions

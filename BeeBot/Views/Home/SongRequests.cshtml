@@ -214,7 +214,11 @@
             newItem.attr("data-played", "false");
             newItem.attr("data-playing", "false");
 
-            newItem.find(".name").html(ret.Title);
+            if (ret.Duration === null || ret.Duration === "") {
+                newItem.find(".name").html(ret.Title + " (#:##)");
+            } else {
+                newItem.find(".name").html(ret.Title + " (" + ret.Duration + ")");
+            }
             newItem.find(".requester").html(ret.RequestedBy);
             newItem.removeClass("playlisttemplate").removeClass("dontshow").appendTo(".playlist").slideDown("fast");
 

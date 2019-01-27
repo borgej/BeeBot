@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -16,6 +17,7 @@ using TwitchLib.Client.Models;
 using TwitchLib.Client.Services;
 using YoutubeSearch;
 using YTBot.Models;
+using YTBot.Models.ViewModels;
 using SysRandom = System.Random;
 
 namespace YTBot.Services
@@ -214,9 +216,9 @@ namespace YTBot.Services
                         // !commands || !help
                         else if (trigger.TriggerName.Equals("commands") || trigger.TriggerName.Equals("help"))
                         {
-                            var availableTriggers = ContextService.GetCallableTriggers(User, viewer, command);
-                            TwitchClient.WhisperThrottler = new MessageThrottler(TwitchClient, 50, new TimeSpan(0, 0, 1) );
-                            foreach (var availableTrigger in availableTriggers)
+                            var availableTriggers = ContextService.GetAllTriggers(User, viewer, command);
+                            //TwitchClient.WhisperThrottler = new MessageThrottler(TwitchClient, 100, new TimeSpan(0, 0, 1) );
+                            foreach (var availableTrigger in availableTriggers.Where(t => t.TriggerType != TriggerType.Message))
                             {
                                 TwitchClient.SendWhisper(command.ChatMessage.Username, $"!{availableTrigger.TriggerName.ToLower()} - {availableTrigger.TriggerResponse}");
                             }
@@ -878,23 +880,24 @@ namespace YTBot.Services
 
                                     var query = HttpUtility.ParseQueryString(uri.Query);
 
-                                    var videoId = string.Empty;
+                                    var video = new VideoVm();
+                                    
+                                    video.Id = query.AllKeys.Contains("v") ? query["v"] : uri.Segments.Last();
 
-                                    videoId = query.AllKeys.Contains("v") ? query["v"] : uri.Segments.Last();
+                                    video = await hub.GetVideoInfoByHttp(commandArguments, video.Id);
 
-                                    var title = hub.GetVideoTitleByHttp(commandArguments, videoId);
-
-                                    // Try again if title cannot be found
-                                    if (title == "N/A") title = hub.GetVideoTitleByHttp(commandArguments, videoId);
-                                    if (TcContainer.SongRequests.Any(a => a.VideoId == videoId))
+                                    if (TcContainer.SongRequests.Any(a => a.VideoId == video.Id))
                                     {
                                         TwitchClient.SendMessage(TcContainer.Channel,
-                                            $"\"{title}\" is already in the playlist.");
+                                            $"\"{video.Title}\" is already in the playlist.");
+                                    }
+                                    else if (SongDurationCheck(video) == false)
+                                    {
+                                        TwitchClient.SendMessage(TcContainer.Channel, $"\"{video.Title}\" is over 10 minutes long, please request a song that is shorter!");
                                     }
                                     else
                                     {
-                                        var song = hub.UpdatePlaylistFromCommand(commandArguments, title, userName,
-                                            videoId);
+                                        var song = hub.UpdatePlaylistFromCommand(commandArguments, video.Title, userName, video.Id, video.Length);
                                         TwitchClient.SendMessage(TcContainer.Channel,
                                             $"\"{song.Title}\" was added to the playlist by @{song.RequestedBy}.");
                                     }
@@ -912,21 +915,37 @@ namespace YTBot.Services
                                     {
                                         var firstHit = youtubeSearchResult.FirstOrDefault();
                                         var firstVideoUrl = new Uri(firstHit.Url);
-                                        var videoId = string.Empty;
+                                        var video = new VideoVm();
+                                        video.Id = string.Empty;
+                                        video.Title = firstHit.Title;
+                                        video.Url = firstHit.Url;
+                                        try
+                                        {
+                                            video.Length = StringToTimeSpan(firstHit.Duration);
+                                        }
+                                        catch (Exception e)
+                                        {
+                                            // Video is potentially over 1 hour long
+                                            video.Length = new TimeSpan(1, 0, 0);
+                                        }
+                                        
+
                                         var query = HttpUtility.ParseQueryString(firstVideoUrl.Query);
                                         if (query.AllKeys.Contains("v"))
-                                            videoId = query["v"];
+                                            video.Id = query["v"];
                                         else
-                                            videoId = firstVideoUrl.Segments.Last();
-                                        if (TcContainer.SongRequests.Any(a => a.VideoId == videoId))
+                                            video.Id = firstVideoUrl.Segments.Last();
+                                        if (TcContainer.SongRequests.Any(a => a.VideoId == video.Id))
                                         {
-                                            TwitchClient.SendMessage(TcContainer.Channel,
-                                                $"\"{firstHit.Title}\" is already in the playlist.");
+                                            TwitchClient.SendMessage(TcContainer.Channel, $"\"{firstHit.Title}\" is already in the playlist.");
+                                        }
+                                        else if(SongDurationCheck(video) == false)
+                                        {
+                                            TwitchClient.SendMessage(TcContainer.Channel, $"\"{firstHit.Title}\" is over 10 minutes long, please request a song that is shorter!");
                                         }
                                         else
                                         {
-                                            var song = hub.UpdatePlaylistFromCommand(firstHit.Url, firstHit.Title,
-                                                userName, videoId);
+                                            var song = hub.UpdatePlaylistFromCommand(firstHit.Url, firstHit.Title, userName, video.Id, video.Length);
                                             TwitchClient.SendMessage(TcContainer.Channel,
                                                 $"\"{song.Title}\" was added to the playlist by @{song.RequestedBy}.");
                                         }
@@ -1129,6 +1148,37 @@ namespace YTBot.Services
         {
             var r = new SysRandom();
             return r.NextDouble() < truePercentage / 100.0;
+        }
+
+
+        /// <summary>
+        /// Check if song request is under 10 minutes long
+        /// </summary>
+        /// <param name="songRequest">VideoVm with youtube video and metadata</param>
+        /// <returns>True if song length is under 10 mins</returns>
+        private bool SongDurationCheck(VideoVm songRequest)
+        {
+            if (songRequest.Length < new TimeSpan(0, 10, 0))
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Get TimeSpan from string e.g.(10:13) 10 minutes and 13 seconds
+        /// </summary>
+        /// <param name="time">Time in string e.g.(10:13) 10 minutes and 13 seconds</param>
+        /// <returns>Timespan representation of input</returns>
+        private TimeSpan StringToTimeSpan(string time)
+        {
+            var format = "m\\:ss";
+            var culture = CultureInfo.CurrentCulture;
+
+            return TimeSpan.ParseExact(time, format, culture);
         }
     }
 }

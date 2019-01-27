@@ -88,7 +88,7 @@
         </div>
         <div class="col pull-left">
             <div class="dontshow id"></div>
-            <div class="name videoname"></div>
+            <div class="name videoname duration"></div>
             <div class="requester"></div>
         </div>
         <div class="">
@@ -241,7 +241,12 @@
             newItem.attr("data-played", "false");
             newItem.attr("data-playing", "false");
 
-            newItem.find(".name").html(ret.Title);
+            if (ret.Duration === null || ret.Duration === "") {
+                newItem.find(".name").html(ret.Title + " (#:##)");
+            } else {
+                newItem.find(".name").html(ret.Title + " (" + ret.Duration + ")");
+            }
+            
             newItem.find(".requester").html(ret.RequestedBy);
             newItem.removeClass("playlisttemplate").removeClass("dontshow").appendTo(".playlist").slideDown("fast");
 

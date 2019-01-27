@@ -1,0 +1,66 @@
+﻿@using System.Globalization
+@model IEnumerable<YTBot.Models.PlayListItem>
+@{
+    Layout = null;
+}
+<!DOCTYPE html>
+
+<html>
+<head>
+    <title>YTBot playlist for channel "@ViewBag.channel"</title>
+    @Styles.Render("~/Content/css")
+    @Scripts.Render("~/bundles/modernizr")
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/bootstrap")
+    @Scripts.Render("https://cdn.jsdelivr.net/npm/pretty-checkbox@3.0/dist/pretty-checkbox.min.css")
+</head>
+<body>
+    <div class="channel text-center">
+        <div class="col-12 text-center mt-1">
+            <img src="@ViewBag.ChannelLogo" width="60" /><img class="ytbotLogo" src="@Url.Content("~/Content/ytb_logo2.png")" width="200" />
+        </div>
+        <div class="col-12 text-center mt-2">
+             <span style="font-size: 20px;">Songrequests for <b>@ViewBag.channel</b></span>
+        </div>
+        
+        
+    </div>
+<div class="container">
+    <div class="col-12">
+    @if (ViewBag.Error != null)
+    {
+        <label class="badge badge-warning"><i class="fa fa-exclamation"></i> @ViewBag.Error</label>
+    }
+    @if (Model.Any())
+    {
+        
+        <table class="table table-striped">
+            <thead>
+            <tr>
+                <th>#</th>
+                <th>Name</th>
+                <th>Length</th>
+                <th>Url</th>
+                <th>Requester</th>
+                <th>Date</th>
+            </tr>
+            </thead>
+            <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td></td>
+                    <td>@item.Title</td>
+                    <td>@item.Duration.ToString()</td>
+                    <td><a href="@item.Url">@item.Url</a></td>
+                    <td>@item.RequestedBy</td>
+                    <td>@item.RequestDate.ToString("D", CultureInfo.CreateSpecificCulture("en-US"))</td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    }
+    </div>
+</div>
+</body>
+</html>

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Configuration;
 using System.Diagnostics;
+using System.Globalization;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading;
@@ -18,6 +19,7 @@ using TwitchLib.Client;
 using TwitchLib.Client.Events;
 using TwitchLib.Client.Extensions;
 using TwitchLib.Client.Models;
+using YoutubeExplode;
 using YTBot.Models;
 using YTBot.Models.ViewModels;
 using YTBot.Services;
@@ -838,7 +840,7 @@ namespace BeeBot.Signalr
                 var bcs = GetClientContainer();
                 if (bcs.SongRequests != null)
                     foreach (var song in bcs.SongRequests)
-                        UpdatePlaylistFromCommand(song.Url, song.Title, song.RequestedBy, song.VideoId);
+                        UpdatePlaylistFromCommand(song.Url, song.Title, song.RequestedBy, song.VideoId, song.Duration);
             }
             catch (Exception e)
             {
@@ -1397,12 +1399,13 @@ namespace BeeBot.Signalr
         /// <param name="title"></param>
         /// <param name="user"></param>
         /// <param name="videoId"></param>
+        /// <param name="duration"></param>
         /// <returns>PlayListItem</returns>
-        public PlayListItem UpdatePlaylistFromCommand(string url, string title, string user, string videoId)
+        public PlayListItem UpdatePlaylistFromCommand(string url, string title, string user, string videoId, TimeSpan? duration)
         {
             try
             {
-                var obj = new {title, url, user, videoid = videoId};
+                var obj = new {title, url, user, duration, videoid = videoId};
                 var container = GetClientContainer();
 
                 var usr = ContextService.GetUser(GetUsername());
@@ -1414,6 +1417,11 @@ namespace BeeBot.Signalr
                 item.RequestDate = DateTime.Now;
                 item.RequestedBy = user;
                 item.Url = url;
+
+                if (duration != null)
+                {
+                    item.Duration = duration;
+                }
 
 
                 container.SongRequests.Add(item);
@@ -1529,22 +1537,41 @@ namespace BeeBot.Signalr
         /// <param name="url"></param>
         /// <param name="videoId"></param>
         /// <returns>Title</returns>
-        public string GetVideoTitleByHttp(string url, string videoId)
+        public async Task<VideoVm> GetVideoInfoByHttp(string url, string videoId)
         {
+            var video = new VideoVm()
+            {
+                Id = videoId,
+                Url = url,
+                Title = "N/A"
+            };
             var web = new HtmlWeb();
-            if (url == null) url = "https://www.youtube.com/watch?v=" + videoId;
+            if (url == null)
+            {
+                video.Url = "https://www.youtube.com/watch?v=" + videoId;
+            }
 
-            if (videoId == null) return "N/A";
+            // no video given
+            if (video.Id == null)
+            {
+                return null;
+            }
 
-            var doc = web.Load(url);
-            var rateNode = doc.DocumentNode.SelectSingleNode("//*[@id='container']/h1");
+            try
+            {
+                var client = new YoutubeClient();
+                var videoMetaData = await client.GetVideoAsync(video.Id);
+                video.Title = videoMetaData.Title;
+                video.Length = videoMetaData.Duration;
+            }
+            catch (Exception e)
+            {
+                ConsoleLog("Error on GetVideoInfoByHttp: " + e.Message);
+            }
 
-            var regex = new Regex(@"document\.title\s*=\s*""(\w.*)\s*-\s*YouTube""");
-            var match = regex.Match(doc.DocumentNode.InnerHtml);
-            if (match.Success) return match.Groups[1].Value;
-
-            return "N/A";
+            return video;
         }
+
 
         /// <summary>
         ///     Gets the current TwitchClient for the current web-connection
@@ -2064,6 +2091,8 @@ namespace BeeBot.Signalr
             Clients.Caller.CreatedPoll(title, pollResult.Id);
             Clients.Caller.CreatePoll(title, allOptions);
         }
+
+
 
         #region Trigger checking
 

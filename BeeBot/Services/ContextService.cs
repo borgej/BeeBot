@@ -1071,11 +1071,18 @@ namespace YTBot.Services
             return GetTriggers(user);
         }
 
-        public IQueryable<Trigger> GetCallableTriggers(ApplicationUser user, StreamViewer chatter, ChatCommand msg)
+        public IEnumerable<Trigger> GetCallableTriggers(ApplicationUser user, StreamViewer chatter, ChatCommand msg)
         {
             var allTriggers = GetTriggers(user);
 
-            return  (IQueryable<Trigger>) allTriggers.Where(t => t.CanTrigger(chatter, msg) && t.Active == true);
+            return  allTriggers.Where(t => t.CanTrigger(chatter, msg) && t.Active == true);
+        }
+
+        public IEnumerable<Trigger> GetAllTriggers(ApplicationUser user, StreamViewer chatter, ChatCommand msg)
+        {
+            var allTriggers = GetTriggers(user);
+
+            return allTriggers.Where(t => t.Active == true);
         }
 
         /// <summary>
@@ -1126,6 +1133,16 @@ namespace YTBot.Services
             Context = new ApplicationDbContext();
 
             return Context.Users.SingleOrDefault(u => u.UserName.ToLower().Equals(username.ToLower()));
+        }
+
+        [OutputCache(Duration = 3600, VaryByParam = "username")]
+        public ApplicationUser GetUserFromChannelname(string channel)
+        {
+            Context = new ApplicationDbContext();
+
+            var t = Context.BotUserSettings.FirstOrDefault(a => a.BotChannel.ToLower() == channel);
+
+            return t.User;
         }
 
 

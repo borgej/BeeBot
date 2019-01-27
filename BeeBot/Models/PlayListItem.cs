@@ -16,6 +16,7 @@ namespace YTBot.Models
         public string Url { get; set; }
         public string RequestedBy { get; set; }
         public DateTime RequestDate { get; set; }
+        public TimeSpan? Duration { get; set; }
         public bool? Deleted { get; set; }
 
         
