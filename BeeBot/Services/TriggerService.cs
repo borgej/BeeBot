@@ -95,6 +95,24 @@ namespace YTBot.Services
                 g.Trigger.ToLower().Equals(command.CommandText) && g.EndsAt >= DateTime.Now);
         }
 
+        public bool KillStatCheck(ChatCommand command)
+        {
+            if (command.ChatMessage.IsBroadcaster || command.ChatMessage.IsModerator ||
+                command.ChatMessage.IsSubscriber)
+            {
+                if (command.CommandText.ToLower().Equals("kill") || command.CommandText.ToLower().Equals("death") ||
+                    command.CommandText.ToLower().Equals("squad"))
+                {
+                    return true;
+                }
+
+                return false;
+            }
+
+            return false;
+
+        }
+
         public async void Run(Trigger trigger, StreamViewer viewer, ChatCommand command)
         {
             if (trigger != null)
@@ -337,6 +355,8 @@ namespace YTBot.Services
                         {
                             hub.AddLinkPermit(command.ChatMessage, null);
                         }
+
+                        
 
                         break;
                     case TriggerType.Stat:
@@ -980,6 +1000,58 @@ namespace YTBot.Services
             }
             else
             {
+                // !kill !death !squad
+                if (command.CommandText.ToLower().Equals("kill") || command.CommandText.ToLower().Equals("death") ||
+                    command.CommandText.ToLower().Equals("squad"))
+                {
+                    try
+                    {
+                        if (command.CommandText.ToLower().Equals("kill"))
+                        {
+                            if (command.ArgumentsAsList.Count == 0)
+                            {
+                                // no argument, increment
+                                TcContainer.KillStats.Kills++;
+
+                            }
+                            else
+                            {
+                                TcContainer.KillStats.Kills = Convert.ToInt32(command.ArgumentsAsList[0]);
+                            }
+                        }
+                        else if (command.CommandText.ToLower().Equals("death"))
+                        {
+                            if (command.ArgumentsAsList.Count == 0)
+                            {
+                                // no argument, increment
+                                TcContainer.KillStats.Deaths++;
+
+                            }
+                            else
+                            {
+                                TcContainer.KillStats.Deaths = Convert.ToInt32(command.ArgumentsAsList[0]);
+                            }
+
+                        }
+                        else if (command.CommandText.ToLower().Equals("squad"))
+                        {
+                            if (command.ArgumentsAsList.Count == 0)
+                            {
+                                // no argument, increment
+                                TcContainer.KillStats.SquadKills++;
+
+                            }
+                            else
+                            {
+                                TcContainer.KillStats.SquadKills = Convert.ToInt32(command.ArgumentsAsList[0]);
+                            }
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        hub.ConsoleLog("Error on !" + command.CommandText.ToLower() + ": " + e.Message, false);
+                    }
+                }
                 // giveaways enrollment
                 if (TcContainer.Giveaways.Any(g =>
                     g.Trigger.ToLower().Equals(command.CommandText.ToLower()) && g.EndsAt >= DateTime.Now))

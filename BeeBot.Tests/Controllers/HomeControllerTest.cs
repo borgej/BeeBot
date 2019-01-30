@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Web.Mvc;
@@ -16,7 +17,17 @@ namespace BeeBot.Tests.Controllers
     [TestClass]
     public class HomeControllerTest
     {
+        [Test]
+        public void TestStringToTimeSpan()
+        {
+            var stringMinutes = "3:15";
+            var stringHours = "14:03:10";
 
+            var res = StringToTimeSpan(stringMinutes);
+
+            Assert.AreEqual(res.Minutes, 3);
+            Assert.AreEqual(res.Seconds, 15);
+        }
         
 
         [Test]
@@ -42,6 +53,13 @@ namespace BeeBot.Tests.Controllers
             Assert.AreNotEqual(list, randomlist);
         }
 
+        private TimeSpan StringToTimeSpan(string time)
+        {
+            var format = "m\\:ss";
+            var culture = CultureInfo.CurrentCulture;
+
+            return TimeSpan.ParseExact(time, format, culture);
+        }
 
         public static List<T> Randomize<T>(List<T> list)
         {

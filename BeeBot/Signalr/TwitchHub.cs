@@ -1362,6 +1362,26 @@ namespace BeeBot.Signalr
         }
 
         /// <summary>
+        ///     Poll this to send kill stats to client
+        /// </summary>
+        public void PollKillStats()
+        {
+            try
+            {
+                var username = ContextService.GetUser(GetUsername());
+                var bcs = ContextService.GetBotChannelSettings(username);
+                
+                
+
+                Clients.Caller.UpdateKillStats(GetClientContainer().KillStats);
+            }
+            catch (Exception e)
+            {
+                Clients.Caller.Notify(new { data = "-1", message = e.Message });
+            }
+        }
+
+        /// <summary>
         ///     Deletes song from database of users songrequest
         /// </summary>
         /// <param name="id"></param>
@@ -1453,7 +1473,7 @@ namespace BeeBot.Signalr
             }
             catch (Exception e)
             {
-                Clients.Caller.Notify(new {data = "1", message = e.Message});
+                Clients.Caller.Notify(new {data = "-1", message = e.Message});
             }
         }
 
@@ -2179,9 +2199,11 @@ namespace BeeBot.Signalr
                 var giveaways = TriggerService.GiveAwayCheck(command);
                 var triggers = TriggerService.TriggerCheck(command);
                 var loyalty = TriggerService.LoyaltyCheck(command);
-                if (giveaways.Any()) TriggerService.Run(null, null, command);
+                var killstat = TriggerService.KillStatCheck(command);
 
+                if (giveaways.Any()) TriggerService.Run(null, null, command);
                 if (loyalty) TriggerService.Run(null, null, command);
+                if (killstat) TriggerService.Run(null, null, command);
                 var enumerable = triggers as Trigger[] ?? triggers.ToArray();
                 if (enumerable.Any())
                 {

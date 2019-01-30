@@ -327,5 +327,10 @@ namespace BeeBot.Controllers
         {
             return View();
         }
+
+        public ActionResult KillStat(string channel)
+        {
+            return View();
+        }
     }
 }

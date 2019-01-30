@@ -38,6 +38,7 @@ namespace YTBot.Models
         public RussianRoulette RRulette { get; set; }
         public DateTime LastRussian { get; set; }
         public List<PlayListItem> SongRequests { get; set; }
+        public KillStat KillStats { get; set; }
         public bool LogOutInProgress { get; set; }
 
         public TwitchClientContainer()
@@ -53,6 +54,7 @@ namespace YTBot.Models
             ModsControlSongrequest = false;
             LinksInChatAllowed = true;
             RRulette = null;
+            KillStats = new KillStat();
 
             // initialize last russian run
             LastRussian = DateTime.Now.AddMinutes(-10);
