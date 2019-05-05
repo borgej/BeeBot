@@ -2003,7 +2003,11 @@ namespace BeeBot.Signalr
 
                 t.TwitchUsername = user.Username;
 
-                if (users.All(u => u.TwitchUserId != t.TwitchUserId)) users.Add(t);
+                if (users.All(u => u.TwitchUsername != t.TwitchUsername))
+                {
+                    users.Add(t);
+                }
+                    
             }
 
             return users;

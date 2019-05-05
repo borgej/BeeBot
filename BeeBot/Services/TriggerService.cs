@@ -11,6 +11,7 @@ using StrawpollNET;
 using StrawpollNET.Data;
 using TwitchLib.Api;
 using TwitchLib.Api.Exceptions;
+using TwitchLib.Api.Models.v5.Channels;
 using TwitchLib.Client;
 using TwitchLib.Client.Extensions;
 using TwitchLib.Client.Models;
@@ -406,10 +407,18 @@ namespace YTBot.Services
                         else if (trigger.TriggerName.Equals("stats"))
                         {
                             var channelData = await Api.Channels.v5.GetChannelAsync(BotUserSettings.ChannelToken);
-                            var channelSubsData =
-                                await Api.Channels.v5.GetChannelSubscribersAsync(channelData.Id, null, null, null,
-                                    BotUserSettings.ChannelToken);
-
+                            ChannelSubscribers channelSubsData = null;
+                            try
+                            {
+                                channelSubsData =
+                                    await Api.Channels.v5.GetChannelSubscribersAsync(channelData.Id, null, null, null,
+                                        BotUserSettings.ChannelToken);
+                            }
+                            catch (Exception e)
+                            {
+                                TwitchClient.SendMessage(TcContainer.Channel,
+                                    $"{TcContainer.Channel} has {channelData.Followers} followers.");
+                            }
                             TwitchClient.SendMessage(TcContainer.Channel,
                                 $"{TcContainer.Channel} has {channelData.Followers} followers and {channelSubsData.Total} subscribers.");
                         }
