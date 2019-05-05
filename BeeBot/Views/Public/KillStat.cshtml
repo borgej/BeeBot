@@ -1,0 +1,179 @@
+﻿@model YTBot.Models.KillStat
+
+@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
+
+    <title>YTBot - Killstats</title>
+    @Styles.Render("~/Content/css")
+    @Scripts.Render("~/bundles/modernizr")
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/bootstrap")
+    <style>
+        body {
+            font-size: 30px !important;
+            font-weight: bold;
+            @if (Convert.ToBoolean(ViewBag.DarkCss) == true)
+            {
+                <text>
+            color: black !important;
+            -webkit-text-stroke-width: 1px;
+            -webkit-text-stroke-color: white;
+            </text>
+            }
+            else
+            {
+                <text>
+            color: white !important;
+            -webkit-text-stroke-width: 1px;
+            -webkit-text-stroke-color: black;
+            </text>
+            }
+
+            background-color: transparent;
+            line-height: 30px;
+        }
+
+        html {
+            background-color: transparent;
+        }
+
+        .kdText {
+            font-size: 18px !important;
+            font-weight: bold;
+        }
+
+        .kdNr {
+            font-size: 20px !important;
+			padding-top: 3px !important;
+        }
+
+        .info {
+            font-size: 16px !important;
+            font-weight: normal !important;
+            color: white !important;
+            -webkit-text-stroke-width: 0px;
+            -webkit-text-stroke-color: white;
+            line-height: 23px !important;
+
+        }
+
+    </style>
+</head>
+<body>
+    <div class="container-fluid text-left">
+        <div class="col-12 text-left mt-2 ml-0">
+            @if (ViewBag.Error != null)
+            {
+                <label class="badge badge-warning"><i class="fa fa-exclamation"></i> @ViewBag.Error</label>
+            }
+            else
+            {
+                <table>
+                    <tr>
+                        <td class="text-center">
+                            <span class="killText"> <img src="@Url.Content("~/Content/KillStats/kill.png")" class="mr-0" /></span>
+                        </td>
+                        <td class="text-right mr-2" style="width: 40px;">
+                            <span id="killNr">@Model.Kills</span>
+                        </td>
+                        <td class="text-center">
+                            <span class="squadText"> <img src="@Url.Content("~/Content/KillStats/group.png")" class="mr-0" /></span>
+                        </td>
+                        <td class="text-right" style="width: 40px;">
+                            <span id="squadNr">@Model.SquadKills</span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="text-center">
+                            <span class="deathText"><img src="@Url.Content("~/Content/KillStats/death.png")" class="mr-0" /></span>
+                        </td>
+                        <td class="text-right" style="width: 40px;">
+                            <span id="deathNr">@Model.Deaths</span>
+                        </td>
+                        <td class="text-right" style="width: 40px;"></td>
+                        <td class="text-right" style="width: 40px;"></td>
+                    </tr>
+                    <tr>
+                        <td class="text-center" style="width: 40px; border-top: 1px solid white">
+                            <span class="kdText">k/d</span>
+                        </td>
+                        <td class="text-right kdNr" style="width: 40px; border-top: 1px solid white"></td>
+                        <td class="text-right" style="width: 40px;"></td>
+                        <td class="text-right" style="width: 40px;"></td>
+                    </tr>
+                </table>
+                <div class="info" style="display: none;">
+                    <p>
+                        Mods and subs can govern the kill stats. <br />
+                        Type !killstats in chat.
+                    </p>
+                </div>
+
+            }
+
+        </div>
+    </div>
+</body>
+</html>
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+        var reloadEverySec = 10;
+        var reloadFinal = reloadEverySec * 1000;
+
+        var numbers = setInterval(updateNumbers,10000);
+
+        var info = setInterval(showInfo, 90000);
+
+        function showInfo() {
+            $(".info").fadeIn(5000).delay(20000).fadeOut(5000);
+        }
+        function updateNumbers() {
+            console.log("reloading stats");
+            try {
+                $.ajax({
+                    type: "GET",
+                    url: "@Url.Action("KillStatAjax")?channel=@ViewBag.channel",
+                    dataType: "json",
+                    success: function(response) {
+						try {
+							if(response.deaths > 0 && response.kills > 0) {
+								var kd = response.kills / response.deaths;
+								$(".kdNr").html(kd.toFixed(1));
+							}
+							else if(response.deaths == 0 && response.kills > 0) {
+								var kd2 = response.kills;
+								$(".kdNr").html(kd2.toFixed(1));
+
+							}
+							else {
+								$(".kdNr").html(0);
+							}
+						}
+						catch(err) {
+							$(".kdNr").html("N/A");
+						}
+						$("#killNr").html(response.kills);
+						$("#squadNr").html(response.squad);
+						$("#deathNr").html(response.deaths);
+
+                        console.log(response);
+                    }
+                });
+            }
+            catch(err) {
+                console.log("Error on reloading stats: " + err.message);
+            }
+
+        }
+    });
+
+</script>

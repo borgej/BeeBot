@@ -101,7 +101,7 @@ namespace YTBot.Services
                 command.ChatMessage.IsSubscriber)
             {
                 if (command.CommandText.ToLower().Equals("kill") || command.CommandText.ToLower().Equals("death") ||
-                    command.CommandText.ToLower().Equals("squad"))
+                    command.CommandText.ToLower().Equals("squad") || command.CommandText.ToLower().Equals("reset"))
                 {
                     return true;
                 }
@@ -111,6 +111,25 @@ namespace YTBot.Services
 
             return false;
 
+        }
+
+        public void WhichServerCheck(ChatMessage message)
+        {
+            if (((message.Message.ToLower().Contains("which") || message.Message.ToLower().Contains("what")) && (message.Message.ToLower().Contains("server")) || message.Message.ToLower().Contains("server?")))
+            {
+                try
+                {
+                    if (Triggers.Any(t => t.TriggerName == "server" && t.Active != null && t.Active.Value == true && t.TriggerResponse != string.Empty))
+                    {
+                        var serverTrigger = Triggers.FirstOrDefault(t => t.TriggerName == "server" && t.TriggerResponse != string.Empty);
+                        TwitchClient.SendMessage(BotUserSettings.BotChannel, "/me " + $"{message.Channel} is playing on {serverTrigger.TriggerResponse}");
+                    }
+                }
+                catch (Exception e)
+                {
+                    hub.ConsoleLog("Error on WichServerCheck" + e.Message, false);
+                }
+            }
         }
 
         public async void Run(Trigger trigger, StreamViewer viewer, ChatCommand command)
@@ -1002,21 +1021,24 @@ namespace YTBot.Services
             {
                 // !kill !death !squad
                 if (command.CommandText.ToLower().Equals("kill") || command.CommandText.ToLower().Equals("death") ||
-                    command.CommandText.ToLower().Equals("squad"))
+                    command.CommandText.ToLower().Equals("squad") || command.CommandText.ToLower().Equals("reset"))
                 {
                     try
                     {
+                        var user = ContextService.GetUserFromChannelname(command.ChatMessage.Channel);
+                        var bcs = ContextService.GetBotChannelSettings(user);
+                        var killStats = bcs.KillStats;
                         if (command.CommandText.ToLower().Equals("kill"))
                         {
                             if (command.ArgumentsAsList.Count == 0)
                             {
                                 // no argument, increment
-                                TcContainer.KillStats.Kills++;
-
+                                killStats.IncrementKills();
+                                
                             }
                             else
                             {
-                                TcContainer.KillStats.Kills = Convert.ToInt32(command.ArgumentsAsList[0]);
+                                killStats.Kills = Convert.ToInt32(command.ArgumentsAsList[0]);
                             }
                         }
                         else if (command.CommandText.ToLower().Equals("death"))
@@ -1024,12 +1046,12 @@ namespace YTBot.Services
                             if (command.ArgumentsAsList.Count == 0)
                             {
                                 // no argument, increment
-                                TcContainer.KillStats.Deaths++;
+                                killStats.IncrementDeaths();
 
                             }
                             else
                             {
-                                TcContainer.KillStats.Deaths = Convert.ToInt32(command.ArgumentsAsList[0]);
+                                killStats.Deaths = Convert.ToInt32(command.ArgumentsAsList[0]);
                             }
 
                         }
@@ -1038,14 +1060,22 @@ namespace YTBot.Services
                             if (command.ArgumentsAsList.Count == 0)
                             {
                                 // no argument, increment
-                                TcContainer.KillStats.SquadKills++;
+                                killStats.IncrementSquad();
 
                             }
                             else
                             {
-                                TcContainer.KillStats.SquadKills = Convert.ToInt32(command.ArgumentsAsList[0]);
+                                killStats.SquadKills = Convert.ToInt32(command.ArgumentsAsList[0]);
                             }
                         }
+                        else if (command.CommandText.ToLower().Equals("reset"))
+                        {
+                            killStats.Kills = 0;
+                            killStats.SquadKills = 0;
+                            killStats.Deaths = 0;
+                        }
+
+                        ContextService.SaveKillStats(BotChannelSettings, killStats);
                     }
                     catch (Exception e)
                     {

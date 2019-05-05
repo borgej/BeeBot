@@ -878,7 +878,7 @@ namespace BeeBot.Signalr
             {
                 var ccontainer = GetClientContainer();
 
-                ccontainer.Client.SendMessage(Channel, "/me connected. - YTBot by @Borge_Jakobsen ");
+                ccontainer.Client.SendMessage(Channel, "/me connected. - YTBot by @BeeJeey ");
                 var botStatus = new BotStatusVM
                 {
                     info = ccontainer.Client.IsConnected ? "Bot connected" : "Bot disconnected",
@@ -1370,8 +1370,6 @@ namespace BeeBot.Signalr
             {
                 var username = ContextService.GetUser(GetUsername());
                 var bcs = ContextService.GetBotChannelSettings(username);
-                
-                
 
                 Clients.Caller.UpdateKillStats(GetClientContainer().KillStats);
             }
@@ -1643,8 +1641,15 @@ namespace BeeBot.Signalr
             var User = ContextService.GetUser(wtarg.Username);
 
             wtarg.Client = GetClientContainer().Client;
-
-            ContextService.TimersResetLastRun(User.UserName);
+            try
+            {
+                ContextService.TimersResetLastRun(User.UserName);
+            }
+            catch (Exception e)
+            {
+                ConsoleLog("Error on TrackLoyaltyAndTimers:TimersResetLastRun: " + e.Message);
+            }
+            
 
             var stopWatch = new Stopwatch();
             stopWatch.Start();
@@ -2121,6 +2126,18 @@ namespace BeeBot.Signalr
             ChatScanForBadWords(e.ChatMessage);
             ChatScanMessageContainsUrl(e.ChatMessage);
             GiveawayWinnerChatCheck(e.ChatMessage);
+
+            if (TriggerService == null)
+            {
+                var tcc = GetClientContainer();
+                TriggerService = new TriggerService(ContextService.GetUser(GetUsername()), tcc, this, Api);
+                TriggerService.WhichServerCheck(e.ChatMessage);
+            }
+            else
+            {
+                TriggerService.WhichServerCheck(e.ChatMessage);
+            }
+            
         }
 
         private async void ChatScanMessageContainsUrl(ChatMessage chatMsg)
@@ -2200,6 +2217,7 @@ namespace BeeBot.Signalr
                 var triggers = TriggerService.TriggerCheck(command);
                 var loyalty = TriggerService.LoyaltyCheck(command);
                 var killstat = TriggerService.KillStatCheck(command);
+                
 
                 if (giveaways.Any()) TriggerService.Run(null, null, command);
                 if (loyalty) TriggerService.Run(null, null, command);

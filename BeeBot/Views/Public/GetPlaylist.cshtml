@@ -2,6 +2,7 @@
 @model IEnumerable<YTBot.Models.PlayListItem>
 @{
     Layout = null;
+    var thumbnails = (List<string>) ViewBag.Thumbnails;
 }
 <!DOCTYPE html>
 
@@ -33,29 +34,34 @@
     }
     @if (Model.Any())
     {
-        
+        var i = 0;
         <table class="table table-striped">
             <thead>
-            <tr>
-                <th>#</th>
-                <th>Name</th>
-                <th>Length</th>
-                <th>Url</th>
-                <th>Requester</th>
-                <th>Date</th>
-            </tr>
+                <tr>
+                    <th>#</th>
+                    <th>Name</th>
+                    <th>Requester</th>
+                    <th>Length</th>
+                    <th>Url</th>
+
+                    <th>Date</th>
+                </tr>
             </thead>
             <tbody>
             @foreach (var item in Model)
             {
                 <tr>
-                    <td></td>
-                    <td>@item.Title</td>
+                    <td>
+                        <a href="@item.Url"><img src="@thumbnails[i]" height="48" /></a>
+</td>
+                    <td><a href="@item.Url">@Html.Raw(item.Title)</a></td>
+                    <td>@item.RequestedBy</td>
                     <td>@item.Duration.ToString()</td>
                     <td><a href="@item.Url">@item.Url</a></td>
-                    <td>@item.RequestedBy</td>
+                    
                     <td>@item.RequestDate.ToString("D", CultureInfo.CreateSpecificCulture("en-US"))</td>
                 </tr>
+                i = i + 1;
             }
             </tbody>
         </table>

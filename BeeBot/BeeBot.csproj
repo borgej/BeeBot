@@ -438,6 +438,10 @@
     <Compile Include="Migrations\201901261539553_PlaylistItemAddedDuration.Designer.cs">
       <DependentUpon>201901261539553_PlaylistItemAddedDuration.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201901301819576_AddedKillStats.cs" />
+    <Compile Include="Migrations\201901301819576_AddedKillStats.Designer.cs">
+      <DependentUpon>201901301819576_AddedKillStats.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\BannedWord.cs" />
     <Compile Include="Models\BotChannelSettings.cs" />
@@ -491,6 +495,9 @@
     <Content Include="Content\font-awesome.css" />
     <Content Include="Content\font-awesome.min.css" />
     <Content Include="Content\jquery.tablesorter.pager.css" />
+    <Content Include="Content\KillStats\death.png" />
+    <Content Include="Content\KillStats\group.png" />
+    <Content Include="Content\KillStats\kill.png" />
     <Content Include="Content\moderatorBadge.png" />
     <Content Include="Content\pretty-checkbox.min.css" />
     <Content Include="Content\tether\tether-theme-arrows-dark.css" />
@@ -661,7 +668,7 @@
     <Content Include="Scripts\popper.js.map" />
     <Content Include="Scripts\popper-utils.min.js.map" />
     <Content Include="Scripts\popper-utils.js.map" />
-    <Content Include="Views\Home\KillStat.cshtml" />
+    <Content Include="Views\Public\KillStat.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -747,6 +754,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201901261539553_PlaylistItemAddedDuration.resx">
       <DependentUpon>201901261539553_PlaylistItemAddedDuration.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201901301819576_AddedKillStats.resx">
+      <DependentUpon>201901301819576_AddedKillStats.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

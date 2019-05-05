@@ -11,10 +11,7 @@
         /// </summary>
         public KillStat()
         {
-            // Set initial stats
-            Kills = 0;
-            SquadKills = 0;
-            Deaths = 0;
+
         }
 
         public int SetKills(int kills)
@@ -36,6 +33,27 @@
             SquadKills = squadKills;
 
             return SquadKills;
+        }
+
+        public int IncrementSquad()
+        {
+            SquadKills++;
+
+            return SquadKills;
+        }
+
+        public int IncrementDeaths()
+        {
+            Deaths++;
+
+            return Deaths;
+        }
+
+        public int IncrementKills()
+        {
+            Kills++;
+
+            return Kills;
         }
     }
 }

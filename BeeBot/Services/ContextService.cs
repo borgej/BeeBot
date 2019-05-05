@@ -109,7 +109,8 @@ namespace YTBot.Services
                     Triggers = GetInitialSystemTriggers(),
                     Loyalty = new Loyalty(),
                     StreamGame = "",
-                    StreamTitle = ""
+                    StreamTitle = "", 
+                    KillStats = new KillStat()
                 };
                 Context.BotChannelSettings.Add(newBcs);
                 Context.SaveChanges();
@@ -1448,5 +1449,23 @@ namespace YTBot.Services
         }
 
 
+        public void SaveKillStats(BotChannelSettings bcs, KillStat tcContainerKillStats)
+        {
+            Context = new ApplicationDbContext();
+
+            var bcsDb = Context.BotChannelSettings.FirstOrDefault(b => b.Id == bcs.Id);
+            var killStatDb = bcsDb.KillStats;
+
+            if (killStatDb == null)
+            {
+                bcsDb.KillStats = new KillStat();
+            }
+
+            bcsDb.KillStats.Kills = tcContainerKillStats.Kills;
+            bcsDb.KillStats.SquadKills = tcContainerKillStats.SquadKills;
+            bcsDb.KillStats.Deaths = tcContainerKillStats.Deaths;
+
+            Context.SaveChanges();
+        }
     }
 }
