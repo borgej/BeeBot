@@ -1379,6 +1379,26 @@ namespace BeeBot.Signalr
             }
         }
 
+        public void DeleteAllSongs()
+        {
+            try
+            {
+                var user = ContextService.GetUser(GetUsername());
+                ContextService.DeleteAllSongRequests(user);
+
+                var retval = new StatusMessageVM
+                {
+                    message = "Deleted all songs",
+                    data = 1
+                };
+                Clients.Caller.deleteSongAck(retval);
+            }
+            catch (Exception e)
+            {
+                Clients.Caller.Notify(new { data = "-1", message = e.Message });
+            }
+        }
+
         /// <summary>
         ///     Deletes song from database of users songrequest
         /// </summary>
@@ -1581,6 +1601,7 @@ namespace BeeBot.Signalr
                 var videoMetaData = await client.GetVideoAsync(video.Id);
                 video.Title = videoMetaData.Title;
                 video.Length = videoMetaData.Duration;
+                video.NumViews = (int) videoMetaData.Statistics.ViewCount;
             }
             catch (Exception e)
             {

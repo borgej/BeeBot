@@ -62,10 +62,18 @@
                             </label>
                         </div>
                     </div>
+                    
 
                 </div>
+                
             </div>
+
+            
+
             <div class="row col">
+                <span class="float-right">
+                    <button class="btn btn-sm btn-warning " id="removeAllSongsBtn" onclick="deleteAllSongs();"><i class="fa fa-times"></i> Delete all</button>
+                </span>
                 <div class="flex-grow-1 playlist">
 
                 </div>
@@ -156,7 +164,19 @@
         var id = $(elem).parent().parent().attr("id");
         console.log("Deleting: " + "//www.youtube.com/embed/" + id + "?rel=0&autoplay=1");
         twitchHub.server.deleteSong(id);
+        $(elem).parent().parent().remove();
 
+    }
+
+    // removes all songs from the channel playlist
+    function deleteAllSongs() {
+        twitchHub.server.deleteAllSongs();
+
+        var playListItems = $(".playlist").find(".playlistitem");
+
+        $.each(playListItems, function(i, elem) {
+            $(elem).remove();
+        });
     }
 
     (function () {

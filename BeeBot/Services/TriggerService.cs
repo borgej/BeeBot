@@ -934,6 +934,10 @@ namespace YTBot.Services
                                     {
                                         TwitchClient.SendMessage(TcContainer.Channel, $"\"{video.Title}\" is over 10 minutes long, please request a song that is shorter!");
                                     }
+                                    else if (video.NumViews < 500)
+                                    {
+                                        TwitchClient.SendMessage(TcContainer.Channel, $"Sorry, {userName}, \"{video.Title}\" has too few views on YouTube, the song will not be added :(.");
+                                    }
                                     else
                                     {
                                         var song = hub.UpdatePlaylistFromCommand(commandArguments, video.Title, userName, video.Id, video.Length);
@@ -974,6 +978,9 @@ namespace YTBot.Services
                                             video.Id = query["v"];
                                         else
                                             video.Id = firstVideoUrl.Segments.Last();
+
+                                        video = await hub.GetVideoInfoByHttp(commandArguments, video.Id);
+
                                         if (TcContainer.SongRequests.Any(a => a.VideoId == video.Id))
                                         {
                                             TwitchClient.SendMessage(TcContainer.Channel, $"\"{firstHit.Title}\" is already in the playlist.");
@@ -981,6 +988,10 @@ namespace YTBot.Services
                                         else if(SongDurationCheck(video) == false)
                                         {
                                             TwitchClient.SendMessage(TcContainer.Channel, $"\"{firstHit.Title}\" is over 10 minutes long, please request a song that is shorter!");
+                                        }
+                                        else if (video.NumViews < 500)
+                                        {
+                                            TwitchClient.SendMessage(TcContainer.Channel, $"\"{firstHit.Title}\" has too few views on YouTube, the song will not be added :(.");
                                         }
                                         else
                                         {

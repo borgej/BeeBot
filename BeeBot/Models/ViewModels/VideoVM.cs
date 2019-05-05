@@ -11,5 +11,7 @@ namespace YTBot.Models.ViewModels
         public string Url { get; set; }
         public string Title { get; set; }
         public TimeSpan Length { get; set; }
+
+        public int NumViews { get; set; }
     }
 }

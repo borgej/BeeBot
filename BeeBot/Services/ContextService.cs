@@ -95,6 +95,20 @@ namespace YTBot.Services
             }
         }
 
+        public void DeleteAllSongRequests(ApplicationUser user)
+        {
+            var bcs = GetBotChannelSettings(GetUser(user.Email));
+
+            if (bcs.SongRequests == null)
+            {
+                return;
+            }
+
+            var dbSongs = bcs.SongRequests;
+            Context.PlaylistItems.RemoveRange(dbSongs);
+            Context.SaveChanges();
+        }
+
         private BotChannelSettings SetInitialBotChannelSettings(ApplicationUser user)
         {
             var bcs = GetBotChannelSettings(user);

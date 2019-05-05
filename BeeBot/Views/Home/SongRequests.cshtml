@@ -1,10 +1,10 @@
 ﻿<h2>Song requests</h2>
-<hr/>
+<hr />
 
 
 <div class="row">
     <div class="col-md-12 ml-4">
-        
+
     </div>
 </div>
 
@@ -32,12 +32,12 @@
                 <input id="random" type="checkbox" checked data-toggle="toggle" data-size="small" data-width="100" data-height="32" data-on="<i class='fa fa-arrow-right'></i> Squential" data-off="<i class='fa fa-random'></i> Shuffle">
             </div>
         </div>
-        
+
     </div>
 
     <div class="col mr-3">
-        <h4 class="col">Playlist</h4>
-        <div class="pl-2 pb-2" >
+        <h4 class="col">Playlist <button class="btn btn-sm btn-warning float-right" id="removeAllSongsBtn" onclick="deleteAllSongs();"><i class="fa fa-times"></i> Delete all</button></h4>
+        <div class="pl-2 pb-2">
             <div class="pretty p-switch">
                 <input class="postSongNameToChat" type="checkbox" value="" id="postSongNameToChat" name="active" checked="checked">
                 <div class="state p-primary">
@@ -47,7 +47,7 @@
                 </div>
             </div>
         </div>
-        
+
         <div class="playlist">
 
         </div>
@@ -56,8 +56,8 @@
 
 <div class="dontshow ">
     <div class="playlistitem row playlisttemplate" onclick="onPlaylystItemClick(this);">
-        <div class="thumb" >
-            <img src=""/>
+        <div class="thumb">
+            <img src="" />
         </div>
         <div class="col pull-left">
             <div class="dontshow id"></div>
@@ -68,7 +68,7 @@
             <button class="btn btn-sm btn-danger" onclick="deleteVideo(this); event.stopPropagation();"><i class="fa fa-trash"></i> </button>
         </div>
     </div>
-    
+
 </div>
 
 <script type="text/javascript">
@@ -108,7 +108,7 @@
         if ($(".postSongNameToChat").prop("checked")) {
             twitchHub.server.playingSong(id);
         }
-        
+
     }
 
     function playVideoId(id) {
@@ -129,14 +129,25 @@
         var id = $(elem).parent().parent().attr("id");
         console.log("Deleting: " + "//www.youtube.com/embed/" + id + "?rel=0&autoplay=1");
         twitchHub.server.deleteSong(id);
-
+        $(elem).parent().parent().remove();
     }
 
-    (function() {
+    // removes all songs from the channel playlist
+    function deleteAllSongs() {
+        twitchHub.server.deleteAllSongs();
+
+        var playListItems = $(".playlist").find(".playlistitem");
+
+        $.each(playListItems, function(i, elem) {
+            $(elem).remove();
+        });
+    }
+
+    (function () {
         $.connection.hub.logging = true;
         // Start the hub
-        $.connection.hub.start().done(function() {
-            $('#modControlSong').change(function() {
+        $.connection.hub.start().done(function () {
+            $('#modControlSong').change(function () {
                 if (this.checked) {
                     twitchHub.server.updateModsCanControlPlaylist(this.checked);
                 } else {
@@ -145,9 +156,9 @@
             });
             twitchHub.server.pollPlaylist();
 
-            setInterval(function() {
-                    twitchHub.server.pollPlaylist();
-                },
+            setInterval(function () {
+                twitchHub.server.pollPlaylist();
+            },
                 3000);
         });
 
@@ -171,9 +182,11 @@
             volume(ret);
         }
 
-        twitchHub.client.deleteSongAck = function(response) {
+        twitchHub.client.deleteSongAck = function (response) {
             if (response.data > 0) {
-                $("#" + response.obj.id).remove();
+                if (response.object != null) {
+                    $("#" + response.obj.id).remove();
+                }
 
                 console.log(response.message);
                 $.amaran({
@@ -202,7 +215,7 @@
             }
         }
 
-        twitchHub.client.UpdatePlaylist = function(ret) {
+        twitchHub.client.UpdatePlaylist = function (ret) {
             if (VideoAlreadyInList(ret))
                 return;
             var newItem = $(".playlisttemplate").clone();
@@ -225,7 +238,7 @@
 
         }
 
-        twitchHub.client.AddedPlaylist = function(ret) {
+        twitchHub.client.AddedPlaylist = function (ret) {
             if (ret.data == "1") {
                 console.log(ret.message);
                 $.amaran({
@@ -253,7 +266,7 @@
             }
         }
 
-        twitchHub.client.Notify = function(ret) {
+        twitchHub.client.Notify = function (ret) {
             if (ret.data == "1") {
                 console.log(ret.message);
                 $.amaran({
@@ -280,7 +293,7 @@
                 });
             }
         }
-        twitchHub.client.onconnected = function() {
+        twitchHub.client.onconnected = function () {
             console.log("connected...");
             $(".console").append("Connected...<br>");
         };
@@ -307,7 +320,8 @@
                 'onError': onPlayerError,
                 'onApiChange': onPlayerApiChange
             }
-        });}
+        });
+    }
 
     function onPlayerStateChange(event) {
         console.log("onPlayerStateChange()");
@@ -364,7 +378,7 @@
         return !$("#random").is(':checked');
     }
 
-    
+
 
     function getFirstUnplayedVideo() {
         var video = $('[data-played="false"]');
@@ -384,7 +398,7 @@
                 newVideo = videos.random();
             }
         }
-        
+
 
 
         return newVideo;
@@ -459,7 +473,7 @@
         }
 
         if ($video.length == 0) {
-            
+
             if (ifRepeat()) {
                 $video = getFirstVideo();
             }
