@@ -15,6 +15,7 @@ using StrawpollNET;
 using StrawpollNET.Data;
 using TwitchLib.Api;
 using TwitchLib.Api.Exceptions;
+using TwitchLib.Api.Models.v5.Clips;
 using TwitchLib.Client;
 using TwitchLib.Client.Events;
 using TwitchLib.Client.Extensions;
@@ -203,6 +204,7 @@ namespace BeeBot.Signalr
             Api = new TwitchAPI();
             Api.Settings.AccessToken = clientSecret;
             Api.Settings.ClientId = clientId;
+
         }
 
         /// <summary>
@@ -2152,16 +2154,24 @@ namespace BeeBot.Signalr
             ChatScanMessageContainsUrl(e.ChatMessage);
             GiveawayWinnerChatCheck(e.ChatMessage);
 
-            if (TriggerService == null)
+            try
             {
-                var tcc = GetClientContainer();
-                TriggerService = new TriggerService(ContextService.GetUser(GetUsername()), tcc, this, Api);
-                TriggerService.WhichServerCheck(e.ChatMessage);
+                if (TriggerService == null)
+                {
+                    var tcc = GetClientContainer();
+                    TriggerService = new TriggerService(ContextService.GetUser(GetUsername()), tcc, this, Api);
+                    TriggerService.WhichServerCheck(e.ChatMessage);
+                }
+                else
+                {
+                    TriggerService.WhichServerCheck(e.ChatMessage);
+                }
             }
-            else
+            catch (Exception exception)
             {
-                TriggerService.WhichServerCheck(e.ChatMessage);
+                ConsoleLog(exception.Message);
             }
+            
             
         }
 

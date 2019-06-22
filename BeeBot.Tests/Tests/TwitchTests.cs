@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System;
+using TwitchLib.Api;
+using TwitchLib.Api.Models.v5.Clips;
 using TwitchLib.Client;
 using TwitchLib.Client.Enums;
 using TwitchLib.Client.Events;
@@ -16,6 +18,7 @@ namespace BeeBot.Tests.Tests
     {
 
             TwitchClient client;
+            private TwitchAPI api;
 
             public void Bot()
             {
@@ -31,6 +34,8 @@ namespace BeeBot.Tests.Tests
                 client.OnConnected += Client_OnConnected;
 
                 client.Connect();
+                var allClips = api.Clips.v5.GetTopClipsAsync("DonFandango", null, null, 300, Period.All);
+
             }
             private void Client_OnConnected(object sender, OnConnectedArgs e)
             {

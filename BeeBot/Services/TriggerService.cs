@@ -455,12 +455,19 @@ namespace YTBot.Services
                         // !top
                         else if (trigger.TriggerName.Equals("top"))
                         {
-                            var regEx = Regex.Match(command.ArgumentsAsString.ToLower(), "(\\d+)");
-
-                            var number = Convert.ToInt32(regEx.Groups[1].Value);
-                            if (number > 10)
+                            int number = 20;
+                            try
                             {
-                                number = 10;
+                                var regEx = Regex.Match(command.ArgumentsAsString.ToLower(), "(\\d+)");
+                                number = Convert.ToInt32(regEx.Groups[1].Value);
+                                if (number > 20)
+                                {
+                                    number = 20;
+                                }
+                            }
+                            catch (Exception e)
+                            {
+                                hub.ConsoleLog("Error on !top: " + e.Message, true);
                             }
 
                             var thisUser = User;
@@ -694,7 +701,7 @@ namespace YTBot.Services
                                             else
                                             {
                                                 var newAmount = sourceViewerLoyalty.CurrentPoints - gambleAmount +
-                                                                gambleAmount * 10;
+                                                                (gambleAmount * 10);
 
                                                 TwitchClient
                                                     .SendMessage(TcContainer.Channel, "/me " +
@@ -898,7 +905,7 @@ namespace YTBot.Services
                         // !play
                         else if (trigger.TriggerName.ToLower().Equals("play"))
                         {
-                            if (command.ChatMessage.IsBroadcaster)
+                            if (command.ChatMessage.IsBroadcaster && TcContainer.ModsControlSongrequest)
                                 hub.Play();
                             else if (command.ChatMessage.IsModerator && TcContainer.ModsControlSongrequest) hub.Play();
                         }
@@ -937,21 +944,21 @@ namespace YTBot.Services
                                     if (TcContainer.SongRequests.Any(a => a.VideoId == video.Id))
                                     {
                                         TwitchClient.SendMessage(TcContainer.Channel,
-                                            $"\"{video.Title}\" is already in the playlist.");
+                                            $"\"@{video.Title}\" is already in the playlist.");
                                     }
                                     else if (SongDurationCheck(video) == false)
                                     {
-                                        TwitchClient.SendMessage(TcContainer.Channel, $"\"{video.Title}\" is over 10 minutes long, please request a song that is shorter!");
+                                        TwitchClient.SendMessage(TcContainer.Channel, $"\"@{video.Title}\" is over 10 minutes long, please request a song that is shorter!");
                                     }
                                     else if (video.NumViews < 500)
                                     {
-                                        TwitchClient.SendMessage(TcContainer.Channel, $"Sorry, {userName}, \"{video.Title}\" has too few views on YouTube, the song will not be added :(.");
+                                        TwitchClient.SendMessage(TcContainer.Channel, $"Sorry, {userName}, \"@{video.Title}\" has too few views on YouTube, the song will not be added :(.");
                                     }
                                     else
                                     {
                                         var song = hub.UpdatePlaylistFromCommand(commandArguments, video.Title, userName, video.Id, video.Length);
                                         TwitchClient.SendMessage(TcContainer.Channel,
-                                            $"\"{song.Title}\" was added to the playlist by @{song.RequestedBy}.");
+                                            $"\"@{song.Title}\" was added to the playlist by @{song.RequestedBy}.");
                                     }
                                 }
                                 // search for the song on youtube
@@ -992,15 +999,15 @@ namespace YTBot.Services
 
                                         if (TcContainer.SongRequests.Any(a => a.VideoId == video.Id))
                                         {
-                                            TwitchClient.SendMessage(TcContainer.Channel, $"\"{firstHit.Title}\" is already in the playlist.");
+                                            TwitchClient.SendMessage(TcContainer.Channel, $"\"@{firstHit.Title}\" is already in the playlist.");
                                         }
                                         else if(SongDurationCheck(video) == false)
                                         {
-                                            TwitchClient.SendMessage(TcContainer.Channel, $"\"{firstHit.Title}\" is over 10 minutes long, please request a song that is shorter!");
+                                            TwitchClient.SendMessage(TcContainer.Channel, $"\"@{firstHit.Title}\" is over 10 minutes long, please request a song that is shorter!");
                                         }
                                         else if (video.NumViews < 500)
                                         {
-                                            TwitchClient.SendMessage(TcContainer.Channel, $"\"{firstHit.Title}\" has too few views on YouTube, the song will not be added :(.");
+                                            TwitchClient.SendMessage(TcContainer.Channel, $"\"@{firstHit.Title}\" has too few views on YouTube, the song will not be added :(.");
                                         }
                                         else
                                         {
