@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using System.Web;
 using BeeBot.Models;
 using BeeBot.Signalr;
+using Google.Apis.Logging;
 using StrawpollNET;
 using StrawpollNET.Data;
 using TwitchLib.Api;
@@ -173,7 +174,7 @@ namespace YTBot.Services
                             var tmp = command.ArgumentsAsList;
                             tmp.RemoveAt(0);
                             var truiggerMsg = string.Join("  ", tmp);
-                            
+
                             var newTrigger = new Trigger
                             {
                                 Id = 0,
@@ -306,13 +307,13 @@ namespace YTBot.Services
                                 TwitchClient.SendMessage(TcContainer.Channel,
                                     "/me " + $"The last poll results for {pollFetch.Title} {pollFetch.PollUrl} are:");
                                 var results = pollFetch.Options.Zip(pollFetch.Votes,
-                                    (a, b) => new {Option = a, Vote = b});
+                                    (a, b) => new { Option = a, Vote = b });
                                 var totalVotes = pollFetch.Votes.Sum();
                                 foreach (var result in results)
                                 {
                                     var percentage = result.Vote == 0
                                         ? "0"
-                                        : (result.Vote / (double) totalVotes * 100).ToString();
+                                        : (result.Vote / (double)totalVotes * 100).ToString();
                                     TwitchClient.SendMessage(TcContainer.Channel,
                                         "/me " + $"{result.Option} => {result.Vote} votes ({percentage}%)");
                                 }
@@ -376,7 +377,7 @@ namespace YTBot.Services
                             hub.AddLinkPermit(command.ChatMessage, null);
                         }
 
-                        
+
 
                         break;
                     case TriggerType.Stat:
@@ -836,7 +837,7 @@ namespace YTBot.Services
                                 }
 
 
-                                var newRoulette = new RussianRoulette {BuyIn = bet};
+                                var newRoulette = new RussianRoulette { BuyIn = bet };
                                 newRoulette.TotalBet += newRoulette.BuyIn;
                                 newRoulette.Players.Add(player);
                                 TcContainer.RRulette = newRoulette;
@@ -936,7 +937,7 @@ namespace YTBot.Services
                                     var query = HttpUtility.ParseQueryString(uri.Query);
 
                                     var video = new VideoVm();
-                                    
+
                                     video.Id = query.AllKeys.Contains("v") ? query["v"] : uri.Segments.Last();
 
                                     video = await hub.GetVideoInfoByHttp(commandArguments, video.Id);
@@ -987,7 +988,7 @@ namespace YTBot.Services
                                             // Video is potentially over 1 hour long
                                             video.Length = new TimeSpan(1, 0, 0);
                                         }
-                                        
+
 
                                         var query = HttpUtility.ParseQueryString(firstVideoUrl.Query);
                                         if (query.AllKeys.Contains("v"))
@@ -1001,7 +1002,7 @@ namespace YTBot.Services
                                         {
                                             TwitchClient.SendMessage(TcContainer.Channel, $"\"@{firstHit.Title}\" is already in the playlist.");
                                         }
-                                        else if(SongDurationCheck(video) == false)
+                                        else if (SongDurationCheck(video) == false)
                                         {
                                             TwitchClient.SendMessage(TcContainer.Channel, $"\"@{firstHit.Title}\" is over 10 minutes long, please request a song that is shorter!");
                                         }
@@ -1046,6 +1047,34 @@ namespace YTBot.Services
             }
             else
             {
+                if (command.CommandText.ToLower().Equals("game"))
+                {
+                    try
+                    {
+                        if (command.ChatMessage.IsBroadcaster || command.ChatMessage.IsModerator)
+                        {
+                            hub.UpdateChannel(null, command.ChatMessage.Message);
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        hub.ConsoleLog("Error on !game: " + e.Message, true);
+                    }
+                }
+                else if (command.CommandText.ToLower().Equals("title"))
+                {
+                    try
+                    {
+                        if (command.ChatMessage.IsBroadcaster || command.ChatMessage.IsModerator)
+                        {
+                            hub.UpdateChannel(command.ChatMessage.Message, null);
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        hub.ConsoleLog("Error on !title: " + e.Message, true);
+                    }
+                }
                 // !kill !death !squad
                 if (command.CommandText.ToLower().Equals("kill") || command.CommandText.ToLower().Equals("death") ||
                     command.CommandText.ToLower().Equals("squad") || command.CommandText.ToLower().Equals("reset"))
@@ -1061,7 +1090,7 @@ namespace YTBot.Services
                             {
                                 // no argument, increment
                                 killStats.IncrementKills();
-                                
+
                             }
                             else
                             {
@@ -1141,12 +1170,12 @@ namespace YTBot.Services
                         Mod = command.ChatMessage.IsModerator
                     };
 
-//#if DEBUG
-//                    viewer.TwitchUsername = GenerateName(12);
-//                    viewer.Follower = NextBool(90);
-//                    viewer.Subscriber = NextBool(40);
-//                    viewer.Mod = NextBool(20);
-//#endif
+                    //#if DEBUG
+                    //                    viewer.TwitchUsername = GenerateName(12);
+                    //                    viewer.Follower = NextBool(90);
+                    //                    viewer.Subscriber = NextBool(40);
+                    //                    viewer.Mod = NextBool(20);
+                    //#endif
                     // enter giveaway
                     if (giveaway.CanEnroll(thisViewer))
                         giveaway.Enroll(thisViewer);
@@ -1256,7 +1285,7 @@ namespace YTBot.Services
                 "b", "c", "d", "f", "g", "h", "j", "k", "l", "m", "l", "n", "p", "q", "r", "s", "sh", "zh", "t", "v",
                 "w", "x"
             };
-            string[] vowels = {"a", "e", "i", "o", "u", "ae", "y"};
+            string[] vowels = { "a", "e", "i", "o", "u", "ae", "y" };
             var Name = "";
             Name += consonants[r.Next(consonants.Length)].ToUpper();
             Name += vowels[r.Next(vowels.Length)];
