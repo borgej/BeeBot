@@ -115,6 +115,21 @@ namespace YTBot.Services
 
         }
 
+        public bool TitleAndGameCheck(ChatCommand command)
+        {
+            if (command.ChatMessage.IsBroadcaster || command.ChatMessage.IsModerator)
+            {
+                if (command.CommandText.ToLower().Equals("title") || command.CommandText.ToLower().Equals("game"))
+                {
+                    return true;
+                }
+
+                return false;
+            }
+
+            return false;
+        }
+
         public void WhichServerCheck(ChatMessage message)
         {
             if (((message.Message.ToLower().Contains("which") || message.Message.ToLower().Contains("what")) && (message.Message.ToLower().Contains("server")) || message.Message.ToLower().Contains("server?")))
@@ -945,21 +960,21 @@ namespace YTBot.Services
                                     if (TcContainer.SongRequests.Any(a => a.VideoId == video.Id))
                                     {
                                         TwitchClient.SendMessage(TcContainer.Channel,
-                                            $"\"@{video.Title}\" is already in the playlist.");
+                                            $"\"{video.Title}\" is already in the playlist.");
                                     }
                                     else if (SongDurationCheck(video) == false)
                                     {
-                                        TwitchClient.SendMessage(TcContainer.Channel, $"\"@{video.Title}\" is over 10 minutes long, please request a song that is shorter!");
+                                        TwitchClient.SendMessage(TcContainer.Channel, $"\"{video.Title}\" is over 10 minutes long, please request a song that is shorter!");
                                     }
                                     else if (video.NumViews < 500)
                                     {
-                                        TwitchClient.SendMessage(TcContainer.Channel, $"Sorry, {userName}, \"@{video.Title}\" has too few views on YouTube, the song will not be added :(.");
+                                        TwitchClient.SendMessage(TcContainer.Channel, $"Sorry, {userName}, \"{video.Title}\" has too few views on YouTube, the song will not be added :(.");
                                     }
                                     else
                                     {
                                         var song = hub.UpdatePlaylistFromCommand(commandArguments, video.Title, userName, video.Id, video.Length);
                                         TwitchClient.SendMessage(TcContainer.Channel,
-                                            $"\"@{song.Title}\" was added to the playlist by @{song.RequestedBy}.");
+                                            $"\"{song.Title}\" added to playlist by @{song.RequestedBy}.");
                                     }
                                 }
                                 // search for the song on youtube
@@ -1000,21 +1015,21 @@ namespace YTBot.Services
 
                                         if (TcContainer.SongRequests.Any(a => a.VideoId == video.Id))
                                         {
-                                            TwitchClient.SendMessage(TcContainer.Channel, $"\"@{firstHit.Title}\" is already in the playlist.");
+                                            TwitchClient.SendMessage(TcContainer.Channel, $"\"{firstHit.Title}\" is already in the playlist.");
                                         }
                                         else if (SongDurationCheck(video) == false)
                                         {
-                                            TwitchClient.SendMessage(TcContainer.Channel, $"\"@{firstHit.Title}\" is over 10 minutes long, please request a song that is shorter!");
+                                            TwitchClient.SendMessage(TcContainer.Channel, $"\"{firstHit.Title}\" is over 10 minutes long, please request a song that is shorter!");
                                         }
                                         else if (video.NumViews < 500)
                                         {
-                                            TwitchClient.SendMessage(TcContainer.Channel, $"\"@{firstHit.Title}\" has too few views on YouTube, the song will not be added :(.");
+                                            TwitchClient.SendMessage(TcContainer.Channel, $"\"{firstHit.Title}\" has too few views on YouTube, the song will not be added :(.");
                                         }
                                         else
                                         {
                                             var song = hub.UpdatePlaylistFromCommand(firstHit.Url, firstHit.Title, userName, video.Id, video.Length);
                                             TwitchClient.SendMessage(TcContainer.Channel,
-                                                $"\"{song.Title}\" was added to the playlist by @{song.RequestedBy}.");
+                                                $"\"{song.Title}\" added to playlist by @{song.RequestedBy}.");
                                         }
                                     }
                                 }
@@ -1053,7 +1068,8 @@ namespace YTBot.Services
                     {
                         if (command.ChatMessage.IsBroadcaster || command.ChatMessage.IsModerator)
                         {
-                            hub.UpdateChannel(null, command.ChatMessage.Message);
+                            var streamInfo = hub.RetrieveStreamInfo();
+                            await hub.SaveStreamInfo(streamInfo.Title, command.ArgumentsAsString, null, null, "0");
                         }
                     }
                     catch (Exception e)
@@ -1067,7 +1083,8 @@ namespace YTBot.Services
                     {
                         if (command.ChatMessage.IsBroadcaster || command.ChatMessage.IsModerator)
                         {
-                            hub.UpdateChannel(command.ChatMessage.Message, null);
+                            var streamInfo = hub.RetrieveStreamInfo();
+                            await hub.SaveStreamInfo(command.ArgumentsAsString, streamInfo.Game, null, null, "0");
                         }
                     }
                     catch (Exception e)

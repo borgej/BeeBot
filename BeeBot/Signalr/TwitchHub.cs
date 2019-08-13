@@ -4,6 +4,7 @@ using System.Configuration;
 using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
+using System.Net;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
@@ -975,6 +976,42 @@ namespace BeeBot.Signalr
         ///     Gets current stream meta information. Uptime, title, game, delay, mature and online status.
         /// </summary>
         /// <returns>Call to Caller.SetStreamInfo</returns>
+        public StreamStatusVM RetrieveStreamInfo()
+        {
+            try
+            {
+                InitializeAPI();
+                var channel = Api.Channels.v5.GetChannelAsync(ChannelToken).Result;
+                var uptime = Api.Streams.v5.BroadcasterOnlineAsync(channel.Id).Result;
+                var stream = Api.Streams.v5.GetStreamByUserAsync(channel.Id).Result;
+
+                var delay = 0;
+                if (stream == null) delay = stream.Stream.Delay;
+
+                var streamStatus = new StreamStatusVM
+                {
+                    Channel = channel.DisplayName,
+                    Game = channel.Game,
+                    Title = channel.Status,
+                    Mature = channel.Mature,
+                    Delay = delay,
+                    Online = uptime
+                };
+
+
+                return streamStatus;
+            }
+            catch (Exception e)
+            {
+                ConsoleLog(e.Message);
+                return null;
+            }
+        }
+
+        /// <summary>
+        ///     Gets current stream meta information. Uptime, title, game, delay, mature and online status.
+        /// </summary>
+        /// <returns>Call to Caller.SetStreamInfo</returns>
         public async Task GetStreamInfo()
         {
             try
@@ -1601,7 +1638,7 @@ namespace BeeBot.Signalr
             {
                 var client = new YoutubeClient();
                 var videoMetaData = await client.GetVideoAsync(video.Id);
-                video.Title = videoMetaData.Title;
+                video.Title = WebUtility.HtmlDecode(videoMetaData.Title);
                 video.Length = videoMetaData.Duration;
                 video.NumViews = (int) videoMetaData.Statistics.ViewCount;
             }
@@ -2252,11 +2289,13 @@ namespace BeeBot.Signalr
                 var triggers = TriggerService.TriggerCheck(command);
                 var loyalty = TriggerService.LoyaltyCheck(command);
                 var killstat = TriggerService.KillStatCheck(command);
+                var titleAndGame = TriggerService.TitleAndGameCheck(command);
                 
 
                 if (giveaways.Any()) TriggerService.Run(null, null, command);
                 if (loyalty) TriggerService.Run(null, null, command);
                 if (killstat) TriggerService.Run(null, null, command);
+                if (titleAndGame) TriggerService.Run(null, null, command);
                 var enumerable = triggers as Trigger[] ?? triggers.ToArray();
                 if (enumerable.Any())
                 {
