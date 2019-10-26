@@ -225,7 +225,7 @@ namespace BeeBot.Signalr
                 var video = bcs.SongRequests.FirstOrDefault(v => v.VideoId == id);
 
                 ccontainer.Client.SendMessage(ccontainer.Channel,
-                    $"/me is now playing: {video.Title} - ( {video.Url} ) added by @{video.RequestedBy}");
+                    $"/me playing: {video.Title} - {video.Url} by @{video.RequestedBy}");
             }
             catch (Exception exception)
             {
@@ -651,6 +651,7 @@ namespace BeeBot.Signalr
             {
                 //ConsoleLog("Checking bot connection status...");
                 var cc = GetClientContainer();
+                cc.LastClientPing = DateTime.Now;
                 if (cc.Client != null)
                 {
                     var bs = new BotStatusVM
@@ -687,7 +688,7 @@ namespace BeeBot.Signalr
             try
             {
                 GetClientContainer().LogOutInProgress = false;
-                ConnectBot(username, password, channel);
+                await ConnectBot(username, password, channel);
             }
             catch (Exception e)
             {
@@ -708,11 +709,17 @@ namespace BeeBot.Signalr
                 if (GetClientContainer().LogOutInProgress) return;
 
                 var client = GetClient();
+
+                ConsoleLog("Running threads:");
+                foreach (var thread in RunningThreads)
+                {
+                    ConsoleLog(thread.Key.ToString());
+                    ConsoleLog(thread.Value.ManagedThreadId.ToString());
+                }
                 if (client != null)
                 {
                     if (client.IsConnected)
                     {
-                        ConsoleLog("Already connected...");
                         ConnectionId = Context.ConnectionId;
                         var bs = new BotStatusVM
                         {
@@ -721,7 +728,7 @@ namespace BeeBot.Signalr
                             warning = "",
                             connected = GetClientContainer().Client.IsConnected
                         };
-
+                        ConsoleLog("Already connected... (ConnectionId: " + ConnectionId.ToString() + ")");
                         Clients.Caller.BotStatus(bs);
                     }
                     else
@@ -748,7 +755,7 @@ namespace BeeBot.Signalr
 
                         //ccontainer.Client.Initialize()
                         ccontainer.Client.Connect();
-                        ConsoleLog("Reconnecting to channel " + channel);
+                        ConsoleLog("Reconnecting to channel " + channel + "(ConnectionId: " + ConnectionId.ToString() + ")");
 
                         var bs = new BotStatusVM
                         {
@@ -799,7 +806,7 @@ namespace BeeBot.Signalr
 
 
                     clientContainer.Client.Connect();
-                    ConsoleLog("Connecting to channel " + channel);
+                    ConsoleLog("Connecting to channel " + channel + "(ConnectionId: " + ConnectionId.ToString() + ")");
 
                     var arg = new WorkerThreadArg
                     {
@@ -1805,10 +1812,11 @@ namespace BeeBot.Signalr
 
                             // Timers
                             var threadId = Thread.CurrentThread.ManagedThreadId;
-                            foreach (var timer in botChannelSettings.Timers)
+                            foreach (var timer in botChannelSettings.Timers) {
                                 if (timer.TimerLastRun != null && timer.Active.HasValue && timer.Active.Value &&
                                     Convert.ToDateTime(timer.TimerLastRun.Value.AddMinutes(timer.TimerInterval)) <=
                                     DateTime.Now)
+                                {
                                     try
                                     {
                                         // update timer
@@ -1823,6 +1831,9 @@ namespace BeeBot.Signalr
                                     {
                                         ConsoleLog("Error on ThreadTimerRun: " + e.Message);
                                     }
+                                }
+                                    
+                            }
                         }
                     }
                     catch (Exception e)
@@ -2191,8 +2202,12 @@ namespace BeeBot.Signalr
             ChatScanMessageContainsUrl(e.ChatMessage);
             GiveawayWinnerChatCheck(e.ChatMessage);
 
+            // Check for double bot / recycle problems
+            
             try
             {
+
+
                 if (TriggerService == null)
                 {
                     var tcc = GetClientContainer();
@@ -2250,6 +2265,14 @@ namespace BeeBot.Signalr
         /// <param name="e"></param>
         private void ChatMessageTriggerCheck(object sender, OnChatCommandReceivedArgs e)
         {
+            var lastClientPing = GetClientContainer().LastClientPing;
+            if (DateTime.Now > lastClientPing.AddSeconds(30))
+            {
+                DisconnectBot();
+                HttpContext.Current.Session.Abandon();
+                return;
+            }
+
             ChatCommandTriggerCheck(e.Command, e);
         }
 

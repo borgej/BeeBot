@@ -144,7 +144,7 @@
 
                 // try to reconnect on disconnect
                 $.connection.hub.disconnected(function () {
-                  
+                    console.log("Disconnected from web-server...");
                     setTimeout(function () {
                         tryReconnect();
 
@@ -210,19 +210,6 @@
                 function tryReconnect() {
                     $(".botconnectionstatus").text("Disconnected");
                     $(".botconnectionstatus").removeClass("badge-info").removeClass("badge-warning").removeClass("badge-success").addClass("badge-danger");
-                    console.log("Disconnected from web-server...");
-                    $.amaran({
-                        'theme': 'colorful',
-                        'content': {
-                            bgcolor: '#ff3300',
-                            color: '#fff',
-                            message: "Disconnected from web-server...",
-                        },
-                        'closeOnClick': false,
-                        'inEffect': 'slideTop'
-
-                    });
-
                     console.log("Reconnecting to web-server...");
                     try {
                             $.amaran({

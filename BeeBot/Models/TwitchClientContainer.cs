@@ -23,6 +23,7 @@ namespace YTBot.Models
         public TwitchPubSub PubSubClient { get; set; }
         public Thread WorkerThread { get; set; }
         public string ConnectionId { get; set; }
+        public DateTime LastClientPing { get; set; }
 
         public List<string> ConsoleLog { get; set; }
         public List<ChatMessage> ChatLog { get; set; }
