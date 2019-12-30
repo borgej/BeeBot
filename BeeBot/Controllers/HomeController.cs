@@ -13,8 +13,6 @@ using Newtonsoft.Json;
 using TwitchLib.Api;
 using TwitchLib.Api.Models.v5.Games;
 using TwitchLib.Client;
-using TwitchLib.Api;
-using TwitchLib.Api.Exceptions;
 using YTBot.Migrations;
 using YTBot.Models;
 using YTBot.Models.ViewModels;
@@ -153,9 +151,7 @@ namespace BeeBot.Controllers
             var twitchApi = new TwitchAPI();
             twitchApi.Settings.ClientId = ConfigurationManager.AppSettings["clientId"];
             twitchApi.Settings.AccessToken = bs.ChannelToken;
-            var gamesResult = await twitchApi.Search.v5.SearchGamesAsync(phrase, null);
-
-            var output = new List<object>();
+            var gamesResult = await twitchApi.V5.Search.SearchGamesAsync(phrase, null);
 
             var settings = new JsonSerializerSettings();
             settings.StringEscapeHandling = StringEscapeHandling.EscapeHtml;
@@ -308,7 +304,7 @@ namespace BeeBot.Controllers
         //        Api.Settings.AccessToken = clientSecret;
         //        Api.Settings.ClientId = clientId;
         //        var userBotSettings = ContextService.GetBotUserSettingsForUser(ContextService.GetUser(User.Identity.Name));
-        //        var channel = Api.Channels.v5.GetChannelAsync(userBotSettings.ChannelToken);
+        //        var channel = Api.V5.Channels.GetChannelAsync(userBotSettings.ChannelToken);
         //        var channelData = channel.Result;
 
         //    }

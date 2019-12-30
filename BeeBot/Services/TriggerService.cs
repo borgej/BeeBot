@@ -11,15 +11,15 @@ using Google.Apis.Logging;
 using StrawpollNET;
 using StrawpollNET.Data;
 using TwitchLib.Api;
-using TwitchLib.Api.Exceptions;
+using TwitchLib.Api.Core.Exceptions;
 using TwitchLib.Api.Models.v5.Channels;
 using TwitchLib.Client;
 using TwitchLib.Client.Extensions;
 using TwitchLib.Client.Models;
-using TwitchLib.Client.Services;
 using YoutubeSearch;
 using YTBot.Models;
 using YTBot.Models.ViewModels;
+using ChannelSubscribers = TwitchLib.Api.V5.Models.Channels.ChannelSubscribers;
 using SysRandom = System.Random;
 
 namespace YTBot.Services
@@ -253,8 +253,8 @@ namespace YTBot.Services
                         {
                             try
                             {
-                                var channelData = await Api.Channels.v5.GetChannelAsync(BotUserSettings.ChannelToken);
-                                var clip = await Api.Clips.helix.CreateClipAsync(channelData.Id,
+                                var channelData = await Api.V5.Channels.GetChannelAsync(BotUserSettings.ChannelToken);
+                                var clip = await Api.Helix.Clips.CreateClipAsync(channelData.Id,
                                     BotUserSettings.ChannelToken);
                                 var id = clip.CreatedClips.First().Id;
                                 var clipUrl = clip.CreatedClips.Last().EditUrl.Replace("/edit", "");
@@ -346,8 +346,8 @@ namespace YTBot.Services
 
                             try
                             {
-                                var twitchUser = await Api.Users.v5.GetUserByNameAsync(streamerName);
-                                var channelData = await Api.Channels.v5.GetChannelByIDAsync(twitchUser.Matches[0].Id);
+                                var twitchUser = await Api.V5.Users.GetUserByNameAsync(streamerName);
+                                var channelData = await Api.V5.Channels.GetChannelByIDAsync(twitchUser.Matches[0].Id);
 
                                 lastStreamed = " - Last streamed '" + channelData.Game + "'";
                                 streamerName = twitchUser.Matches[0].DisplayName;
@@ -399,11 +399,11 @@ namespace YTBot.Services
                         // !follower
                         if (trigger.TriggerName.Equals("follower"))
                         {
-                            var twitchUser = await Api.Users.v5.GetUserByNameAsync(command.ChatMessage.Username);
-                            var channelData = await Api.Users.v5.GetUserByNameAsync(TcContainer.Channel);
+                            var twitchUser = await Api.V5.Users.GetUserByNameAsync(command.ChatMessage.Username);
+                            var channelData = await Api.V5.Users.GetUserByNameAsync(TcContainer.Channel);
                             try
                             {
-                                var follower = await Api.Users.v5.CheckUserFollowsByChannelAsync(
+                                var follower = await Api.V5.Users.CheckUserFollowsByChannelAsync(
                                     twitchUser.Matches[0].Id,
                                     channelData.Matches[0].Id);
                                 TwitchClient.SendMessage(TcContainer.Channel,
@@ -422,12 +422,11 @@ namespace YTBot.Services
                         // !stats
                         else if (trigger.TriggerName.Equals("stats"))
                         {
-                            var channelData = await Api.Channels.v5.GetChannelAsync(BotUserSettings.ChannelToken);
+                            var channelData = await Api.V5.Channels.GetChannelAsync(BotUserSettings.ChannelToken);
                             ChannelSubscribers channelSubsData = null;
                             try
                             {
-                                channelSubsData =
-                                    await Api.Channels.v5.GetChannelSubscribersAsync(channelData.Id, null, null, null,
+                                channelSubsData = await Api.V5.Channels.GetChannelSubscribersAsync(channelData.Id, null, null, null,
                                         BotUserSettings.ChannelToken);
                             }
                             catch (Exception e)
@@ -444,11 +443,11 @@ namespace YTBot.Services
                         {
                             try
                             {
-                                var channelData = await Api.Channels.v5.GetChannelAsync(BotUserSettings.ChannelToken);
+                                var channelData = await Api.V5.Channels.GetChannelAsync(BotUserSettings.ChannelToken);
                                 var channelId = channelData.Id;
-                                var twitchUser = await Api.Users.v5.GetUserByNameAsync(command.ChatMessage.Username);
+                                var twitchUser = await Api.V5.Users.GetUserByNameAsync(command.ChatMessage.Username);
                                 var twitchUserId = twitchUser.Matches.First().Id;
-                                var sub = await Api.Users.v5.CheckUserSubscriptionByChannelAsync(twitchUserId,
+                                var sub = await Api.V5.Users.CheckUserSubscriptionByChannelAsync(twitchUserId,
                                     channelId);
 
                                 TwitchClient.SendMessage(TcContainer.Channel,
@@ -505,8 +504,8 @@ namespace YTBot.Services
                         // !uptime
                         else if (trigger.TriggerName.Equals("uptime"))
                         {
-                            var channel = Api.Channels.v5.GetChannelAsync(BotUserSettings.ChannelToken).Result;
-                            var uptime = Api.Streams.v5.GetUptimeAsync(channel.Id);
+                            var channel = Api.V5.Channels.GetChannelAsync(BotUserSettings.ChannelToken).Result;
+                            var uptime = Api.V5.Streams.GetUptimeAsync(channel.Id);
 
 
                             if (uptime.Result == null)
@@ -1162,13 +1161,13 @@ namespace YTBot.Services
                     var giveaway = TcContainer.Giveaways.FirstOrDefault(g =>
                         g.Trigger.ToLower().Equals(command.CommandText.ToLower()) && g.EndsAt >= DateTime.Now);
 
-                    var twitchUser = await Api.Users.v5.GetUserByNameAsync(command.ChatMessage.Username);
+                    var twitchUser = await Api.V5.Users.GetUserByNameAsync(command.ChatMessage.Username);
 
-                    var channel = await Api.Users.v5.GetUserByNameAsync(TcContainer.Channel);
+                    var channel = await Api.V5.Users.GetUserByNameAsync(TcContainer.Channel);
                     var isFollower = false;
                     try
                     {
-                        await Api.Users.v5.CheckUserFollowsByChannelAsync(twitchUser.Matches[0].Id,
+                        await Api.V5.Users.CheckUserFollowsByChannelAsync(twitchUser.Matches[0].Id,
                             channel.Matches[0].Id);
                         isFollower = true;
                     }

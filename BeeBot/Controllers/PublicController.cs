@@ -38,7 +38,7 @@ namespace YTBot.Controllers
                 var bcs = ContextService.GetBotChannelSettings(user);
                 var bus = ContextService.GetBotUserSettingsForUser(user);
                 
-                var channelMeta = await Api.Channels.v5.GetChannelAsync(bus.ChannelToken);
+                var channelMeta = await Api.V5.Channels.GetChannelAsync(bus.ChannelToken);
 
                 ViewBag.ChannelProfileBannerUrl = channelMeta.ProfileBanner;
                 ViewBag.ChannelLogo = channelMeta.Logo;
@@ -59,8 +59,6 @@ namespace YTBot.Controllers
                 ViewBag.Error = e.Message;
                 return View(model);
             }
-
-            return View(model);
         }
 
         public ActionResult KillStat(string channel, bool? dark = false)

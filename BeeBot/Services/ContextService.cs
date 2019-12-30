@@ -672,13 +672,11 @@ namespace YTBot.Services
                 {
                     return null;
                 }
-
             }
             else
             {
                 try
                 {
-
                     return Context.Viewers.SingleOrDefault(
                         u => u.TwitchUsername.ToLower() == twitchusername.ToLower() && u.Channel.ToLower() == channel.ToLower());
                 }

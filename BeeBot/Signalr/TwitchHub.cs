@@ -15,8 +15,7 @@ using Microsoft.AspNet.SignalR;
 using StrawpollNET;
 using StrawpollNET.Data;
 using TwitchLib.Api;
-using TwitchLib.Api.Exceptions;
-using TwitchLib.Api.Models.v5.Clips;
+using TwitchLib.Api.Core.Exceptions;
 using TwitchLib.Client;
 using TwitchLib.Client.Events;
 using TwitchLib.Client.Extensions;
@@ -196,6 +195,7 @@ namespace BeeBot.Signalr
         /// <returns></returns>
         public async Task InitializeAPI()
         {
+            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
             var user = ContextService.GetUser(GetUsername());
             BotUserSettings = ContextService.GetBotUserSettingsForUser(user);
             ChannelToken = BotUserSettings.ChannelToken;
@@ -794,7 +794,7 @@ namespace BeeBot.Signalr
 
                     clientContainer.Client.OnConnected += OnConnectToChannel;
                     clientContainer.Client.OnJoinedChannel += OnJoinedChannel;
-                    clientContainer.Client.OnDisconnected += OnDisconnectReconnect;
+                    //clientContainer.Client.OnDisconnected += OnDisconnectReconnect;
 
                     clientContainer.Client.OnModeratorsReceived += ChannelModerators;
                     clientContainer.Client.OnMessageReceived += ChatMessageCheck;
@@ -858,9 +858,6 @@ namespace BeeBot.Signalr
             }
         }
 
-        private void OnDisconnectReconnect(object sender, OnDisconnectedArgs e)
-        {
-        }
 
         /// <summary>
         ///     OnBeeingRaided event
@@ -988,9 +985,9 @@ namespace BeeBot.Signalr
             try
             {
                 InitializeAPI();
-                var channel = Api.Channels.v5.GetChannelAsync(ChannelToken).Result;
-                var uptime = Api.Streams.v5.BroadcasterOnlineAsync(channel.Id).Result;
-                var stream = Api.Streams.v5.GetStreamByUserAsync(channel.Id).Result;
+                var channel = Api.V5.Channels.GetChannelAsync(ChannelToken).Result;
+                var uptime = Api.V5.Streams.BroadcasterOnlineAsync(channel.Id).Result;
+                var stream = Api.V5.Streams.GetStreamByUserAsync(channel.Id).Result;
 
                 var delay = 0;
                 if (stream == null) delay = stream.Stream.Delay;
@@ -1024,9 +1021,9 @@ namespace BeeBot.Signalr
             try
             {
                 await InitializeAPI();
-                var channel = await Api.Channels.v5.GetChannelAsync(ChannelToken);
-                var uptime = await Api.Streams.v5.BroadcasterOnlineAsync(channel.Id);
-                var stream = await Api.Streams.v5.GetStreamByUserAsync(channel.Id);
+                var channel = await Api.V5.Channels.GetChannelAsync(ChannelToken);
+                var uptime = await Api.V5.Streams.BroadcasterOnlineAsync(channel.Id);
+                var stream = await Api.V5.Streams.GetStreamByUserAsync(channel.Id);
 
                 var delay = 0;
                 if (stream == null) delay = stream.Stream.Delay;
@@ -1065,7 +1062,7 @@ namespace BeeBot.Signalr
                 await InitializeAPI();
                 Api.Settings.AccessToken = clientSecret;
 
-                var channelId = await Api.Channels.v5.GetChannelAsync(ChannelToken);
+                var channelId = await Api.V5.Channels.GetChannelAsync(ChannelToken);
 
                 if (string.IsNullOrWhiteSpace(delay)) delay = "0";
                 var user = ContextService.GetUser(GetUsername());
@@ -1073,7 +1070,7 @@ namespace BeeBot.Signalr
                 ChannelToken = BotUserSettings.ChannelToken;
                 Channel = BotUserSettings.BotChannel;
 
-                await Api.Channels.v5.UpdateChannelAsync(channelId.Id, title, game, delay, null, ChannelToken);
+                await Api.V5.Channels.UpdateChannelAsync(channelId.Id, title, game, delay, null, ChannelToken);
 
                 var retval = new {data = "1", message = "Saved"};
                 Clients.Caller.SaveCallback(retval);
@@ -1109,7 +1106,7 @@ namespace BeeBot.Signalr
             {
                 await InitializeAPI();
 
-                var channel = await Api.Channels.v5.GetChannelAsync(ChannelToken);
+                var channel = await Api.V5.Channels.GetChannelAsync(ChannelToken);
 
                 var chatOptions = channel;
                 var retval = new {data = "1", message = "", container = chatOptions};
@@ -1294,7 +1291,7 @@ namespace BeeBot.Signalr
         /// <returns></returns>
         public bool UpdateChannel(string topic, string game)
         {
-            return Api.Channels.v5.UpdateChannelAsync(Channel, topic, game, null, null, Password).IsCompleted;
+            return Api.V5.Channels.UpdateChannelAsync(Channel, topic, game, null, null, Password).IsCompleted;
         }
 
 
@@ -1376,8 +1373,8 @@ namespace BeeBot.Signalr
         {
             try
             {
-                var user = Api.Users.v5.GetUserByNameAsync(Channel).Result;
-                var stream = Api.Streams.v5.GetStreamByUserAsync(user.Matches[0].Id).Result;
+                var user = Api.V5.Users.GetUserByNameAsync(Channel).Result;
+                var stream = Api.V5.Streams.GetStreamByUserAsync(user.Matches[0].Id).Result;
 
                 var numViewers = stream.Stream.Viewers;
 
@@ -1757,8 +1754,8 @@ namespace BeeBot.Signalr
                         if (botChannelSettings != null)
                         {
                             // Loyalty only if channel is online
-                            var channel = Api.Channels.v5.GetChannelAsync(ChannelToken).Result;
-                            var uptime = Api.Streams.v5.GetUptimeAsync(channel.Id);
+                            var channel = Api.V5.Channels.GetChannelAsync(ChannelToken).Result;
+                            var uptime = Api.V5.Streams.GetUptimeAsync(channel.Id);
 
 
 #if DEBUG
@@ -2305,14 +2302,14 @@ namespace BeeBot.Signalr
         {
             try
             {
-                var tcc = GetClientContainer();
+                                                                var tcc = GetClientContainer();
                 TriggerService = new TriggerService(ContextService.GetUser(GetUsername()), tcc, this, Api);
 
                 var giveaways = TriggerService.GiveAwayCheck(command);
                 var triggers = TriggerService.TriggerCheck(command);
                 var loyalty = TriggerService.LoyaltyCheck(command);
                 var killstat = TriggerService.KillStatCheck(command);
-                var titleAndGame = TriggerService.TitleAndGameCheck(command);
+                var titleAndGame = TriggerService.TitleAndGameCheck(command);                   
                 
 
                 if (giveaways.Any()) TriggerService.Run(null, null, command);
@@ -2322,12 +2319,12 @@ namespace BeeBot.Signalr
                 var enumerable = triggers as Trigger[] ?? triggers.ToArray();
                 if (enumerable.Any())
                 {
-                    var twitchUser = await Api.Users.v5.GetUserByNameAsync(command.ChatMessage.Username);
-                    var channel = await Api.Users.v5.GetUserByNameAsync(tcc.Channel);
+                    var twitchUser = await Api.V5.Users.GetUserByNameAsync(command.ChatMessage.Username);
+                    var channel = await Api.V5.Users.GetUserByNameAsync(tcc.Channel);
                     var isFollower = false;
                     try
                     {
-                        await Api.Users.v5.CheckUserFollowsByChannelAsync(twitchUser.Matches[0].Id,
+                        await Api.V5.Users.CheckUserFollowsByChannelAsync(twitchUser.Matches[0].Id,
                             channel.Matches[0].Id);
                         isFollower = true;
                     }
@@ -2364,7 +2361,7 @@ namespace BeeBot.Signalr
             }
             catch (Exception e)
             {
-                ConsoleLog(e.Message);
+                ConsoleLog(e.Message + " | Source: " + e.Source + " | Stacktrace: " + e.StackTrace);
             }
         }
 
